@@ -1,0 +1,39 @@
+# ============================================================================
+# .gitignore - Sistema de Aeropuerto (CORPAC S.A.)
+# ============================================================================
+
+# Compilación y binarios NetBeans / Apache Ant
+build/
+dist/
+nbproject/private/
+*.class
+
+# Informes, documentación técnica y archivos de texto auxiliares (Exclusión estricta)
+*.docx
+*.pdf
+*.dotx
+*.xlsx
+*.csv
+*.txt
+INFORME*.md
+informe*.md
+REPORTE*.md
+reporte*.md
+INSTRUCCIONES*.txt
+
+# Vouchers, boletas y comprobantes generados en runtime
+Voucher_*.txt
+comprobantes_correo/
+vouchers/
+*.log
+
+# Archivos comprimidos
+*.zip
+*.rar
+*.7z
+*.tar.gz
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
