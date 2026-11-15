@@ -7,7 +7,7 @@ if %ERRORLEVEL% EQU 0 (
     echo.
     echo ========================================================
     echo   [OK] BUILD SUCCESSFUL - Compilacion exitosa
-    echo   Archivo generado: dist\PrimerAvance.jar
+    echo   Archivo generado: dist\SistemaDeAeropuerto.jar
     echo ========================================================
 ) else (
     echo.

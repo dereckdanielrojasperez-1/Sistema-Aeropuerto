@@ -20,11 +20,11 @@ Ejecute el script por lotes ubicado en la raíz del proyecto:
 ```cmd
 clean_and_build.bat
 ```
-El script compilará todas las clases con Ant y generará el archivo ejecutable en `dist/PrimerAvance.jar`.
+El script compilará todas las clases con Ant y generará el archivo ejecutable en `dist/SistemaDeAeropuerto.jar`.
 
 ### Opción B: Ejecución directa del archivo JAR
 ```bash
-java -jar dist/PrimerAvance.jar
+java -jar dist/SistemaDeAeropuerto.jar
 ```
 
 ### Opción C: Ejecución de la Suite Oficial de 128 Pruebas Automatizadas de TADs
