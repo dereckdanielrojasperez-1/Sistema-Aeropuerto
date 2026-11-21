@@ -77,8 +77,8 @@ public class DialogoFichaAvion extends JDialog {
         int maxH = (insets != null) ? screenSize.height - insets.top - insets.bottom : screenSize.height - 50;
         int maxW = (insets != null) ? screenSize.width - insets.left - insets.right : screenSize.width - 40;
 
-        int dialogW = Math.min(960, maxW - 20);
-        int dialogH = Math.min(740, maxH - 20);
+        int dialogW = Math.min(980, maxW - 20);
+        int dialogH = Math.min(760, maxH - 20);
         setSize(dialogW, dialogH);
         setLocationRelativeTo(ventanaPadre);
         setResizable(true);
@@ -132,30 +132,39 @@ public class DialogoFichaAvion extends JDialog {
         // =========================================================================
         // 1. Encabezado Institucional CORPAC con Selector Rápido de Vuelos de la Flota
         // =========================================================================
-        JPanel panelEncabezado = new JPanel(new BorderLayout(14, 0));
+        JPanel panelEncabezado = new JPanel();
+        panelEncabezado.setLayout(new BoxLayout(panelEncabezado, BoxLayout.Y_AXIS));
         panelEncabezado.setBackground(fondoHeader);
         panelEncabezado.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, bordeTarjeta),
-                new EmptyBorder(12, 18, 12, 18)
+                new EmptyBorder(10, 18, 10, 18)
         ));
 
-        JPanel panelTitulos = new JPanel(new GridLayout(2, 1, 0, 2));
-        panelTitulos.setOpaque(false);
+        // Fila 1: Título principal a la izquierda y Logo CORPAC a la derecha
+        JPanel filaSuperior = new JPanel(new BorderLayout(12, 0));
+        filaSuperior.setOpaque(false);
 
         lblTitulo = new JLabel("FICHA TÉCNICA OFICIAL: " + avionActivo.obtenerModelo().toUpperCase(), JLabel.LEFT);
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 15));
         lblTitulo.setForeground(doradoSmart);
+        filaSuperior.add(lblTitulo, BorderLayout.WEST);
+
+        Image imgLogo = cargarImagen("logo_corpac.png");
+        if (imgLogo != null) {
+            JLabel lblLogo = new JLabel(new ImageIcon(imgLogo.getScaledInstance(130, 32, Image.SCALE_SMOOTH)));
+            filaSuperior.add(lblLogo, BorderLayout.EAST);
+        }
+
+        // Fila 2: Subtítulo de ruta a la izquierda y selector de aeronave/vuelo a la derecha
+        JPanel filaInferior = new JPanel(new BorderLayout(12, 0));
+        filaInferior.setOpaque(false);
 
         lblSubtitulo = new JLabel("Aeronave asignada a ruta comercial nacional · Flota Oficial CORPAC S.A.", JLabel.LEFT);
         lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         lblSubtitulo.setForeground(textoGris);
+        filaInferior.add(lblSubtitulo, BorderLayout.WEST);
 
-        panelTitulos.add(lblTitulo);
-        panelTitulos.add(lblSubtitulo);
-        panelEncabezado.add(panelTitulos, BorderLayout.WEST);
-
-        // Selector dinámico de vuelo/destino en la cabecera
-        JPanel pSelectorWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
+        JPanel pSelectorWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
         pSelectorWrapper.setOpaque(false);
 
         JLabel lblSelVuelo = new JLabel("Vuelo / Destino:");
@@ -167,7 +176,7 @@ public class DialogoFichaAvion extends JDialog {
                 "CP-2024: Lima -> Arequipa  [Boeing 737-800 MAX - Troncal Sur]",
                 "CP-2025: Lima -> Piura  [Airbus A321neo - Corredor Norte]",
                 "CP-2026: Lima -> Iquitos  [Dash 8-Q400 - Selva Amazónica]",
-                "CP-2027: Lima -> Tarapoto  [Embraer E190-E2 - Valles y Selva Alta]",
+                "CP-2027: Lima -> Tarapoto  [Embraer E190-E2 - Valles y Selva]",
                 "CP-2028: Lima -> Trujillo  [Boeing 737-800 MAX - Costa Norte]",
                 "CP-2029: Lima -> Juliaca  [Airbus A320neo - Altiplano Andino]",
                 "CP-2030: Lima -> Ayacucho  [Embraer E190-E2 - Sierra Central]"
@@ -177,7 +186,7 @@ public class DialogoFichaAvion extends JDialog {
         cbSelectorVuelo.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         cbSelectorVuelo.setBackground(fondoTarjeta);
         cbSelectorVuelo.setForeground(textoBlanco);
-        cbSelectorVuelo.setPreferredSize(new Dimension(360, 28));
+        cbSelectorVuelo.setPreferredSize(new Dimension(310, 26));
 
         // Seleccionar según el código activo
         seleccionarItemSegunCodigo(controlador.obtenerCodigoVueloActivo());
@@ -194,14 +203,12 @@ public class DialogoFichaAvion extends JDialog {
 
         pSelectorWrapper.add(lblSelVuelo);
         pSelectorWrapper.add(cbSelectorVuelo);
+        filaInferior.add(pSelectorWrapper, BorderLayout.EAST);
 
-        Image imgLogo = cargarImagen("logo_corpac.png");
-        if (imgLogo != null) {
-            JLabel lblLogo = new JLabel(new ImageIcon(imgLogo.getScaledInstance(140, 36, Image.SCALE_SMOOTH)));
-            pSelectorWrapper.add(lblLogo);
-        }
+        panelEncabezado.add(filaSuperior);
+        panelEncabezado.add(Box.createVerticalStrut(6));
+        panelEncabezado.add(filaInferior);
 
-        panelEncabezado.add(pSelectorWrapper, BorderLayout.EAST);
         panelContenedorRaiz.add(panelEncabezado, BorderLayout.NORTH);
 
         // =========================================================================
@@ -382,10 +389,12 @@ public class DialogoFichaAvion extends JDialog {
         txtDescripcion.setForeground(textoBlanco);
         txtDescripcion.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(bordeTarjeta, 1, true),
-                new EmptyBorder(10, 14, 10, 14)
+                new EmptyBorder(8, 14, 8, 14)
         ));
-        txtDescripcion.setMaximumSize(new Dimension(32767, 95));
+        txtDescripcion.setPreferredSize(new Dimension(890, 75));
+        txtDescripcion.setMaximumSize(new Dimension(32767, 85));
         panelCuerpo.add(txtDescripcion);
+        panelCuerpo.add(Box.createVerticalStrut(10));
 
         JScrollPane scrollPrincipal = new JScrollPane(panelCuerpo);
         scrollPrincipal.setBorder(null);
@@ -396,23 +405,20 @@ public class DialogoFichaAvion extends JDialog {
         // =========================================================================
         // 5. Barra Inferior con Botón de Cierre
         // =========================================================================
-        JPanel panelPie = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 10));
+        JPanel panelPie = new JPanel(new FlowLayout(FlowLayout.RIGHT, 14, 8));
         panelPie.setBackground(fondoHeader);
-        panelPie.setBorder(new CompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, bordeTarjeta),
-                new EmptyBorder(4, 10, 4, 10)
-        ));
 
         JLabel lblInfoPie = new JLabel("CORPAC S.A. · Gerencia de Operaciones Aeronáuticas · Flota Diversificada");
         lblInfoPie.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         lblInfoPie.setForeground(textoGris);
 
-        JPanel pInfoWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 4));
+        JPanel pInfoWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 10));
         pInfoWrapper.setOpaque(false);
         pInfoWrapper.add(lblInfoPie);
 
         JPanel panelPieCompleto = new JPanel(new BorderLayout());
-        panelPieCompleto.setOpaque(false);
+        panelPieCompleto.setBackground(fondoHeader);
+        panelPieCompleto.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, bordeTarjeta));
         panelPieCompleto.add(pInfoWrapper, BorderLayout.WEST);
 
         JButton btnCerrar = new JButton("Cerrar Ficha Técnica (Esc)");
@@ -447,29 +453,29 @@ public class DialogoFichaAvion extends JDialog {
         panelPlano.setImagen(imgPlano, "PLANO TÉCNICO AERONÁUTICO (" + av.obtenerModelo() + ")");
 
         lblValVelocidad.setText(av.obtenerVelocidadCrucero() + " km/h (Mach " + String.format("%.2f", av.obtenerVelocidadCrucero() / 1062.0) + ")");
-        lblValAlcance.setText(String.format("%,.0f km (Ruta Lima -> %s)", av.obtenerAlcanceMaximo(), av.obtenerDestinoAsignado()));
+        lblValAlcance.setText(String.format("%,.0f km (Lima -> %s)", av.obtenerAlcanceMaximo(), av.obtenerDestinoAsignado()));
         lblValTecho.setText(String.format("%,d m (%,d pies)", av.obtenerTechoServicio(), (int)(av.obtenerTechoServicio() * 3.28084)));
-        lblValDespegue.setText((av.obtenerModelo().contains("Dash") ? "1,400 m (Apto para pistas cortas de selva)" : "1,950 m (Certificado para altura)"));
+        lblValDespegue.setText((av.obtenerModelo().contains("Dash") ? "1,400 m (Pistas cortas)" : "1,950 m (Apto para altura)"));
 
-        lblValEnvergadura.setText(av.obtenerEnvergadura() + " metros");
-        lblValLongitud.setText(av.obtenerLongitud() + " metros");
-        lblValAltura.setText(av.obtenerAltura() + " metros");
+        lblValEnvergadura.setText(av.obtenerEnvergadura() + " m");
+        lblValLongitud.setText(av.obtenerLongitud() + " m");
+        lblValAltura.setText(av.obtenerAltura() + " m");
         lblValMTOW.setText(String.format("%,.0f kg", av.obtenerPesoMaximoDespegue()));
 
         lblValFabricante.setText(av.obtenerFabricante() + " / " + av.obtenerModelo());
-        lblValMatricula.setText(av.obtenerMatricula() + " (Flota Oficial CORPAC)");
+        lblValMatricula.setText(av.obtenerMatricula() + " (Oficial CORPAC)");
         lblValMotores.setText(av.obtenerMotores());
-        lblValEficiencia.setText(av.obtenerModelo().contains("Dash") ? "Bajo consumo de combustible en turboprop" : "-20% consumo frente a generación previa");
+        lblValEficiencia.setText(av.obtenerModelo().contains("Dash") ? "Alta eficiencia turboprop" : "-20% consumo de combustible");
 
-        lblValCapacidad.setText(av.obtenerCapacidadReal() + " pasajeros comerciales");
-        lblValCabina.setText(av.obtenerCapacidadSimulada() + " plazas activas (10 filas x 5 col)");
-        lblValZonificacion.setText("Ventana (+30%), Pasillo (+10%), Centro");
-        lblValCert.setText("DGAC Perú / OACI Cat IIIa / EASA / FAA");
+        lblValCapacidad.setText(av.obtenerCapacidadReal() + " plazas comerciales");
+        lblValCabina.setText(av.obtenerCapacidadSimulada() + " plazas (Matriz 10x5)");
+        lblValZonificacion.setText("Ventana +30% | Pasillo +10%");
+        lblValCert.setText("DGAC Perú / OACI Cat IIIa");
 
         txtDescripcion.setText(
                 "Reseña Técnica y Operativa:\n" +
                 av.obtenerResena() + "\n" +
-                "Su cabina se encuentra modelada como una matriz bidimensional 10x5 en memoria con despacho dinámico de asientos y tarifas zonales."
+                "Cabina modelada como matriz bidimensional 10x5 en memoria con despacho dinámico y tarifas zonales."
         );
         repaint();
     }
