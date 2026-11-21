@@ -6538,38 +6538,6 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    private void mostrarDialogoDiagnosticoSaludTADs() {
-        String informe = controlador.ejecutarDiagnosticoTADs();
-        JDialog diag = new JDialog(this, "Diagnóstico Integral y Salud de TADs - CORPAC", true);
-        diag.setSize(680, 520);
-        diag.setLocationRelativeTo(this);
-
-        JPanel pContenido = new JPanel(new BorderLayout(10, 10));
-        pContenido.setBackground(fondoTarjeta);
-        pContenido.setBorder(new EmptyBorder(14, 16, 14, 16));
-
-        JTextArea txtReporte = new JTextArea(informe);
-        txtReporte.setEditable(false);
-        txtReporte.setFont(new Font("Consolas", Font.PLAIN, 12));
-        txtReporte.setBackground(new Color(15, 23, 42));
-        txtReporte.setForeground(new Color(248, 250, 252));
-        txtReporte.setCaretPosition(0);
-
-        JScrollPane scroll = new JScrollPane(txtReporte);
-        scroll.setBorder(new LineBorder(bordeTarjeta, 1));
-        pContenido.add(scroll, BorderLayout.CENTER);
-
-        JPanel pSur = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        pSur.setOpaque(false);
-        JButton btnCerrar = new JButton("Entendido / Cerrar");
-        estilizarBotonAccion(btnCerrar, azulAccion, new Color(15, 20, 29));
-        btnCerrar.addActionListener(ev -> diag.dispose());
-        pSur.add(btnCerrar);
-        pContenido.add(pSur, BorderLayout.SOUTH);
-
-        diag.setContentPane(pContenido);
-        diag.setVisible(true);
-    }
 
     public void accionOptimizarRedTroncal() {
         try {
