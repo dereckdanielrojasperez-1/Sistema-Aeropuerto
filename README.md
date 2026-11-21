@@ -1,6 +1,6 @@
 # Sistema de Gestión Aeroportuaria - CORPAC S.A.
 **Curso:** Algoritmos y Estructuras de Datos (AED)  
-**Avance:** Tercer Avance Integral (Semana 15)  
+**Avance:** Proyecto Final - Semana 18  
 **Organización:** Corporación Peruana de Aeropuertos y Aviación Comercial (CORPAC S.A.)  
 **Tecnología:** Java Standard Edition (JDK 17 / 21 / 25), Swing, NetBeans Ant, MySQL 8.0+
 
@@ -27,8 +27,8 @@ El script compilará todas las clases con Ant y generará el archivo ejecutable 
 java -jar dist/SistemaDeAeropuerto.jar
 ```
 
-### Opción C: Ejecución de la Suite Oficial de 128 Pruebas Automatizadas de TADs
-Para ejecutar las 128 pruebas automatizadas de verificación de estructuras de datos y algoritmos (100% PASS):
+### Opción C: Ejecución de la Suite Oficial de 131 Pruebas Automatizadas de TADs
+Para ejecutar las 131 pruebas automatizadas de verificación de estructuras de datos y algoritmos (100% PASS):
 ```bash
 java -cp "build/classes;dist/lib/*" com.aeropuerto.test.TestAuditoriaIntegralTADs
 ```
@@ -43,19 +43,17 @@ java -cp "build/classes;dist/lib/*" com.aeropuerto.test.TestAuditoriaIntegralTAD
 
 ## 3. Credenciales de Acceso
 - **Modo Pasajero:** Acceso libre directo para reserva de vuelos, selección de cabina y emisión de pases de abordar con QR SUNAT.
-  - *Tip para evaluación:* En el Paso 2/3 presione el botón **"⚡ Carga Rápida (Demo)"** para auto-completar DNI y nombres válidos en 1 solo clic.
 - **Modo Administrador (AOC):**
   - **Usuario:** `admin`
   - **Contraseña:** `admin123`
-  - Permite acceso al Radar en vivo, gestión de Pistas/Supervisores, TADs dinámicos, **Diagnóstico Integral de Salud (12 Estructuras)** y el nuevo botón:  
-    `"🌳 Laboratorio Algoritmos Semana 15 (Árboles, Grafos, Hash, Heap, Sort)"`.
+  - Permite acceso al Radar en vivo, gestión de Pistas/Supervisores, TADs dinámicos integrados en pestañas nativas del centro de control.
 
 ---
 
 ## 4. Estructuras de Datos y Algoritmos Implementados (12 Estructuras Oficiales)
 
 ### Unidad 1 y 2: Estructuras Lineales y Arreglos
-1. **Arreglo Unidimensional Dinámico:** Catálogo de vuelos con auto-redimensionamiento y búsqueda binaria $O(\log n)$.
+1. **Arreglo Unidimensional Dinámico:** Catálogo de vuelos con auto-redimensionamiento y búsqueda binaria.
 2. **Matriz Bidimensional (10x5):** Plano físico de cabina del *Airbus A320neo*.
 3. **Lista Enlazada Simple:** Gestión y despacho de equipajes comerciales facturados por DNI.
 4. **Lista Doblemente Enlazada:** Catálogo bidireccional de rutas aéreas.
@@ -64,23 +62,21 @@ java -cp "build/classes;dist/lib/*" com.aeropuerto.test.TestAuditoriaIntegralTAD
 7. **Cola con Prioridad (FIFO):** Despacho de aeronaves en pista por la Torre de Control (Niveles: 1-Emergencia, 2-Prioritario, 3-Regular).
 
 ### Unidad 3: Hashing y Prioridades Avanzadas
-8. **Tabla Hash (Separate Chaining):** Indexación de pasajeros por DNI en $O(1)$ con función bit-shift, factor de carga $\alpha \le 0.75$ y rehashing dinámico a módulos primos.
-9. **Montículo Binario (Min-Heap):** Cola de prioridad logarítmica $O(\log n)$ con operaciones `flotar()` y `hundir()` para la asignación óptima de slots de pista.
+8. **Tabla Hash (Separate Chaining):** Indexación de pasajeros por DNI en O(1) con función bit-shift, factor de carga alpha <= 0.75 y rehashing dinámico a módulos primos.
+9. **Montículo Binario (Min-Heap):** Cola de prioridad logarítmica O(log n) con operaciones `flotar()` y `hundir()` para la asignación óptima de slots de pista.
 
 ### Unidad 4: Estructuras No Lineales (Árboles y Grafos)
 10. **Árbol Binario de Búsqueda (ABB):** Indexación jerárquica con recorridos iterativos Preorden, Inorden, Postorden y Por Niveles (BFS).
-11. **Árbol AVL Auto-balanceado:** Estructura balanceada en altura con implementación explícita de las **4 rotaciones canónicas** (RSD/LL, RSI/RR, RDID/LR, RDDI/RL) manteniendo $|FE| \le 1$.
+11. **Árbol AVL Auto-balanceado:** Estructura balanceada en altura con implementación explícita de las **4 rotaciones canónicas** (RSD/LL, RSI/RR, RDID/LR, RDDI/RL) manteniendo |FE| <= 1.
 12. **Grafo Ponderado de Rutas:** Red nacional CORPAC representada en matriz y lista de adyacencia:
-    - **Algoritmo de Dijkstra:** Camino de costo mínimo $O((V+E)\log V)$.
+    - **Algoritmo de Dijkstra:** Camino de costo mínimo O((V+E) log V).
     - **Algoritmo de Prim:** Árbol de Expansión Mínima (MST) conectando todos los aeropuertos al menor costo.
     - **Algoritmo de Kruskal:** Árbol de Expansión Mínima (MST) con estructura de conjuntos disjuntos (Union-Find / DSU).
-    - **Algoritmo de Floyd-Warshall:** Matriz de todos los pares de distancias mínimas en $O(V^3)$ para consultas directas en $O(1)$.
+    - **Algoritmo de Floyd-Warshall:** Matriz de todos los pares de distancias mínimas en O(V^3) para consultas directas en O(1).
 
 ### Algoritmos de Ordenamiento Avanzado y Benchmarking
-- **Burbuja e Inserción ($O(n^2)$):** Algoritmos cuadráticos de base.
-- **Quicksort ($O(n \log n)$ In-Place):** Partición según pivote Hoare.
-- **Mergesort ($O(n \log n)$ Estable):** Divide y vencerás con memoria auxiliar.
-- **Heapsort ($O(n \log n)$ sobre Montículo):** Reorganización in-place por montículo.
+- **Burbuja e Inserción (O(n^2)):** Algoritmos cuadráticos de base.
+- **Quicksort (O(n log n) In-Place):** Partición según pivote Hoare.
+- **Mergesort (O(n log n) Estable):** Divide y vencerás con memoria auxiliar.
+- **Heapsort (O(n log n) sobre Montículo):** Reorganización in-place por montículo.
 - **Módulo de Benchmarking Comparativo:** Medición en nanosegundos y microsegundos con tabla de evaluación de rendimiento en vivo.
-8. **Árbol Binario de Búsqueda (ABB):** Indexación logarítmica $O(\log n)$ y recorrido In-Order 100% iterativo libre de recursión profunda.
-9. **Grafo Ponderado de Rutas:** Red aeroportuaria nacional con Matriz/Lista de Adyacencia, Algoritmo de Dijkstra, BFS y DFS iterativo.
