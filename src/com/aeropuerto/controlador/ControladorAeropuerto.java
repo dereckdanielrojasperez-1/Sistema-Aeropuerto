@@ -523,6 +523,7 @@ public class ControladorAeropuerto {
 
     private void sincronizarAvionConVuelo(Vuelo v) {
         if (v == null) return;
+        avion.configurarSegunDestino(v.obtenerDestino(), v.obtenerCodigo());
         int[][] asientosVuelo = v.obtenerMatrizAsientos();
         if (asientosVuelo == null || asientosVuelo.length < 10) return;
         for (int f = 0; f < 10; f++) {

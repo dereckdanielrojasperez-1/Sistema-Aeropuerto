@@ -2,6 +2,7 @@ package com.aeropuerto.vista;
 
 import com.aeropuerto.controlador.ControladorAeropuerto;
 import com.aeropuerto.modelo.Avion;
+import com.aeropuerto.modelo.Vuelo;
 import com.aeropuerto.vista.tema.Theme;
 
 import javax.swing.*;
@@ -12,9 +13,12 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-// Ficha técnica oficial y especificaciones aeronáuticas del Airbus A320neo (CORPAC S.A.)
+// Ficha técnica oficial y catálogo dinámico de flota de aeronaves comerciales CORPAC S.A.
 public class DialogoFichaAvion extends JDialog {
     private static final long serialVersionUID = 1L;
+
+    private final ControladorAeropuerto controlador;
+    private final Avion avionActivo;
 
     private CardLayout layoutVisualizador;
     private JPanel panelTarjetasVisual;
@@ -22,8 +26,48 @@ public class DialogoFichaAvion extends JDialog {
     private JButton btnVerPlano;
     private JButton btnVer3D;
 
+    private JLabel lblTitulo;
+    private JLabel lblSubtitulo;
+    private JComboBox<String> cbSelectorVuelo;
+
+    private PanelVisorImagenHD panelFotoHD;
+    private PanelVisorImagenHD panelPlano;
+
+    private JLabel lblValVelocidad;
+    private JLabel lblValAlcance;
+    private JLabel lblValTecho;
+    private JLabel lblValDespegue;
+
+    private JLabel lblValEnvergadura;
+    private JLabel lblValLongitud;
+    private JLabel lblValAltura;
+    private JLabel lblValMTOW;
+
+    private JLabel lblValFabricante;
+    private JLabel lblValMatricula;
+    private JLabel lblValMotores;
+    private JLabel lblValEficiencia;
+
+    private JLabel lblValCapacidad;
+    private JLabel lblValCabina;
+    private JLabel lblValZonificacion;
+    private JLabel lblValCert;
+
+    private JTextArea txtDescripcion;
+
     public DialogoFichaAvion(JFrame ventanaPadre, ControladorAeropuerto controlador) {
-        super(ventanaPadre, "Ficha Técnica y Especificaciones de Aeronave - CORPAC / Airbus A320neo", false);
+        super(ventanaPadre, "Ficha Técnica y Especificaciones de Aeronave - Flota CORPAC S.A.", false);
+        this.controlador = controlador;
+        this.avionActivo = controlador.obtenerAvion();
+
+        // Si hay un vuelo activo en el controlador, configurar el avión automáticamente para su destino
+        String codActivo = controlador.obtenerCodigoVueloActivo();
+        if (codActivo != null && !codActivo.isEmpty()) {
+            Vuelo v = controlador.buscarVueloPorCodigo(codActivo);
+            if (v != null) {
+                this.avionActivo.configurarSegunDestino(v.obtenerDestino(), v.obtenerCodigo());
+            }
+        }
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Insets insets = null;
@@ -33,8 +77,8 @@ public class DialogoFichaAvion extends JDialog {
         int maxH = (insets != null) ? screenSize.height - insets.top - insets.bottom : screenSize.height - 50;
         int maxW = (insets != null) ? screenSize.width - insets.left - insets.right : screenSize.width - 40;
 
-        int dialogW = Math.min(940, maxW - 20);
-        int dialogH = Math.min(720, maxH - 20);
+        int dialogW = Math.min(960, maxW - 20);
+        int dialogH = Math.min(740, maxH - 20);
         setSize(dialogW, dialogH);
         setLocationRelativeTo(ventanaPadre);
         setResizable(true);
@@ -46,7 +90,8 @@ public class DialogoFichaAvion extends JDialog {
         );
 
         configurarIcono();
-        inicializarComponentes(controlador.obtenerAvion());
+        inicializarComponentes();
+        actualizarDatosAeronave(this.avionActivo);
     }
 
     private void configurarIcono() {
@@ -69,7 +114,7 @@ public class DialogoFichaAvion extends JDialog {
         return null;
     }
 
-    private void inicializarComponentes(Avion avion) {
+    private void inicializarComponentes() {
         Color fondoOscuro = Theme.getBg();
         Color fondoTarjeta = Theme.getSurface();
         Color fondoHeader = Theme.getElevated();
@@ -85,7 +130,7 @@ public class DialogoFichaAvion extends JDialog {
         setContentPane(panelContenedorRaiz);
 
         // =========================================================================
-        // 1. Encabezado Institucional CORPAC
+        // 1. Encabezado Institucional CORPAC con Selector Rápido de Vuelos de la Flota
         // =========================================================================
         JPanel panelEncabezado = new JPanel(new BorderLayout(14, 0));
         panelEncabezado.setBackground(fondoHeader);
@@ -97,40 +142,82 @@ public class DialogoFichaAvion extends JDialog {
         JPanel panelTitulos = new JPanel(new GridLayout(2, 1, 0, 2));
         panelTitulos.setOpaque(false);
 
-        JLabel lblTitulo = new JLabel("FICHA TÉCNICA OFICIAL: AIRBUS A320neo - MODELO A320-271N", JLabel.LEFT);
+        lblTitulo = new JLabel("FICHA TÉCNICA OFICIAL: " + avionActivo.obtenerModelo().toUpperCase(), JLabel.LEFT);
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 15));
         lblTitulo.setForeground(doradoSmart);
 
-        JLabel lblSubtitulo = new JLabel("Aeronave comercial de corto y medio alcance · Flota Oficial CORPAC S.A.", JLabel.LEFT);
+        lblSubtitulo = new JLabel("Aeronave asignada a ruta comercial nacional · Flota Oficial CORPAC S.A.", JLabel.LEFT);
         lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         lblSubtitulo.setForeground(textoGris);
 
         panelTitulos.add(lblTitulo);
         panelTitulos.add(lblSubtitulo);
-        panelEncabezado.add(panelTitulos, BorderLayout.CENTER);
+        panelEncabezado.add(panelTitulos, BorderLayout.WEST);
+
+        // Selector dinámico de vuelo/destino en la cabecera
+        JPanel pSelectorWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
+        pSelectorWrapper.setOpaque(false);
+
+        JLabel lblSelVuelo = new JLabel("Vuelo / Destino:");
+        lblSelVuelo.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        lblSelVuelo.setForeground(azulCyan);
+
+        String[] opcionesFlota = {
+                "CP-2023: Lima -> Cusco  [Airbus A320neo - Altura Extrema]",
+                "CP-2024: Lima -> Arequipa  [Boeing 737-800 MAX - Troncal Sur]",
+                "CP-2025: Lima -> Piura  [Airbus A321neo - Corredor Norte]",
+                "CP-2026: Lima -> Iquitos  [Dash 8-Q400 - Selva Amazónica]",
+                "CP-2027: Lima -> Tarapoto  [Embraer E190-E2 - Valles y Selva Alta]",
+                "CP-2028: Lima -> Trujillo  [Boeing 737-800 MAX - Costa Norte]",
+                "CP-2029: Lima -> Juliaca  [Airbus A320neo - Altiplano Andino]",
+                "CP-2030: Lima -> Ayacucho  [Embraer E190-E2 - Sierra Central]"
+        };
+
+        cbSelectorVuelo = new JComboBox<>(opcionesFlota);
+        cbSelectorVuelo.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        cbSelectorVuelo.setBackground(fondoTarjeta);
+        cbSelectorVuelo.setForeground(textoBlanco);
+        cbSelectorVuelo.setPreferredSize(new Dimension(360, 28));
+
+        // Seleccionar según el código activo
+        seleccionarItemSegunCodigo(controlador.obtenerCodigoVueloActivo());
+
+        cbSelectorVuelo.addActionListener(e -> {
+            String item = (String) cbSelectorVuelo.getSelectedItem();
+            if (item != null) {
+                String cod = extraerCodigoDeItem(item);
+                String dest = extraerDestinoDeItem(item);
+                avionActivo.configurarSegunDestino(dest, cod);
+                actualizarDatosAeronave(avionActivo);
+            }
+        });
+
+        pSelectorWrapper.add(lblSelVuelo);
+        pSelectorWrapper.add(cbSelectorVuelo);
 
         Image imgLogo = cargarImagen("logo_corpac.png");
         if (imgLogo != null) {
-            JLabel lblLogo = new JLabel(new ImageIcon(imgLogo.getScaledInstance(160, 42, Image.SCALE_SMOOTH)));
-            panelEncabezado.add(lblLogo, BorderLayout.EAST);
+            JLabel lblLogo = new JLabel(new ImageIcon(imgLogo.getScaledInstance(140, 36, Image.SCALE_SMOOTH)));
+            pSelectorWrapper.add(lblLogo);
         }
 
+        panelEncabezado.add(pSelectorWrapper, BorderLayout.EAST);
         panelContenedorRaiz.add(panelEncabezado, BorderLayout.NORTH);
 
         // =========================================================================
-        // 2. Contenido Central Desplazable (Evita recortes o solapamiento)
+        // 2. Contenido Central Desplazable (JScrollPane para máxima compatibilidad)
         // =========================================================================
         JPanel panelCuerpo = new JPanel();
         panelCuerpo.setLayout(new BoxLayout(panelCuerpo, BoxLayout.Y_AXIS));
         panelCuerpo.setBackground(fondoOscuro);
         panelCuerpo.setBorder(new EmptyBorder(12, 16, 12, 16));
 
-        // Barra de Control Superior para Alternar Vistas del Avión
+        // Barra de Control para Alternar Vistas del Avión
         JPanel panelBarraVistas = new JPanel(new BorderLayout(10, 0));
         panelBarraVistas.setOpaque(false);
         panelBarraVistas.setMaximumSize(new Dimension(32767, 34));
 
-        JLabel lblModoVista = new JLabel("Modo de Visualización de Aeronave:");
+        JLabel lblModoVista = new JLabel("Perspectiva de la Aeronave:");
         lblModoVista.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblModoVista.setForeground(azulCyan);
         panelBarraVistas.add(lblModoVista, BorderLayout.WEST);
@@ -154,9 +241,7 @@ public class DialogoFichaAvion extends JDialog {
         panelCuerpo.add(panelBarraVistas);
         panelCuerpo.add(Box.createVerticalStrut(8));
 
-        // =========================================================================
         // Contenedor de Vistas Alternables (CardLayout)
-        // =========================================================================
         layoutVisualizador = new CardLayout();
         panelTarjetasVisual = new JPanel(layoutVisualizador);
         panelTarjetasVisual.setBackground(new Color(11, 19, 41));
@@ -165,15 +250,12 @@ public class DialogoFichaAvion extends JDialog {
         panelTarjetasVisual.setMaximumSize(new Dimension(32767, 320));
 
         // Vista 1: Fotografía HD en Vuelo
-        Image imgHD = cargarImagen("airbus_a320neo_hd.jpg");
-        if (imgHD == null) imgHD = cargarImagen("avion_a320.jpg");
-        if (imgHD == null) imgHD = cargarImagen("avion_a320.png");
-        PanelVisorImagenHD panelFotoHD = new PanelVisorImagenHD(imgHD, "AIRBUS A320neo - VUELO ANDINO CORPAC");
+        panelFotoHD = new PanelVisorImagenHD(null, "");
         panelTarjetasVisual.add(panelFotoHD, "FOTO");
 
         // Vista 2: Plano Técnico Esquematico (CAD Blueprint)
         Image imgBlueprint = cargarImagen("airbus_a320neo_blueprint.jpg");
-        PanelVisorImagenHD panelPlano = new PanelVisorImagenHD(imgBlueprint != null ? imgBlueprint : imgHD, "PLANO TÉCNICO AERONÁUTICO (COTAS Y MOTORES LEAP-1A)");
+        panelPlano = new PanelVisorImagenHD(imgBlueprint, "PLANO TÉCNICO AERONÁUTICO DE FLOTA");
         panelTarjetasVisual.add(panelPlano, "PLANO");
 
         // Vista 3: Modelo 3D Interactivo con sus Controles
@@ -209,7 +291,6 @@ public class DialogoFichaAvion extends JDialog {
         panelCuerpo.add(panelTarjetasVisual);
         panelCuerpo.add(Box.createVerticalStrut(12));
 
-        // Eventos de los botones de selector de vistas
         btnVerFoto.addActionListener(e -> {
             layoutVisualizador.show(panelTarjetasVisual, "FOTO");
             estilizarBotonPill(btnVerFoto, true);
@@ -240,34 +321,50 @@ public class DialogoFichaAvion extends JDialog {
 
         // Cuadro 1: Rendimiento Operativo
         JPanel panelRendimiento = crearTarjetaSeccion("Rendimiento Operativo", doradoSmart, fondoTarjeta, bordeTarjeta);
-        panelRendimiento.add(crearFila("Velocidad Crucero:", "828 km/h (Mach 0.78)", textoGris, azulCyan));
-        panelRendimiento.add(crearFila("Alcance Máximo:", "6,500 km (Rutas en Perú sin escalas)", textoGris, azulCyan));
-        panelRendimiento.add(crearFila("Techo de Operación:", "12,100 m (39,800 pies)", textoGris, azulCyan));
-        panelRendimiento.add(crearFila("Carrera de Despegue:", "1,950 m (Apto para Cuzco/Juliaca)", textoGris, azulCyan));
+        lblValVelocidad = new JLabel("-", JLabel.RIGHT);
+        lblValAlcance = new JLabel("-", JLabel.RIGHT);
+        lblValTecho = new JLabel("-", JLabel.RIGHT);
+        lblValDespegue = new JLabel("-", JLabel.RIGHT);
+        panelRendimiento.add(crearFila("Velocidad Crucero:", lblValVelocidad, textoGris, azulCyan));
+        panelRendimiento.add(crearFila("Alcance Máximo:", lblValAlcance, textoGris, azulCyan));
+        panelRendimiento.add(crearFila("Techo de Operación:", lblValTecho, textoGris, azulCyan));
+        panelRendimiento.add(crearFila("Carrera de Despegue:", lblValDespegue, textoGris, azulCyan));
         panelCuadricula.add(panelRendimiento);
 
         // Cuadro 2: Dimensiones y Geometría
         JPanel panelDimensiones = crearTarjetaSeccion("Dimensiones y Pesos", doradoSmart, fondoTarjeta, bordeTarjeta);
-        panelDimensiones.add(crearFila("Envergadura (Alas):", "35.80 metros (con Sharklets)", textoGris, textoBlanco));
-        panelDimensiones.add(crearFila("Longitud Total:", "37.57 metros", textoGris, textoBlanco));
-        panelDimensiones.add(crearFila("Altura de Cola:", "11.76 metros", textoGris, textoBlanco));
-        panelDimensiones.add(crearFila("Peso Máx. Despegue (MTOW):", "79,000 kg", textoGris, textoBlanco));
+        lblValEnvergadura = new JLabel("-", JLabel.RIGHT);
+        lblValLongitud = new JLabel("-", JLabel.RIGHT);
+        lblValAltura = new JLabel("-", JLabel.RIGHT);
+        lblValMTOW = new JLabel("-", JLabel.RIGHT);
+        panelDimensiones.add(crearFila("Envergadura (Alas):", lblValEnvergadura, textoGris, textoBlanco));
+        panelDimensiones.add(crearFila("Longitud Total:", lblValLongitud, textoGris, textoBlanco));
+        panelDimensiones.add(crearFila("Altura de Cola:", lblValAltura, textoGris, textoBlanco));
+        panelDimensiones.add(crearFila("Peso Máx. Despegue (MTOW):", lblValMTOW, textoGris, textoBlanco));
         panelCuadricula.add(panelDimensiones);
 
         // Cuadro 3: Propulsión y Eficiencia
         JPanel panelPropulsion = crearTarjetaSeccion("Propulsión y Planta de Poder", doradoSmart, fondoTarjeta, bordeTarjeta);
-        panelPropulsion.add(crearFila("Fabricante / Modelo:", "Airbus SAS / A320-271N", textoGris, textoBlanco));
-        panelPropulsion.add(crearFila("Motores Turbofán:", "2x CFM LEAP-1A26 (27,120 lbf c/u)", textoGris, textoBlanco));
-        panelPropulsion.add(crearFila("Eficiencia de Combustible:", "-20% consumo frente a generación previa", textoGris, verdeAcento));
-        panelPropulsion.add(crearFila("Huella Acústica:", "-50% emisión sonora en aproximación", textoGris, verdeAcento));
+        lblValFabricante = new JLabel("-", JLabel.RIGHT);
+        lblValMatricula = new JLabel("-", JLabel.RIGHT);
+        lblValMotores = new JLabel("-", JLabel.RIGHT);
+        lblValEficiencia = new JLabel("-", JLabel.RIGHT);
+        panelPropulsion.add(crearFila("Fabricante / Modelo:", lblValFabricante, textoGris, textoBlanco));
+        panelPropulsion.add(crearFila("Matrícula Oficial:", lblValMatricula, textoGris, doradoSmart));
+        panelPropulsion.add(crearFila("Planta de Poder:", lblValMotores, textoGris, textoBlanco));
+        panelPropulsion.add(crearFila("Eficiencia Operativa:", lblValEficiencia, textoGris, verdeAcento));
         panelCuadricula.add(panelPropulsion);
 
         // Cuadro 4: Capacidad y Certificación
         JPanel panelCapacidad = crearTarjetaSeccion("Capacidad y Homologación", doradoSmart, fondoTarjeta, bordeTarjeta);
-        panelCapacidad.add(crearFila("Capacidad Comercial:", "180 pasajeros en clase mixta", textoGris, textoBlanco));
-        panelCapacidad.add(crearFila("Matriz de Cabina CORPAC:", "50 plazas activas (10 filas x 5 col)", textoGris, azulCyan));
-        panelCapacidad.add(crearFila("Diferenciación Tarifaria:", "Ventana (+30%), Pasillo (+10%), Centro", textoGris, doradoSmart));
-        panelCapacidad.add(crearFila("Certificaciones Oficiales:", "DGAC Perú / OACI Cat IIIa / EASA / FAA", textoGris, textoBlanco));
+        lblValCapacidad = new JLabel("-", JLabel.RIGHT);
+        lblValCabina = new JLabel("-", JLabel.RIGHT);
+        lblValZonificacion = new JLabel("-", JLabel.RIGHT);
+        lblValCert = new JLabel("-", JLabel.RIGHT);
+        panelCapacidad.add(crearFila("Capacidad Comercial:", lblValCapacidad, textoGris, textoBlanco));
+        panelCapacidad.add(crearFila("Matriz de Cabina CORPAC:", lblValCabina, textoGris, azulCyan));
+        panelCapacidad.add(crearFila("Diferenciación Tarifaria:", lblValZonificacion, textoGris, doradoSmart));
+        panelCapacidad.add(crearFila("Certificaciones Oficiales:", lblValCert, textoGris, textoBlanco));
         panelCuadricula.add(panelCapacidad);
 
         panelCuerpo.add(panelCuadricula);
@@ -276,7 +373,7 @@ public class DialogoFichaAvion extends JDialog {
         // =========================================================================
         // 4. Reseña Técnica Oficial
         // =========================================================================
-        JTextArea txtDescripcion = new JTextArea();
+        txtDescripcion = new JTextArea();
         txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
@@ -287,17 +384,9 @@ public class DialogoFichaAvion extends JDialog {
                 new LineBorder(bordeTarjeta, 1, true),
                 new EmptyBorder(10, 14, 10, 14)
         ));
-        txtDescripcion.setText(
-                "Reseña Técnica y Operativa:\n" +
-                "El Airbus A320neo es la aeronave insignia de CORPAC para el transporte interdepartamental en el Perú. " +
-                "Equipado con dispositivos Sharklets de alta eficiencia aerodinámica y reactores CFM LEAP-1A con relación de derivación 11:1, " +
-                "ofrece rendimiento sobresaliente en pistas de altura como el Aeropuerto Alejandro Velasco Astete del Cusco (3,310 msnm) y Juliaca (3,825 msnm). " +
-                "Su cabina se encuentra modelada como una matriz bidimensional 10x5 en memoria con despacho dinámico de asientos y tarifas zonales."
-        );
         txtDescripcion.setMaximumSize(new Dimension(32767, 95));
         panelCuerpo.add(txtDescripcion);
 
-        // Envolver todo el cuerpo en ScrollPane para garantizar visualización perfecta en cualquier resolución
         JScrollPane scrollPrincipal = new JScrollPane(panelCuerpo);
         scrollPrincipal.setBorder(null);
         scrollPrincipal.getVerticalScrollBar().setUnitIncrement(16);
@@ -314,7 +403,7 @@ public class DialogoFichaAvion extends JDialog {
                 new EmptyBorder(4, 10, 4, 10)
         ));
 
-        JLabel lblInfoPie = new JLabel("CORPAC S.A. · Gerencia de Operaciones Aeronáuticas · Modelo A320neo");
+        JLabel lblInfoPie = new JLabel("CORPAC S.A. · Gerencia de Operaciones Aeronáuticas · Flota Diversificada");
         lblInfoPie.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         lblInfoPie.setForeground(textoGris);
 
@@ -343,6 +432,79 @@ public class DialogoFichaAvion extends JDialog {
         panelContenedorRaiz.add(panelPieCompleto, BorderLayout.SOUTH);
     }
 
+    public void actualizarDatosAeronave(Avion av) {
+        if (av == null) return;
+        setTitle("Ficha Técnica y Especificaciones de Aeronave - " + av.obtenerModelo() + " (" + av.obtenerCodigoVueloAsignado() + ")");
+        lblTitulo.setText("FICHA TÉCNICA OFICIAL: " + av.obtenerModelo().toUpperCase());
+        lblSubtitulo.setText("Aeronave asignada al Vuelo " + av.obtenerCodigoVueloAsignado() + " (Ruta: Lima -> " + av.obtenerDestinoAsignado() + ") · Flota CORPAC S.A.");
+
+        Image imgHD = cargarImagen(av.obtenerRutaFotoHD());
+        if (imgHD == null) imgHD = cargarImagen("airbus_a320neo_hd.jpg");
+        panelFotoHD.setImagen(imgHD, av.obtenerModelo() + " - VUELO " + av.obtenerCodigoVueloAsignado() + " (LIMA -> " + av.obtenerDestinoAsignado().toUpperCase() + ")");
+
+        Image imgPlano = cargarImagen(av.obtenerRutaPlano());
+        if (imgPlano == null) imgPlano = cargarImagen("airbus_a320neo_blueprint.jpg");
+        panelPlano.setImagen(imgPlano, "PLANO TÉCNICO AERONÁUTICO (" + av.obtenerModelo() + ")");
+
+        lblValVelocidad.setText(av.obtenerVelocidadCrucero() + " km/h (Mach " + String.format("%.2f", av.obtenerVelocidadCrucero() / 1062.0) + ")");
+        lblValAlcance.setText(String.format("%,.0f km (Ruta Lima -> %s)", av.obtenerAlcanceMaximo(), av.obtenerDestinoAsignado()));
+        lblValTecho.setText(String.format("%,d m (%,d pies)", av.obtenerTechoServicio(), (int)(av.obtenerTechoServicio() * 3.28084)));
+        lblValDespegue.setText((av.obtenerModelo().contains("Dash") ? "1,400 m (Apto para pistas cortas de selva)" : "1,950 m (Certificado para altura)"));
+
+        lblValEnvergadura.setText(av.obtenerEnvergadura() + " metros");
+        lblValLongitud.setText(av.obtenerLongitud() + " metros");
+        lblValAltura.setText(av.obtenerAltura() + " metros");
+        lblValMTOW.setText(String.format("%,.0f kg", av.obtenerPesoMaximoDespegue()));
+
+        lblValFabricante.setText(av.obtenerFabricante() + " / " + av.obtenerModelo());
+        lblValMatricula.setText(av.obtenerMatricula() + " (Flota Oficial CORPAC)");
+        lblValMotores.setText(av.obtenerMotores());
+        lblValEficiencia.setText(av.obtenerModelo().contains("Dash") ? "Bajo consumo de combustible en turboprop" : "-20% consumo frente a generación previa");
+
+        lblValCapacidad.setText(av.obtenerCapacidadReal() + " pasajeros comerciales");
+        lblValCabina.setText(av.obtenerCapacidadSimulada() + " plazas activas (10 filas x 5 col)");
+        lblValZonificacion.setText("Ventana (+30%), Pasillo (+10%), Centro");
+        lblValCert.setText("DGAC Perú / OACI Cat IIIa / EASA / FAA");
+
+        txtDescripcion.setText(
+                "Reseña Técnica y Operativa:\n" +
+                av.obtenerResena() + "\n" +
+                "Su cabina se encuentra modelada como una matriz bidimensional 10x5 en memoria con despacho dinámico de asientos y tarifas zonales."
+        );
+        repaint();
+    }
+
+    private void seleccionarItemSegunCodigo(String cod) {
+        if (cod == null || cod.isEmpty() || cbSelectorVuelo == null) return;
+        for (int i = 0; i < cbSelectorVuelo.getItemCount(); i++) {
+            String item = cbSelectorVuelo.getItemAt(i);
+            if (item != null && item.startsWith(cod)) {
+                cbSelectorVuelo.setSelectedIndex(i);
+                return;
+            }
+        }
+    }
+
+    private String extraerCodigoDeItem(String item) {
+        if (item == null) return "CP-2023";
+        int idx = item.indexOf(':');
+        return idx > 0 ? item.substring(0, idx).trim() : "CP-2023";
+    }
+
+    private String extraerDestinoDeItem(String item) {
+        if (item == null) return "Cusco";
+        try {
+            int arrow = item.indexOf("->");
+            if (arrow > 0) {
+                int bracket = item.indexOf('[', arrow);
+                if (bracket > 0) {
+                    return item.substring(arrow + 2, bracket).trim();
+                }
+            }
+        } catch (Exception ignored) {}
+        return "Cusco";
+    }
+
     private JPanel crearTarjetaSeccion(String titulo, Color colorTitulo, Color fondo, Color borde) {
         JPanel p = new JPanel(new GridLayout(4, 1, 4, 4));
         p.setBackground(fondo);
@@ -360,19 +522,18 @@ public class DialogoFichaAvion extends JDialog {
         return p;
     }
 
-    private JPanel crearFila(String etiqueta, String valor, Color colorEtiqueta, Color colorValor) {
+    private JPanel crearFila(String etiqueta, JLabel valorLabel, Color colorEtiqueta, Color colorValor) {
         JPanel panelFila = new JPanel(new BorderLayout(8, 0));
         panelFila.setOpaque(false);
         JLabel lblEtiq = new JLabel(etiqueta);
         lblEtiq.setFont(new Font("Segoe UI", Font.BOLD, 11));
         lblEtiq.setForeground(colorEtiqueta);
 
-        JLabel lblVal = new JLabel(valor, JLabel.RIGHT);
-        lblVal.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        lblVal.setForeground(colorValor);
+        valorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        valorLabel.setForeground(colorValor);
 
         panelFila.add(lblEtiq, BorderLayout.WEST);
-        panelFila.add(lblVal, BorderLayout.EAST);
+        panelFila.add(valorLabel, BorderLayout.EAST);
         return panelFila;
     }
 
@@ -409,17 +570,22 @@ public class DialogoFichaAvion extends JDialog {
         ));
     }
 
-    // Panel especializado para visualización de imágenes de aeronave con renderizado de alta calidad
     private static class PanelVisorImagenHD extends JPanel {
         private static final long serialVersionUID = 1L;
-        private final Image imagen;
-        private final String tituloOverlay;
+        private Image imagen;
+        private String tituloOverlay;
 
         public PanelVisorImagenHD(Image img, String titulo) {
             this.imagen = img;
             this.tituloOverlay = titulo;
             setOpaque(true);
             setBackground(new Color(11, 19, 41));
+        }
+
+        public void setImagen(Image img, String titulo) {
+            this.imagen = img;
+            this.tituloOverlay = titulo;
+            repaint();
         }
 
         @Override
@@ -451,7 +617,7 @@ public class DialogoFichaAvion extends JDialog {
             } else {
                 g2.setColor(new Color(148, 163, 184));
                 g2.setFont(new Font("Segoe UI", Font.ITALIC, 13));
-                String msg = "Imagen oficial Airbus A320neo en proceso de carga...";
+                String msg = "Cargando fotografía oficial de la aeronave...";
                 FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(msg, (w - fm.stringWidth(msg)) / 2, h / 2);
             }
