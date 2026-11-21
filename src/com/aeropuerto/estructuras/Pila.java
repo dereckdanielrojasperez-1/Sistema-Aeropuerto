@@ -1,22 +1,6 @@
 package com.aeropuerto.estructuras;
 
-/**
- * ============================================================================
- * TAD PILA LIFO (Last-In, First-Out)
- * Paquete: com.aeropuerto.estructuras
- * ============================================================================
- * Propósito en CORPAC: Gestión de reversibilidad y deshacer (Undo) de reservas
- * de butacas y transacciones operacionales.
- * 
- * Disciplina LIFO: La última acción apilada es la primera en ser revertida.
- * Incorpora guarda de capacidad máxima para proteger la memoria heap en producción.
- * 
- * Complejidad Asintótica:
- * - Apilar (Push): O(1)
- * - Desapilar (Pop): O(1)
- * - Cima / Inspección (Peek): O(1)
- * - Espacio en memoria: O(n)
- */
+// Estructura Pila LIFO (Last-In, First-Out) para deshacer reservas (Undo)
 public class Pila implements TADPila {
 
     public static final int CAPACIDAD_POR_DEFECTO = 1000;
@@ -112,7 +96,7 @@ public class Pila implements TADPila {
         if (estaVacia()) {
             return "Pila de acciones vacía (0 transacciones pendientes de deshacer).";
         }
-        StringBuilder sb = new StringBuilder("=== PILA DE ACCIONES LIFO (TOPE -> FONDO) ===\n");
+        StringBuilder sb = new StringBuilder("Pila de acciones LIFO (Tope a Fondo):\n");
         NodoPila nodoActual = this.tope;
         int nivel = 1;
         int maxIter = this.tamano + 50;

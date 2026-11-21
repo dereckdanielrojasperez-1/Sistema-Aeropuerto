@@ -3,33 +3,7 @@ package com.aeropuerto.estructuras.hash;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ============================================================================
- * ESTRUCTURA DE DATOS AVANZADA: TABLA HASH (DISPERSIÓN CON ENCADENAMIENTO SEPARADO)
- * ============================================================================
- * Propósito en CORPAC:
- * - Auditoría, verificación y búsqueda en tiempo constante O(1) de información
- *   de pasajeros y pases de abordar utilizando el número de DNI como clave primaria.
- * - Resolución de colisiones mediante encadenamiento separado (Separate Chaining)
- *   utilizando nodos simplemente enlazados por cubeta.
- *
- * Análisis de Complejidad Temporal (Big-O):
- * - Inserción (put):           O(1) promedio - Inserción en cubeta con factor de carga controlado
- * - Búsqueda por clave (get):  O(1) promedio - Acceso directo por índice hash polinomial
- * - Eliminación (remove):      O(1) promedio - Reconexión nodal dentro de la cubeta
- * - Peor caso degenerado:      O(n) - Si todas las claves colisionaran en la misma cubeta
- * - Rehashing dinámico:        O(n) - Redistribución total al superar el factor de carga (alpha > 0.75)
- *
- * Mecanismo de Dispersión y Factor de Carga:
- * - Función de dispersión con difusión binaria: h ^= (h >>> 16)
- * - Mapeo por compresión a tamaño primo de tabla para dispersión uniforme.
- * - Factor de carga límite: FACTOR_CARGA_MAXIMO = 0.75. Al superarse, se duplica la
- *   capacidad al siguiente número primo y se rehashean todos los nodos activos.
- * ============================================================================
- *
- * @param <K> Tipo de la clave (ej. DNI del pasajero, código de reserva)
- * @param <V> Tipo del valor asociado (ej. Datos completos del pasajero, ticket)
- */
+// Tabla Hash con encadenamiento separado para busqueda rapida O(1) de pasajeros
 public class TablaHash<K, V> {
 
     public static final int CAPACIDAD_INICIAL_DEFECTO = 17;

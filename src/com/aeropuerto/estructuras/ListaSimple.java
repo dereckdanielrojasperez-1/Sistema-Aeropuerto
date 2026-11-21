@@ -2,28 +2,7 @@ package com.aeropuerto.estructuras;
 
 import com.aeropuerto.modelo.Equipaje;
 
-/**
- * ============================================================================
- * ESTRUCTURA DE DATOS DINÁMICA: LISTA ENLAZADA SIMPLE (SINGLY LINKED LIST)
- * ============================================================================
- * Propósito en CORPAC:
- * - Gestión secuencial y despacho de equipajes en plataforma de embarque (IATA).
- * - Enlace unidireccional nativo (cabeza -> nodoSiguiente -> null).
- *
- * Análisis de Complejidad Temporal (Big-O):
- * - Inserción al final:     O(n) - Recorre hasta el último nodo referenciado
- * - Búsqueda por ID:       O(n) - Búsqueda lineal secuencial
- * - Eliminación nodal:     O(n) - Localiza y reconecta punteros anterior y siguiente
- * - Ordenamiento Burbuja:  O(n²) - Permutación iterativa in-situ de nodos
- * - Cálculo peso total:    O(n) - Acumulación lineal
- *
- * Tratamiento de Casos Borde:
- * 1. Estructura vacía (cabeza == null).
- * 2. Operación sobre el primer elemento (cabeza).
- * 3. Operación sobre el último elemento (nodoActual.siguiente == null).
- * 4. Operación intermedia con reconexión segura del puntero 'nodoAnterior.siguiente'.
- * ============================================================================
- */
+// Lista enlazada simple para gestion de equipajes
 public class ListaSimple {
 
     public static final double LIMITE_SOBREPESO_IATA_KG = 23.0;

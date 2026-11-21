@@ -78,6 +78,7 @@ public interface TADVuelo {
     void establecerPrecioBase(double precioBase);
 
     String obtenerClaseDisponible();
+    default String obtenerClase() { return obtenerClaseDisponible(); }
     void establecerClaseDisponible(String claseDisponible);
 
     boolean ocuparAsiento(int fila, int columna, String dni);

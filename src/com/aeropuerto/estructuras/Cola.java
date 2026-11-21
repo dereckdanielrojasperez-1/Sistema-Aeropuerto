@@ -1,24 +1,6 @@
 package com.aeropuerto.estructuras;
 
-/**
- * ============================================================================
- * TAD COLA CON PRIORIDAD Y COLA FIFO
- * Paquete: com.aeropuerto.estructuras
- * ============================================================================
- * Propósito en CORPAC: Despacho y secuenciación de aeronaves en Torre ATC.
- * Implementa una estructura lineal dinámica con soporte de prioridad multinivel:
- * - Prioridad 1 (EMERGENCIA): Vuelos en emergencia médica o falla mecánica.
- * - Prioridad 2 (PRIORITARIO): Vuelos internacionales o con conexión crítica.
- * - Prioridad 3 (REGULAR): Vuelos comerciales regulares con orden FIFO de llegada.
- * 
- * Estabilidad: Entre aeronaves con igual prioridad, se garantiza el orden de llegada.
- * 
- * Complejidad Asintótica:
- * - Encolar FIFO: O(1)
- * - Encolar con prioridad: O(n)
- * - Desencolar (Dequeue): O(1)
- * - Consulta frente (Peek): O(1)
- */
+// Estructura Cola FIFO con soporte de prioridad para pista de despegue ATC
 public class Cola implements TADCola {
 
     public static final int PRIORIDAD_EMERGENCIA = 1;
@@ -152,7 +134,7 @@ public class Cola implements TADCola {
         if (estaVacia()) {
             return "Cola de pista vacía (0 aeronaves en espera de despegue).";
         }
-        StringBuilder sb = new StringBuilder("=== COLA DE PISTA CON PRIORIDAD ATC (FRENTE -> FIN) ===\n");
+        StringBuilder sb = new StringBuilder("Cola de pista con prioridad ATC (Frente a Fin):\n");
         NodoCola nodoActual = this.frente;
         int turno = 1;
         int iteraciones = 0;

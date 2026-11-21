@@ -200,14 +200,10 @@ public class ServicioAeropuerto {
     }
 
     /**
-     * Auditoría y diagnóstico integral de salud de TODOS los TADs y algoritmos del sistema.
+     * Verificación técnica de salud operativa de las 12 estructuras de datos y TADs.
      */
     public String ejecutarDiagnosticoIntegralTADs(ControladorAeropuerto ctrl) {
         StringBuilder sb = new StringBuilder();
-        sb.append("================================================================================\n");
-        sb.append("   INFORME DE AUDITORÍA Y SALUD INTEGRAL DEL SISTEMA (SEMANA 15 - CORPAC)       \n");
-        sb.append("================================================================================\n\n");
-
         int tadOk = 0;
         int totalTads = 12;
 
@@ -339,12 +335,7 @@ public class ServicioAeropuerto {
             sb.append("12. [TAD HEAP] Error: ").append(e.getMessage()).append("\n");
         }
 
-        sb.append("\n--------------------------------------------------------------------------------\n");
-        sb.append("RESULTADO DEL DIAGNÓSTICO: ").append(tadOk).append(" de ").append(totalTads).append(" Estructuras y TADs verificados al 100%.\n");
-        sb.append("ALGORITMOS AVANZADOS: Quicksort, Mergesort, Heapsort, Dijkstra, Prim, Kruskal, Floyd-Warshall.\n");
-        sb.append("ESTADO: APTO PARA SUSTENTACIÓN SEMANA 15 (UNIDAD 4 Y FINAL).\n");
-        sb.append("================================================================================\n");
-
+        sb.append("\nRESULTADO: ").append(tadOk).append(" de ").append(totalTads).append(" Estructuras y TADs verificados al 100% de operatividad técnica.");
         return sb.toString();
     }
 }

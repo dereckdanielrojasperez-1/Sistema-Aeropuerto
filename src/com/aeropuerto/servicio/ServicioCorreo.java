@@ -568,25 +568,25 @@ public class ServicioCorreo {
                 "ESTADO DE EMISIÓN               : CONFIRMADO Y PAGADO\n" +
                 "--------------------------------------------------------------------------------\n" +
                 "1. DATOS DEL PASAJERO:\n" +
-                "   • Nombre Completo            : " + nombre.toUpperCase() + "\n" +
-                "   • Documento de Identidad     : DNI " + dni + "\n" +
-                "   • Correo Registrado          : " + correo + "\n\n" +
+                "   - Nombre Completo            : " + nombre.toUpperCase() + "\n" +
+                "   - Documento de Identidad     : DNI " + dni + "\n" +
+                "   - Correo Registrado          : " + correo + "\n\n" +
                 "2. DETALLE DE ITINERARIO Y CABINA:\n" +
-                "   • Código de Vuelo            : " + codigoVuelo + " (CORPAC Airways)\n" +
-                "   • Ruta Comercial             : " + origen.toUpperCase() + " -> " + destino.toUpperCase() + "\n" +
-                "   • Fecha Programada           : " + fecha + "\n" +
-                "   • Hora de Salida             : " + hora + " hrs\n" +
-                "   • Asiento Asignado           : " + asiento + " (" + clase + ")\n" +
-                "   • Puerta de Embarque         : " + puerta + "\n\n" +
+                "   - Código de Vuelo            : " + codigoVuelo + " (CORPAC Airways)\n" +
+                "   - Ruta Comercial             : " + origen.toUpperCase() + " -> " + destino.toUpperCase() + "\n" +
+                "   - Fecha Programada           : " + fecha + "\n" +
+                "   - Hora de Salida             : " + hora + " hrs\n" +
+                "   - Asiento Asignado           : " + asiento + " (" + clase + ")\n" +
+                "   - Puerta de Embarque         : " + puerta + "\n\n" +
                 "3. LIQUIDACIÓN TRIBUTARIA (SUNAT TIPO 03 - BOLETA DE VENTA):\n" +
-                "   • Operación Gravada          : S/. " + String.format(Locale.US, "%.2f", gravada) + "\n" +
-                "   • I.G.V. (18%)               : S/. " + String.format(Locale.US, "%.2f", igv) + "\n" +
-                "   • IMPORTE TOTAL PAGADO       : S/. " + String.format(Locale.US, "%.2f", total) + "\n" +
+                "   - Operación Gravada          : S/. " + String.format(Locale.US, "%.2f", gravada) + "\n" +
+                "   - I.G.V. (18%)               : S/. " + String.format(Locale.US, "%.2f", igv) + "\n" +
+                "   - IMPORTE TOTAL PAGADO       : S/. " + String.format(Locale.US, "%.2f", total) + "\n" +
                 "--------------------------------------------------------------------------------\n" +
                 "INSTRUCCIONES DE EMBARQUE:\n" +
-                "• Preséntese en la sala de embarque con 45 minutos de anticipación al vuelo.\n" +
-                "• Porte su DNI en físico o formato digital oficial y este comprobante.\n" +
-                "• Su pase de abordar con código QR oficial se encuentra disponible en cabina.\n" +
+                "- Preséntese en la sala de embarque con 45 minutos de anticipación al vuelo.\n" +
+                "- Porte su DNI en físico o formato digital oficial y este comprobante.\n" +
+                "- Su pase de abordar con código QR oficial se encuentra disponible en cabina.\n" +
                 "================================================================================\n" +
                 "   Emitido electrónicamente por el Sistema Integrado de Control CORPAC S.A.\n" +
                 "   Consulte la validez del comprobante tributario en: www.sunat.gob.pe\n" +

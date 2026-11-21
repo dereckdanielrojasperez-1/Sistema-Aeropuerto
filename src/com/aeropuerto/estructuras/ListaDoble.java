@@ -2,30 +2,7 @@ package com.aeropuerto.estructuras;
 
 import com.aeropuerto.modelo.Ruta;
 
-/**
- * ============================================================================
- * ESTRUCTURA DE DATOS DINÁMICA: LISTA DOBLEMENTE ENLAZADA (DOUBLY LINKED LIST)
- * ============================================================================
- * Propósito en CORPAC:
- * - Gestión y navegación bidireccional de la red de rutas aéreas comerciales.
- * - Permite recorridos hacia adelante (origen -> escalas -> destino) y reversos
- *   (retorno / vuelta) mediante punteros dobles 'siguiente' y 'anterior'.
- *
- * Análisis de Complejidad Temporal (Big-O):
- * - Inserción al final:     O(1) - Acceso directo mediante el puntero 'cola'
- * - Búsqueda por ID:       O(n) - Recorrido secuencial desde la cabeza
- * - Eliminación nodal:     O(n) - Reconexión simétrica O(1) una vez localizado
- * - Recorrido adelante:    O(n) - Desde cabeza hasta cola (puntero siguiente)
- * - Recorrido atrás:       O(n) - Desde cola hasta cabeza (puntero anterior)
- *
- * Tratamiento de Casos Borde:
- * 1. Estructura vacía (cabeza == null && cola == null).
- * 2. Eliminación de único nodo (cabeza == cola -> ambos pasan a null).
- * 3. Eliminación de la cabeza (la nueva cabeza limpia su puntero anterior a null).
- * 4. Eliminación de la cola (la nueva cola limpia su puntero siguiente a null).
- * 5. Nodo intermedio: Reconexión simétrica de punteros contiguos.
- * ============================================================================
- */
+// Lista doblemente enlazada para gestion bidireccional de rutas
 public class ListaDoble {
 
     private static final int FACTOR_SEGURIDAD_ITERACIONES = 20;

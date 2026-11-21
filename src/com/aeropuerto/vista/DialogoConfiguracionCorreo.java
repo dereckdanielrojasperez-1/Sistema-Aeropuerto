@@ -133,7 +133,7 @@ public class DialogoConfiguracionCorreo extends JDialog {
             if (chkMostrarPassword.isSelected()) {
                 txtPassword.setEchoChar((char) 0);
             } else {
-                txtPassword.setEchoChar('•');
+                txtPassword.setEchoChar('-');
             }
         });
 
@@ -143,9 +143,9 @@ public class DialogoConfiguracionCorreo extends JDialog {
         // Fila 5: Caja de ayuda explicativa
         JTextArea txtAyuda = new JTextArea(
                 "Guía de Conectividad con Gmail:\n" +
-                "• Para envío automático desatendido por SMTP SSL (puerto 465), Google requiere\n" +
+                "- Para envío automático desatendido por SMTP SSL (puerto 465), Google requiere\n" +
                 "  una 'Contraseña de Aplicación' de 16 letras (https://myaccount.google.com/apppasswords).\n" +
-                "• Si no dispone de contraseña de aplicación, use la opción 'Abrir en Gmail Web' en la\n" +
+                "- Si no dispone de contraseña de aplicación, use la opción 'Abrir en Gmail Web' en la\n" +
                 "  pantalla del boleto para despachar el correo con 1 solo clic desde su navegador.");
         txtAyuda.setEditable(false);
         txtAyuda.setFont(FontManager.getIBMPlexMono(Font.PLAIN, 10f));
@@ -291,9 +291,9 @@ public class DialogoConfiguracionCorreo extends JDialog {
         ServicioCorreo.obtenerInstancia().guardarConfiguracion(host, puerto, remitente, password, nombre);
         JOptionPane.showMessageDialog(this,
                 "Configuración SMTP guardada exitosamente en config_correo.properties.\n\n" +
-                "• Servidor: " + host + ":" + puerto + "\n" +
-                "• Remitente: " + (remitente.isEmpty() ? "(No configurado)" : remitente) + "\n" +
-                "• Estado Credenciales: " + (remitente.isEmpty() || password.isEmpty() ? "Incompletas (se usará Gmail Web)" : "Completas para envío directo"),
+                "- Servidor: " + host + ":" + puerto + "\n" +
+                "- Remitente: " + (remitente.isEmpty() ? "(No configurado)" : remitente) + "\n" +
+                "- Estado Credenciales: " + (remitente.isEmpty() || password.isEmpty() ? "Incompletas (se usará Gmail Web)" : "Completas para envío directo"),
                 "Configuración Actualizada", JOptionPane.INFORMATION_MESSAGE);
         dispose();
     }

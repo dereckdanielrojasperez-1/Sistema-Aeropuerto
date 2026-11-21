@@ -259,11 +259,16 @@ public class VentanaPrincipal extends JFrame {
     // Componentes de Modo Limpio / Tecnico y validacion inline
     private boolean vistaTecnicaActiva = false;
     private JButton btnToggleVistaTecnica;
-    private JButton btnVistaTecnicaLabHeader;
     private JButton btnToggleTablaDetallada;
     private JLabel lblValidacionDni;
     private Timer toastTimer;
     private JLabel lblToast;
+
+    // Paneles integrados de Estructuras Avanzadas (Semana 18)
+    private JPanel panelArbolesTab;
+    private JPanel panelGrafoTab;
+    private JPanel panelHashHeapTab;
+    private JPanel panelBenchTab;
 
     // Componentes de Equipaje Pasajero
     private JComboBox<String> cbTipoEquipajePasajero;
@@ -332,6 +337,7 @@ public class VentanaPrincipal extends JFrame {
     private JLabel lblCockpitCabina;
     private JLabel lblVipBannerCabina;
     private JLabel lblTuristaBannerCabina;
+    private JComboBox<String> cbClaseCabinaPasajero;
     private JButton btnAutoAsignarPasajero;
     private JButton btnFichaAvionPasajero;
     private JButton btnVolverVuelosCabina;
@@ -498,7 +504,16 @@ public class VentanaPrincipal extends JFrame {
         panelPestanas.addChangeListener(e -> {
             int idx = panelPestanas.getSelectedIndex();
             if (!Theme.esRolAdmin()) {
-                // Guarda de prerrequisitos: tabs 2 (Equipaje) y 3 (Pase) exigen asiento confirmado y datos de pasajero
+                // Guarda 1: Una vez confirmada la reserva, el pasajero no puede regresar a cambiar de vuelo (Paso 1)
+                if (pasajeroFilaConfirmada >= 0 && idx == 0) {
+                    SwingUtilities.invokeLater(() -> {
+                        panelPestanas.setSelectedIndex(2);
+                        mostrarToast("Su reserva ya está confirmada. No puede cambiar de vuelo en esta etapa.", Theme.getWarning());
+                    });
+                    return;
+                }
+
+                // Guarda 2: tabs 2 (Equipaje) y 3 (Pase) exigen asiento confirmado y datos de pasajero
                 if (idx >= 2) {
                     String dni = (txtDniPasajeroReserva != null) ? txtDniPasajeroReserva.getText().trim() : "";
                     String nom = (txtNombrePasajeroReserva != null) ? txtNombrePasajeroReserva.getText().trim() : "";
@@ -853,26 +868,10 @@ public class VentanaPrincipal extends JFrame {
         btnToggleVistaTecnica.setToolTipText("Alternar entre Modo Limpio (pasajero) y Modo Técnico (TADs, métricas y consola)");
         btnToggleVistaTecnica.addActionListener(e -> alternarVistaTecnica());
 
-        btnVistaTecnicaLabHeader = new JButton("Vista Técnica (Demo Algorítmica)");
-        btnVistaTecnicaLabHeader.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
-        btnVistaTecnicaLabHeader.setBackground(Theme.getElevated());
-        btnVistaTecnicaLabHeader.setForeground(Theme.getAcento());
-        btnVistaTecnicaLabHeader.setIcon(AppIcon.of("flask", 13, Theme.getAcento()));
-        btnVistaTecnicaLabHeader.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Theme.getAcento(), 1),
-                BorderFactory.createEmptyBorder(3, 8, 3, 8)));
-        btnVistaTecnicaLabHeader.setFocusPainted(false);
-        btnVistaTecnicaLabHeader.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnVistaTecnicaLabHeader.setToolTipText("Abrir Laboratorio Algorítmico y TADs Avanzados (Árboles ABB/AVL, Grafos, Hash, Heap, Benchmark)");
-        btnVistaTecnicaLabHeader.addActionListener(e -> mostrarDialogoVistaTecnicaLaboratorio(false));
-        btnVistaTecnicaLabHeader.setVisible(false);
-
         panelSesionCentro.add(Box.createHorizontalGlue());
         panelSesionCentro.add(lblEstadoSesion);
         panelSesionCentro.add(Box.createHorizontalStrut(8));
         panelSesionCentro.add(btnToggleVistaTecnica);
-        panelSesionCentro.add(Box.createHorizontalStrut(8));
-        panelSesionCentro.add(btnVistaTecnicaLabHeader);
         panelSesionCentro.add(Box.createHorizontalStrut(8));
         panelSesionCentro.add(btnSesionAdmin);
         panelSesionCentro.add(Box.createHorizontalStrut(8));
@@ -2396,12 +2395,12 @@ public class VentanaPrincipal extends JFrame {
             actualizarVistaColaPista();
             log("[COLA] Torre de Control: Vuelo " + v.obtenerCodigo() + " (" + v.obtenerOrigen() + " -> " + v.obtenerDestino() + ") autorizado para despegue.");
             JOptionPane.showMessageDialog(this,
-                    "╔══════════════════════════════════════════════════════════════╗\n" +
+                    "================================================================\n" +
                     "   TORRE DE CONTROL - DESPACHO EXITOSO EN PISTA              \n" +
-                    "╚══════════════════════════════════════════════════════════════╝\n\n" +
-                    "• Vuelo Despachado: " + v.obtenerCodigo() + "\n" +
-                    "• Ruta Autorizada: " + v.obtenerOrigen() + " -> " + v.obtenerDestino() + "\n" +
-                    "• Operación: Despegue en pista activo (Despacho prioritario)\n\n" +
+                    "================================================================\n\n" +
+                    "- Vuelo Despachado: " + v.obtenerCodigo() + "\n" +
+                    "- Ruta Autorizada: " + v.obtenerOrigen() + " -> " + v.obtenerDestino() + "\n" +
+                    "- Operación: Despegue en pista activo (Despacho prioritario)\n\n" +
                     "La aeronave ha sido liberada de la cola y despega según normativa CORPAC.",
                     "Autorización de Despegue", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -2665,33 +2664,17 @@ public class VentanaPrincipal extends JFrame {
         filaAdmin2.add(btnCargarDemo);
         filaAdmin2.add(btnVaciarTodo);
 
-        JButton btnDiagnosticoTADs = new JButton("Auditoría de Salud de Estructuras (TADs)");
-        estilizarBotonAccion(btnDiagnosticoTADs, new Color(15, 60, 45), new Color(52, 211, 153));
-        btnDiagnosticoTADs.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        btnDiagnosticoTADs.setMargin(new Insets(4, 10, 4, 10));
-        btnDiagnosticoTADs.addActionListener(e -> mostrarDialogoDiagnosticoSaludTADs());
-
         JButton btnOptimizarRed = new JButton("Optimización de Red Troncal Nacional (MST Kruskal)");
         estilizarBotonAccion(btnOptimizarRed, new Color(20, 40, 70), new Color(147, 197, 253));
         btnOptimizarRed.setFont(new Font("Segoe UI", Font.BOLD, 11));
         btnOptimizarRed.setMargin(new Insets(4, 10, 4, 10));
         btnOptimizarRed.addActionListener(e -> accionOptimizarRedTroncal());
 
-        filaAdmin3.add(btnDiagnosticoTADs);
         filaAdmin3.add(btnOptimizarRed);
-
-        JButton btnVistaTecnicaLabAdmin = new JButton("Vista Técnica (Demo Algorítmica)");
-        estilizarBotonAccion(btnVistaTecnicaLabAdmin, new Color(20, 50, 75), azulCyan);
-        btnVistaTecnicaLabAdmin.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        btnVistaTecnicaLabAdmin.setIcon(AppIcon.of("flask", 13, azulCyan));
-        btnVistaTecnicaLabAdmin.setMargin(new Insets(4, 10, 4, 10));
-        btnVistaTecnicaLabAdmin.setToolTipText("Abrir Laboratorio Algorítmico (Árboles ABB/AVL, Grafos, Hash, Heap, Benchmark)");
-        btnVistaTecnicaLabAdmin.addActionListener(e -> mostrarDialogoVistaTecnicaLaboratorio(false));
-        filaAdmin3.add(btnVistaTecnicaLabAdmin);
 
         GlassPanel cardPersistencia = GlassPanel.crearApartado("Persistencia MySQL", "Sincronizacion y Recarga", azulAccion, filaAdmin1);
         GlassPanel cardMantenimiento = GlassPanel.crearApartado("Inicializacion y Datos", "Carga demo y mantenimiento", doradoAlerta, filaAdmin2);
-        GlassPanel cardDiagnostico = GlassPanel.crearApartado("Diagnóstico y Optimización", "Telemetría y Rutas Óptimas", new Color(52, 211, 153), filaAdmin3);
+        GlassPanel cardDiagnostico = GlassPanel.crearApartado("Optimización de Rutas", "Red Troncal de Grafo Kruskal", new Color(52, 211, 153), filaAdmin3);
 
         panelAccionesAdmin.add(cardPersistencia);
         panelAccionesAdmin.add(cardMantenimiento);
@@ -2760,13 +2743,17 @@ public class VentanaPrincipal extends JFrame {
             }
             if (stepperPasajero != null) stepperPasajero.setVisible(false);
 
-            // Pestañas exclusivas de Administrador (Centro de Control AOC)
+            // Pestañas integrales de Administrador (Centro de Control AOC - Semana 18)
             panelPestanas.addTab("Radar de Plataforma CORPAC", panelRadarSmartAirport);
             panelPestanas.addTab("Supervisión y Aeropuertos Libres", panelSupervisoresAeropuertos);
             panelPestanas.addTab("Arreglos y Matrices", panelDivisionPrincipal);
             panelPestanas.addTab("Listas Dinámicas", panelDivisionListas);
             panelPestanas.addTab("Puertas de Embarque", panelModuloPuertas);
-            panelPestanas.addTab("Control Administrativo y Auditoría", panelModuloAdministracion);
+            panelPestanas.addTab("Árboles (ABB y AVL)", obtenerPanelArboles());
+            panelPestanas.addTab("Red de Rutas y Grafos", obtenerPanelGrafo());
+            panelPestanas.addTab("Directorio de Pasajeros (Hash y Heap)", obtenerPanelHashHeap());
+            panelPestanas.addTab("Benchmarking de Ordenamiento", obtenerPanelBenchmarking());
+            panelPestanas.addTab("Control Administrativo y SQL", panelModuloAdministracion);
 
             // Ajustes visuales de cabecera (Mantener logo CORPAC)
             if (lblInsigniaHeader != null) {
@@ -2893,9 +2880,7 @@ public class VentanaPrincipal extends JFrame {
                     BorderFactory.createLineBorder(Theme.getPasajeroAccent(), 1),
                     BorderFactory.createEmptyBorder(5, 12, 5, 12)));
         }
-        if (btnVistaTecnicaLabHeader != null) {
-            btnVistaTecnicaLabHeader.setVisible(controlador.esSesionAdmin());
-        }
+
         actualizarPanelAdminTab();
         if (panelRadarSmartAirport != null) {
             panelRadarSmartAirport.actualizarEstadoPermisos();
@@ -2949,8 +2934,14 @@ public class VentanaPrincipal extends JFrame {
                 txtDniPasajeroReserva != null && txtDniPasajeroReserva.getText().trim().length() == 8 &&
                 txtNombrePasajeroReserva != null && !txtNombrePasajeroReserva.getText().trim().isEmpty());
         if (panelPestanas.getTabCount() >= 4) {
+            panelPestanas.setEnabledAt(0, !prereqs); // Una vez confirmada la reserva, se bloquea el regreso a Vuelos
+            panelPestanas.setEnabledAt(1, true);     // Pestaña de cabina en modo lectura / bloqueo de asientos
             panelPestanas.setEnabledAt(2, prereqs);
             panelPestanas.setEnabledAt(3, prereqs);
+        }
+        if (btnVolverCabinaEquipaje != null) {
+            btnVolverCabinaEquipaje.setEnabled(!prereqs);
+            btnVolverCabinaEquipaje.setToolTipText(prereqs ? "Reserva asegurada: su asiento no requiere modificaciones." : "Regresar a la cabina");
         }
     }
 
@@ -2976,7 +2967,14 @@ public class VentanaPrincipal extends JFrame {
 
         boolean puedeConfirmar = esValido && !nom.isEmpty() && (pasajeroFilaSel >= 0 && pasajeroColSel >= 0);
         if (btnConfirmarAsientoPasajero != null) {
-            btnConfirmarAsientoPasajero.setEnabled(puedeConfirmar);
+            if (pasajeroFilaConfirmada >= 0) {
+                char letConf = (char) ('A' + pasajeroColConfirmada);
+                btnConfirmarAsientoPasajero.setText("Asiento " + (pasajeroFilaConfirmada + 1) + letConf + " Confirmado (Bloqueado)");
+                btnConfirmarAsientoPasajero.setEnabled(false);
+            } else {
+                btnConfirmarAsientoPasajero.setText("Confirmar y Reservar Asiento");
+                btnConfirmarAsientoPasajero.setEnabled(puedeConfirmar);
+            }
         }
     }
 
@@ -3015,57 +3013,7 @@ public class VentanaPrincipal extends JFrame {
         });
     }
 
-    private JButton crearBotonAyudaPaso(int paso) {
-        JButton btnAyuda = new JButton("?");
-        btnAyuda.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
-        btnAyuda.setPreferredSize(new Dimension(24, 24));
-        btnAyuda.setMargin(new Insets(0, 0, 0, 0));
-        btnAyuda.setFocusPainted(false);
-        btnAyuda.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnAyuda.setBackground(Theme.getElevated());
-        btnAyuda.setForeground(Theme.getPasajeroAccent());
-        btnAyuda.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Theme.getBorder(), 1),
-                BorderFactory.createEmptyBorder(2, 6, 2, 6)));
-        btnAyuda.setToolTipText("Ver guía rápida de este paso");
-        btnAyuda.addActionListener(e -> mostrarAyudaContextualPaso(paso));
-        return btnAyuda;
-    }
 
-    private void mostrarAyudaContextualPaso(int paso) {
-        String titulo;
-        String mensaje;
-        switch (paso) {
-            case 1:
-                titulo = "Paso 1: Itinerario y Selección de Vuelo";
-                mensaje = "• Seleccione su destino y compare horarios en las 3 tarjetas de turno (Mañana, Tarde o Noche).\n"
-                        + "• El vuelo CP-2024 a Arequipa está preseleccionado para iniciar de inmediato.\n"
-                        + "• Presione 'Reservar este Vuelo' para continuar al mapa de asientos.";
-                break;
-            case 2:
-                titulo = "Paso 2: Selección de Asiento y Registro";
-                mensaje = "• Los asientos verdes están libres y los rojos ocupados.\n"
-                        + "• Filas 1-3 corresponden a Clase Ejecutiva VIP y 4-10 a Turista Confort.\n"
-                        + "• Ingrese su DNI y Nombre (o use 'Carga Rapida') y presione 'Confirmar y Reservar Asiento'.";
-                break;
-            case 3:
-                titulo = "Paso 3: Facturación y Despacho de Equipaje";
-                mensaje = "• Incluye 10 kg de equipaje de mano sin costo según norma internacional IATA.\n"
-                        + "• Si lleva equipaje de bodega o sobrepeso, ingrese el peso y presione 'Registrar Maleta'.\n"
-                        + "• Al finalizar, presione 'Generar Mi Pase de Abordar'.";
-                break;
-            case 4:
-                titulo = "Paso 4: Pase de Abordar y Puerta de Embarque";
-                mensaje = "• Verifique los datos de su vuelo, asiento asignado y puerta de embarque en tiempo real.\n"
-                        + "• Presione 'Emitir Voucher CORPAC con QR' para abrir su comprobante oficial listo para imprimir.\n"
-                        + "• Se envía copia digital automática a su correo electrónico institucional.";
-                break;
-            default:
-                titulo = "Guía del Sistema";
-                mensaje = "Complete cada paso guiado para gestionar su vuelo.";
-        }
-        JOptionPane.showMessageDialog(this, mensaje, titulo, JOptionPane.INFORMATION_MESSAGE);
-    }
 
     private void accionReprogramarHorarioVuelo() {
         Vuelo vAct = controlador.obtenerVueloActivo();
@@ -3160,7 +3108,6 @@ public class VentanaPrincipal extends JFrame {
         pTitulosVuelos.add(lblSubPasajeroVuelos);
 
         pNortePasajeroVuelos.add(pTitulosVuelos, BorderLayout.CENTER);
-        pNortePasajeroVuelos.add(crearBotonAyudaPaso(1), BorderLayout.EAST);
         panelPasajeroVuelos.add(pNortePasajeroVuelos, BorderLayout.NORTH);
 
         // Barra de filtros por Destino, Turno y Clase con estilo real y labels inline secundarios
@@ -3356,12 +3303,12 @@ public class VentanaPrincipal extends JFrame {
             if (act != null) {
                 JOptionPane.showMessageDialog(this,
                         "Información de Ruta Comercial:\n" +
-                        "• Vuelo: " + act.obtenerCodigo() + "\n" +
-                        "• Origen: " + act.obtenerOrigen() + " (LIM)\n" +
-                        "• Destino: " + act.obtenerDestino() + " (" + obtenerIata(act.obtenerDestino()) + ")\n" +
-                        "• Duración estimada: " + act.obtenerDuracion() + " minutos\n" +
-                        "• Aeronave: Airbus A320neo (50 Asientos)\n" +
-                        "• Operador: CORPAC Airways / Servicio Nacional",
+                        "- Vuelo: " + act.obtenerCodigo() + "\n" +
+                        "- Origen: " + act.obtenerOrigen() + " (LIM)\n" +
+                        "- Destino: " + act.obtenerDestino() + " (" + obtenerIata(act.obtenerDestino()) + ")\n" +
+                        "- Duración estimada: " + act.obtenerDuracion() + " minutos\n" +
+                        "- Aeronave: Airbus A320neo (50 Asientos)\n" +
+                        "- Operador: CORPAC Airways / Servicio Nacional",
                         "Detalle de Ruta", JOptionPane.INFORMATION_MESSAGE);
             }
         });
@@ -3470,10 +3417,10 @@ public class VentanaPrincipal extends JFrame {
         pNavegacionVentanas.setOpaque(false);
 
         String[] pasosTitulos = {
-            "1. Vuelos y Destinos  [●]",
-            "2. Asiento y Cabina   [○]",
-            "3. Equipaje IATA      [○]",
-            "4. Pase de Abordar    [○]"
+            "1. Vuelos y Destinos  [*]",
+            "2. Asiento y Cabina   [ ]",
+            "3. Equipaje IATA      [ ]",
+            "4. Pase de Abordar    [ ]"
         };
         for (int pIdx = 0; pIdx < pasosTitulos.length; pIdx++) {
             final int pasoDestino = pIdx;
@@ -3630,12 +3577,39 @@ public class VentanaPrincipal extends JFrame {
         pLeyenda.add(itemOcupado);
         pLeyenda.add(itemSeleccionado);
         pLeyenda.add(btnVisor3D);
-        pLeyenda.add(crearBotonAyudaPaso(2));
 
-        JPanel pTitulos = new JPanel(new GridLayout(2, 1, 0, 2));
+        JPanel pSubCabina = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        pSubCabina.setOpaque(false);
+
+        JLabel lblSelClaseTxt = new JLabel("Clase:");
+        lblSelClaseTxt.setFont(FontManager.getBarlowCondensed(Font.BOLD, 12f));
+        lblSelClaseTxt.setForeground(Theme.getWarning());
+
+        cbClaseCabinaPasajero = new JComboBox<>(new String[]{
+            "Clase Ejecutiva (VIP)", "Clase Turista"
+        });
+        estilizarComboModerno(cbClaseCabinaPasajero);
+        cbClaseCabinaPasajero.setPreferredSize(new Dimension(175, 26));
+        cbClaseCabinaPasajero.addActionListener(e -> {
+            if (cbFiltroClasePasajero != null) {
+                String sel = (String) cbClaseCabinaPasajero.getSelectedItem();
+                if (sel != null && sel.contains("Ejecutiva")) {
+                    cbFiltroClasePasajero.setSelectedItem("Ejecutiva");
+                } else if (sel != null && sel.contains("Turista")) {
+                    cbFiltroClasePasajero.setSelectedItem("Turista");
+                }
+            }
+            actualizarCabinaPasajero();
+        });
+
+        pSubCabina.add(lblSelClaseTxt);
+        pSubCabina.add(cbClaseCabinaPasajero);
+        pSubCabina.add(lblCabinaResumenLibres);
+
+        JPanel pTitulos = new JPanel(new GridLayout(2, 1, 0, 3));
         pTitulos.setOpaque(false);
         pTitulos.add(lblCabinaVueloActivoInfo);
-        pTitulos.add(lblCabinaResumenLibres);
+        pTitulos.add(pSubCabina);
 
         pEncabezadoCabinaPasajero.add(pTitulos, BorderLayout.WEST);
         pEncabezadoCabinaPasajero.add(pLeyenda, BorderLayout.EAST);
@@ -3809,13 +3783,6 @@ public class VentanaPrincipal extends JFrame {
         lblTitLatCabina = new JLabel("DETALLE DE SU ASIENTO Y TARIFA", SwingConstants.CENTER);
         lblTitLatCabina.setFont(FontManager.getBarlowCondensed(Font.BOLD, 13f));
         lblTitLatCabina.setForeground(Theme.getTexto());
-        pLateralCabinaPasajero.add(lblTitLatCabina, BorderLayout.NORTH);
-
-        JPanel pCuerpoLat = new JPanel(new GridBagLayout());
-        pCuerpoLat.setOpaque(false);
-        GridBagConstraints gLat = new GridBagConstraints();
-        gLat.insets = new Insets(4, 4, 4, 4);
-        gLat.fill = GridBagConstraints.HORIZONTAL;
 
         lblDetalleAsientoPasajero = new JLabel("Asiento: Seleccione un asiento en el mapa");
         lblDetalleAsientoPasajero.setFont(FontManager.getIBMPlexMono(Font.BOLD, 12f));
@@ -3836,6 +3803,28 @@ public class VentanaPrincipal extends JFrame {
         lblDetalleTotalPasajero = new JLabel("TOTAL A PAGAR: S/. 0.00");
         lblDetalleTotalPasajero.setFont(FontManager.getIBMPlexSans(Font.BOLD, 13f));
         lblDetalleTotalPasajero.setForeground(Theme.getSuccess());
+
+        JPanel pNorteCabina = new JPanel(new BorderLayout(0, 4));
+        pNorteCabina.setOpaque(false);
+        pNorteCabina.add(lblTitLatCabina, BorderLayout.NORTH);
+
+        JPanel pCardResumen = new JPanel(new GridLayout(0, 1, 0, 2));
+        pCardResumen.setOpaque(false);
+        pCardResumen.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Theme.getBorder(), 1),
+                BorderFactory.createEmptyBorder(5, 8, 5, 8)));
+        pCardResumen.add(lblDetalleAsientoPasajero);
+        pCardResumen.add(lblDetalleClasePasajero);
+        pCardResumen.add(lblDetalleTotalPasajero);
+        pNorteCabina.add(pCardResumen, BorderLayout.CENTER);
+
+        pLateralCabinaPasajero.add(pNorteCabina, BorderLayout.NORTH);
+
+        JPanel pCuerpoLat = new JPanel(new GridBagLayout());
+        pCuerpoLat.setOpaque(false);
+        GridBagConstraints gLat = new GridBagConstraints();
+        gLat.insets = new Insets(4, 4, 4, 4);
+        gLat.fill = GridBagConstraints.HORIZONTAL;
 
         txtDniPasajeroReserva = new JTextField("", 10);
         txtDniPasajeroReserva.setToolTipText("Ingrese su número de DNI (8 dígitos)");
@@ -3883,7 +3872,12 @@ public class VentanaPrincipal extends JFrame {
                 Vuelo vDemo = controlador.obtenerVueloActivo();
                 if (vDemo != null) {
                     int[][] matD = vDemo.obtenerMatrizAsientos();
-                    for (int f = 0; f < 10 && (pasajeroFilaSel < 0); f++) {
+                    String filtroClase = (cbClaseCabinaPasajero != null && cbClaseCabinaPasajero.getSelectedItem() != null)
+                            ? (String) cbClaseCabinaPasajero.getSelectedItem()
+                            : ((cbFiltroClasePasajero != null) ? (String) cbFiltroClasePasajero.getSelectedItem() : "Todas las Clases");
+                    int fInicio = (filtroClase != null && filtroClase.contains("Turista")) ? 3 : 0;
+                    int fFin = (filtroClase != null && (filtroClase.contains("Ejecutiva") || filtroClase.contains("VIP"))) ? 3 : 10;
+                    for (int f = fInicio; f < fFin && (pasajeroFilaSel < 0); f++) {
                         for (int c = 0; c < 5; c++) {
                             if (matD[f][c] == 0) {
                                 pasajeroFilaSel = f;
@@ -3900,28 +3894,24 @@ public class VentanaPrincipal extends JFrame {
             mostrarToast("Datos demo cargados con éxito (DNI 74859612)", Theme.getSuccess());
         });
 
-        gLat.gridx = 0; gLat.gridy = 0; gLat.gridwidth = 2; pCuerpoLat.add(lblDetalleAsientoPasajero, gLat);
-        gLat.gridx = 0; gLat.gridy = 1; gLat.gridwidth = 2; pCuerpoLat.add(lblDetalleClasePasajero, gLat);
-        gLat.gridx = 0; gLat.gridy = 2; gLat.gridwidth = 2; pCuerpoLat.add(lblDetalleBasePasajero, gLat);
-        gLat.gridx = 0; gLat.gridy = 3; gLat.gridwidth = 2; pCuerpoLat.add(lblDetalleSuplementoPasajero, gLat);
-        gLat.gridx = 0; gLat.gridy = 4; gLat.gridwidth = 2; pCuerpoLat.add(new JSeparator(), gLat);
-        gLat.gridx = 0; gLat.gridy = 5; gLat.gridwidth = 2; pCuerpoLat.add(lblDetalleTotalPasajero, gLat);
-        gLat.gridx = 0; gLat.gridy = 6; gLat.gridwidth = 2; pCuerpoLat.add(new JSeparator(), gLat);
+        gLat.gridx = 0; gLat.gridy = 0; gLat.gridwidth = 2; pCuerpoLat.add(lblDetalleBasePasajero, gLat);
+        gLat.gridx = 0; gLat.gridy = 1; gLat.gridwidth = 2; pCuerpoLat.add(lblDetalleSuplementoPasajero, gLat);
+        gLat.gridx = 0; gLat.gridy = 2; gLat.gridwidth = 2; pCuerpoLat.add(new JSeparator(), gLat);
 
         // B4.3: Carga Rapida ubicada prominentemente arriba de los campos de formulario
-        gLat.gridx = 0; gLat.gridy = 7; gLat.gridwidth = 2; pCuerpoLat.add(btnCargaRapidaDemo, gLat);
+        gLat.gridx = 0; gLat.gridy = 3; gLat.gridwidth = 2; pCuerpoLat.add(btnCargaRapidaDemo, gLat);
         gLat.gridwidth = 1;
 
-        gLat.gridx = 0; gLat.gridy = 8; pCuerpoLat.add(crearEtiquetaFormulario("DNI Pasajero:"), gLat);
-        gLat.gridx = 1; gLat.gridy = 8; pCuerpoLat.add(txtDniPasajeroReserva, gLat);
+        gLat.gridx = 0; gLat.gridy = 4; pCuerpoLat.add(crearEtiquetaFormulario("DNI Pasajero:"), gLat);
+        gLat.gridx = 1; gLat.gridy = 4; pCuerpoLat.add(txtDniPasajeroReserva, gLat);
 
-        gLat.gridx = 1; gLat.gridy = 9; pCuerpoLat.add(lblValidacionDni, gLat);
+        gLat.gridx = 1; gLat.gridy = 5; pCuerpoLat.add(lblValidacionDni, gLat);
 
-        gLat.gridx = 0; gLat.gridy = 10; pCuerpoLat.add(crearEtiquetaFormulario("Nombres:"), gLat);
-        gLat.gridx = 1; gLat.gridy = 10; pCuerpoLat.add(txtNombrePasajeroReserva, gLat);
+        gLat.gridx = 0; gLat.gridy = 6; pCuerpoLat.add(crearEtiquetaFormulario("Nombres:"), gLat);
+        gLat.gridx = 1; gLat.gridy = 6; pCuerpoLat.add(txtNombrePasajeroReserva, gLat);
 
-        gLat.gridx = 0; gLat.gridy = 11; pCuerpoLat.add(crearEtiquetaFormulario("Correo Electrónico:"), gLat);
-        gLat.gridx = 1; gLat.gridy = 11; pCuerpoLat.add(txtEmailPasajeroReserva, gLat);
+        gLat.gridx = 0; gLat.gridy = 7; pCuerpoLat.add(crearEtiquetaFormulario("Correo Electrónico:"), gLat);
+        gLat.gridx = 1; gLat.gridy = 7; pCuerpoLat.add(txtEmailPasajeroReserva, gLat);
 
         // Botones de acción organizados verticalmente en GlassPanel
         JPanel pBotonesColumnaCabina = new JPanel(new GridLayout(0, 1, 0, 6));
@@ -3960,44 +3950,13 @@ public class VentanaPrincipal extends JFrame {
         btnContinuarEquipajeCabina.setFocusPainted(false);
         btnContinuarEquipajeCabina.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnContinuarEquipajeCabina.addActionListener(e -> {
-            String dni = (txtDniPasajeroReserva != null) ? txtDniPasajeroReserva.getText().trim() : "";
-            String nombre = (txtNombrePasajeroReserva != null) ? txtNombrePasajeroReserva.getText().trim() : "";
-
-            if (nombre.isEmpty() || dni.length() != 8 || !dni.matches("\\d+")) {
-                JOptionPane.showMessageDialog(this,
-                        "Complete los datos del pasajero antes de continuar.",
-                        "Datos del Pasajero Requeridos", JOptionPane.WARNING_MESSAGE);
-                if (txtNombrePasajeroReserva != null && nombre.isEmpty()) txtNombrePasajeroReserva.requestFocus();
-                else if (txtDniPasajeroReserva != null) txtDniPasajeroReserva.requestFocus();
-                return;
+            if (pasajeroFilaConfirmada < 0) {
+                accionConfirmarAsientoPasajero();
+            } else {
+                actualizarPanelEquipajePasajero();
+                actualizarPaseAbordarPasajero();
+                panelPestanas.setSelectedIndex(2);
             }
-
-            if (pasajeroFilaSel < 0 || pasajeroColSel < 0) {
-                JOptionPane.showMessageDialog(this,
-                        "Por favor seleccione un asiento disponible en el mapa de la cabina.",
-                        "Selección de Asiento Requerida", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            Vuelo v = controlador.obtenerVueloActivo();
-            if (v != null) {
-                int[][] mat = v.obtenerMatrizAsientos();
-                if (mat != null && mat[pasajeroFilaSel][pasajeroColSel] == 0) {
-                    controlador.ocuparAsiento(pasajeroFilaSel, pasajeroColSel, dni);
-                    pasajeroFilaConfirmada = pasajeroFilaSel;
-                    pasajeroColConfirmada = pasajeroColSel;
-                    stepperPasajero.setPasoCompletado(1, true);
-                    actualizarCabinaPasajero();
-                    actualizarMatrizCabina();
-                    actualizarTablaVuelos();
-                    actualizarTablaVuelosPasajero();
-                }
-            }
-            actualizarEstadoPestanasPasajero();
-            actualizarPanelEquipajePasajero();
-            actualizarPaseAbordarPasajero();
-            mostrarToast("Asiento confirmado. Avanzando a equipaje...", Theme.getSuccess());
-            panelPestanas.setSelectedIndex(2);
         });
 
         btnVolverVuelosCabina = new JButton("<- Cambiar Vuelo / Destino");
@@ -4009,7 +3968,13 @@ public class VentanaPrincipal extends JFrame {
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)));
         btnVolverVuelosCabina.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnVolverVuelosCabina.setFocusPainted(false);
-        btnVolverVuelosCabina.addActionListener(e -> panelPestanas.setSelectedIndex(0));
+        btnVolverVuelosCabina.addActionListener(e -> {
+            if (pasajeroFilaConfirmada >= 0) {
+                mostrarToast("Su reserva ya está confirmada. No puede cambiar el vuelo.", Theme.getWarning());
+                return;
+            }
+            panelPestanas.setSelectedIndex(0);
+        });
 
         pBotonesColumnaCabina.add(btnConfirmarAsientoPasajero);
         pBotonesColumnaCabina.add(btnContinuarEquipajeCabina);
@@ -4019,7 +3984,7 @@ public class VentanaPrincipal extends JFrame {
 
         GlassPanel cardAccionesCabina = GlassPanel.crearApartado("Acciones de Reserva", "Asignación y Validación", Theme.getPasajeroAccent(), pBotonesColumnaCabina);
 
-        gLat.gridx = 0; gLat.gridy = 12; gLat.gridwidth = 2;
+        gLat.gridx = 0; gLat.gridy = 8; gLat.gridwidth = 2;
         pCuerpoLat.add(cardAccionesCabina, gLat);
 
         JScrollPane scrollLatCabina = new JScrollPane(pCuerpoLat);
@@ -4065,7 +4030,6 @@ public class VentanaPrincipal extends JFrame {
         pTitulosEq.add(this.lblSubEquipajePasajero);
 
         pNorte.add(pTitulosEq, BorderLayout.CENTER);
-        pNorte.add(crearBotonAyudaPaso(3), BorderLayout.EAST);
         this.panelPasajeroEquipajeContenedor.add(pNorte, BorderLayout.NORTH);
 
         // Formulario de equipaje en contenedor GlassPanel
@@ -4165,7 +4129,12 @@ public class VentanaPrincipal extends JFrame {
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         this.btnVolverCabinaEquipaje.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.btnVolverCabinaEquipaje.setFocusPainted(false);
-        this.btnVolverCabinaEquipaje.addActionListener(e -> panelPestanas.setSelectedIndex(1));
+        this.btnVolverCabinaEquipaje.addActionListener(e -> {
+            if (pasajeroFilaConfirmada >= 0) {
+                mostrarToast("Su reserva ya está confirmada. La cabina es de sólo lectura.", Theme.getInfo());
+            }
+            panelPestanas.setSelectedIndex(1);
+        });
 
         this.btnContinuarPaseEquipaje = new BotonPrimario("Generar Mi Pase de Abordar ->", Theme.getPasajeroAccent());
         this.btnContinuarPaseEquipaje.setPreferredSize(new Dimension(230, 40));
@@ -4232,7 +4201,6 @@ public class VentanaPrincipal extends JFrame {
         pTitulosPase.add(this.lblSubPasePasajero);
 
         pNorte.add(pTitulosPase, BorderLayout.CENTER);
-        pNorte.add(crearBotonAyudaPaso(4), BorderLayout.EAST);
         this.panelPasajeroPaseAbordar.add(pNorte, BorderLayout.NORTH);
 
         // Tarjeta de boleto en contenedor GlassPanel
@@ -4336,12 +4304,12 @@ public class VentanaPrincipal extends JFrame {
         this.lblTitMonitorSalas.setForeground(Theme.getPasajeroAccent());
 
         this.lblDescMonitorSalas = new JLabel("<html><body style='color:#94A3B8; font-size:10px;'>" +
-                "• Gate 01: Sala Nacional (Puerta Principal) &nbsp;|&nbsp; " +
-                "• Gate 02: Sala Regional &nbsp;|&nbsp; " +
-                "• Gate 03: Sala Norte &nbsp;|&nbsp; " +
-                "• Gate 04: Sala Centro &nbsp;|&nbsp; " +
-                "• Gate 05: Sala Sur &nbsp;|&nbsp; " +
-                "• Gate B12: Sala Internacional" +
+                "- Gate 01: Sala Nacional (Puerta Principal) &nbsp;|&nbsp; " +
+                "- Gate 02: Sala Regional &nbsp;|&nbsp; " +
+                "- Gate 03: Sala Norte &nbsp;|&nbsp; " +
+                "- Gate 04: Sala Centro &nbsp;|&nbsp; " +
+                "- Gate 05: Sala Sur &nbsp;|&nbsp; " +
+                "- Gate B12: Sala Internacional" +
                 "</body></html>");
 
         this.pMonitorSalas.add(this.lblTitMonitorSalas, BorderLayout.NORTH);
@@ -4381,8 +4349,33 @@ public class VentanaPrincipal extends JFrame {
         this.btnNuevaReservaPase.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.btnNuevaReservaPase.setFocusPainted(false);
         this.btnNuevaReservaPase.addActionListener(e -> {
-            if (txtNombrePasajeroReserva != null) txtNombrePasajeroReserva.setText("");
-            if (txtDniPasajeroReserva != null) txtDniPasajeroReserva.setText("");
+            pasajeroFilaConfirmada = -1;
+            pasajeroColConfirmada = -1;
+            pasajeroFilaSel = -1;
+            pasajeroColSel = -1;
+            if (txtNombrePasajeroReserva != null) {
+                txtNombrePasajeroReserva.setText("");
+                txtNombrePasajeroReserva.setEditable(true);
+            }
+            if (txtDniPasajeroReserva != null) {
+                txtDniPasajeroReserva.setText("");
+                txtDniPasajeroReserva.setEditable(true);
+            }
+            if (txtEmailPasajeroReserva != null) {
+                txtEmailPasajeroReserva.setText("");
+                txtEmailPasajeroReserva.setEditable(true);
+            }
+            if (cbClaseCabinaPasajero != null) cbClaseCabinaPasajero.setEnabled(true);
+            if (btnAutoAsignarPasajero != null) btnAutoAsignarPasajero.setEnabled(true);
+            if (btnVolverVuelosCabina != null) btnVolverVuelosCabina.setEnabled(true);
+            if (btnVolverCabinaEquipaje != null) btnVolverCabinaEquipaje.setEnabled(true);
+            if (stepperPasajero != null) {
+                stepperPasajero.setPasoCompletado(1, false);
+                stepperPasajero.setPasoCompletado(2, false);
+                stepperPasajero.setPasoCompletado(3, false);
+            }
+            actualizarEstadoPestanasPasajero();
+            actualizarCabinaPasajero();
             panelPestanas.setSelectedIndex(0);
         });
 
@@ -4723,10 +4716,10 @@ public class VentanaPrincipal extends JFrame {
                             mostrarToast("Voucher enviado a su Gmail exitosamente", Theme.getSuccess());
                             JOptionPane.showMessageDialog(VentanaPrincipal.this,
                                     "¡Voucher Electrónico enviado exitosamente vía SMTP directo a su bandeja de entrada!\n\n" +
-                                    "• Destinatario: " + finalEmail + "\n" +
-                                    "• Servidor SMTP: " + srvCorreo.getServidorConfigurado() + ":" + srvCorreo.getPuertoConfigurado() + " (SSL)\n" +
-                                    "• Serie y Número: " + numeroSerie + "\n" +
-                                    "• Localizador: " + localizador + "\n\n" +
+                                    "- Destinatario: " + finalEmail + "\n" +
+                                    "- Servidor SMTP: " + srvCorreo.getServidorConfigurado() + ":" + srvCorreo.getPuertoConfigurado() + " (SSL)\n" +
+                                    "- Serie y Número: " + numeroSerie + "\n" +
+                                    "- Localizador: " + localizador + "\n\n" +
                                     "¡El comprobante oficial fue transferido a los servidores de correo!\n" +
                                     "Revise su bandeja de entrada o buzón principal de Gmail.",
                                     "Voucher Despachado por SMTP", JOptionPane.INFORMATION_MESSAGE);
@@ -4761,9 +4754,9 @@ public class VentanaPrincipal extends JFrame {
             String[] opciones = {"Abrir en Gmail Web (Recomendado)", "Configurar Servidor SMTP", "Ver Archivo HTML"};
             int sel = JOptionPane.showOptionDialog(this,
                     "¡Comprobante digital SUNAT generado con éxito!\n\n" +
-                    "• Destinatario: " + email + "\n" +
-                    "• Comprobante: " + numeroSerie + "\n" +
-                    "• Localizador de Reserva: " + localizador + "\n\n" +
+                    "- Destinatario: " + email + "\n" +
+                    "- Comprobante: " + numeroSerie + "\n" +
+                    "- Localizador de Reserva: " + localizador + "\n\n" +
                     "¿Cómo desea enviar el Voucher a su correo (" + email + ")?\n\n" +
                     "1. 'Abrir en Gmail Web' (Recomendado): Abre su navegador con Gmail y el voucher precargado listo para enviar en 1 clic.\n" +
                     "2. 'Configurar Servidor SMTP': Ingrese su usuario y Contraseña de Aplicación para envíos automáticos 100% en segundo plano.\n" +
@@ -4878,7 +4871,22 @@ public class VentanaPrincipal extends JFrame {
         if (codigo == null || codigo.trim().isEmpty()) return;
         Vuelo v = controlador.buscarVueloPorCodigo(codigo);
         if (v != null) {
+            String codAnterior = controlador.obtenerCodigoVueloActivo();
+            if (codAnterior == null || !codAnterior.equalsIgnoreCase(v.obtenerCodigo())) {
+                this.pasajeroFilaSel = -1;
+                this.pasajeroColSel = -1;
+                this.pasajeroFilaConfirmada = -1;
+                this.pasajeroColConfirmada = -1;
+            }
             controlador.seleccionarVueloActivo(v.obtenerCodigo());
+            if (cbClaseCabinaPasajero != null) {
+                String cv = v.obtenerClase();
+                if (cv != null && cv.contains("Turista")) {
+                    cbClaseCabinaPasajero.setSelectedItem("Clase Turista");
+                } else {
+                    cbClaseCabinaPasajero.setSelectedItem("Clase Ejecutiva (VIP)");
+                }
+            }
             actualizarCabinaPasajero();
             actualizarPaseAbordarPasajero();
             actualizarBannerVueloSeleccionado();
@@ -5059,14 +5067,64 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void seleccionarAsientoPasajero(int fila, int col) {
+        if (pasajeroFilaConfirmada >= 0) {
+            char letConf = (char) ('A' + pasajeroColConfirmada);
+            JOptionPane.showMessageDialog(this,
+                    "Su reserva ya ha sido confirmada con el asiento " + (pasajeroFilaConfirmada + 1) + letConf + ".\nNo es posible modificar ni seleccionar otros asientos.",
+                    "Reserva Bloqueada", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         Vuelo v = controlador.obtenerVueloActivo();
         if (v == null) return;
         int[][] mat = v.obtenerMatrizAsientos();
-        if (mat[fila][col] == 1) {
+        String dniActual = (txtDniPasajeroReserva != null) ? txtDniPasajeroReserva.getText().trim() : "";
+        String[][] matPas = v.obtenerMatrizPasajeros();
+
+        boolean esMiPropioAsiento = (fila == pasajeroFilaConfirmada && col == pasajeroColConfirmada)
+                || (!dniActual.isEmpty() && matPas != null && dniActual.equals(matPas[fila][col]));
+
+        if (mat[fila][col] == 1 && !esMiPropioAsiento) {
             char letra = (char) ('A' + col);
             JOptionPane.showMessageDialog(this,
                     "El asiento " + (fila + 1) + letra + " ya está reservado por otro pasajero.\nPor favor seleccione uno disponible.",
                     "Asiento No Disponible", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Restricción de clase según la clase elegida (combo en Cabina o filtro Paso 1)
+        String claseElegida = null;
+        if (cbClaseCabinaPasajero != null && cbClaseCabinaPasajero.getSelectedItem() != null) {
+            claseElegida = (String) cbClaseCabinaPasajero.getSelectedItem();
+        } else if (cbFiltroClasePasajero != null && cbFiltroClasePasajero.getSelectedItem() != null) {
+            String f = (String) cbFiltroClasePasajero.getSelectedItem();
+            if (!"Todas las Clases".equalsIgnoreCase(f)) {
+                claseElegida = f;
+            }
+        }
+        if (claseElegida == null || claseElegida.isEmpty() || claseElegida.contains("Todas")) {
+            claseElegida = (v.obtenerClase() != null) ? v.obtenerClase() : "Ejecutiva";
+        }
+
+        boolean esEjecutiva = claseElegida.contains("Ejecutiva") || claseElegida.contains("VIP");
+        boolean esTurista = !esEjecutiva;
+        boolean esFilaVip = (fila < 3);
+
+        char letra = (char) ('A' + col);
+        if (esEjecutiva && !esFilaVip) {
+            JOptionPane.showMessageDialog(this,
+                    "No es de esta clase. Asiento bloqueado.\n\n" +
+                    "- Su clase seleccionada es: Clase Ejecutiva (VIP).\n" +
+                    "- El asiento " + (fila + 1) + letra + " pertenece a la Clase Turista.\n\n" +
+                    "Para seleccionar este asiento, cambie la clase a 'Clase Turista' en el selector superior.",
+                    "Restricción de Categoría", JOptionPane.WARNING_MESSAGE);
+            return;
+        } else if (esTurista && esFilaVip) {
+            JOptionPane.showMessageDialog(this,
+                    "No es de esta clase. Asiento bloqueado.\n\n" +
+                    "- Su clase seleccionada es: Clase Turista Confort.\n" +
+                    "- El asiento " + (fila + 1) + letra + " pertenece a la Clase Ejecutiva VIP.\n\n" +
+                    "Para seleccionar este asiento, cambie la clase a 'Clase Ejecutiva (VIP)' en el selector superior.",
+                    "Restricción de Categoría", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -5088,12 +5146,28 @@ public class VentanaPrincipal extends JFrame {
 
         int[][] mat = v.obtenerMatrizAsientos();
         if (mat == null) return;
+
+        // Limpiar asientos duplicados en este vuelo para el mismo DNI (regla: 1 pasajero = 1 asiento)
+        String dniActual = (txtDniPasajeroReserva != null) ? txtDniPasajeroReserva.getText().trim() : "";
+        if (!dniActual.isEmpty() && dniActual.length() == 8) {
+            String[][] matPas = v.obtenerMatrizPasajeros();
+            if (matPas != null) {
+                for (int f = 0; f < 10; f++) {
+                    for (int c = 0; c < 5; c++) {
+                        if (dniActual.equals(matPas[f][c]) && (f != pasajeroFilaConfirmada || c != pasajeroColConfirmada)) {
+                            controlador.liberarAsiento(f, c);
+                        }
+                    }
+                }
+            }
+        }
+
         int ocupados = v.contarAsientosOcupados();
         int libres = 50 - ocupados;
 
-        // Auto-seleccionar primer asiento libre disponible solo si el asiento seleccionado por el usuario fue ocupado
+        // Auto-seleccionar primer asiento libre disponible solo si el asiento seleccionado por el usuario fue ocupado por otro
         if (pasajeroFilaSel >= 0 && pasajeroFilaSel < 10 && pasajeroColSel >= 0 && pasajeroColSel < 5) {
-            if (mat[pasajeroFilaSel][pasajeroColSel] == 1) {
+            if (mat[pasajeroFilaSel][pasajeroColSel] == 1 && (pasajeroFilaSel != pasajeroFilaConfirmada || pasajeroColSel != pasajeroColConfirmada)) {
                 boolean encontrado = false;
                 for (int f = 0; f < 10 && !encontrado; f++) {
                     for (int c = 0; c < 5 && !encontrado; c++) {
@@ -5115,8 +5189,96 @@ public class VentanaPrincipal extends JFrame {
             lblCabinaVueloActivoInfo.setText("CABINA COMERCIAL AIRBUS A320neo | Vuelo Activo: " +
                     v.obtenerCodigo() + " (" + v.obtenerOrigen() + " -> " + v.obtenerDestino() + ") | Salida: " + v.obtenerHoraSalida());
         }
+        String claseElegida = null;
+        if (cbClaseCabinaPasajero != null && cbClaseCabinaPasajero.getSelectedItem() != null) {
+            claseElegida = (String) cbClaseCabinaPasajero.getSelectedItem();
+        } else if (cbFiltroClasePasajero != null && cbFiltroClasePasajero.getSelectedItem() != null) {
+            String f = (String) cbFiltroClasePasajero.getSelectedItem();
+            if (!"Todas las Clases".equalsIgnoreCase(f)) {
+                claseElegida = f;
+            }
+        }
+        if (claseElegida == null || claseElegida.isEmpty() || claseElegida.contains("Todas")) {
+            claseElegida = (v.obtenerClase() != null) ? v.obtenerClase() : "Ejecutiva";
+        }
+
+        boolean esEjecutiva = claseElegida.contains("Ejecutiva") || claseElegida.contains("VIP");
+        boolean esTurista = !esEjecutiva;
+
+        // Mantener sincronizado el combo de cabina si no coincidía
+        if (cbClaseCabinaPasajero != null) {
+            String optDeseada = esEjecutiva ? "Clase Ejecutiva (VIP)" : "Clase Turista";
+            if (!optDeseada.equals(cbClaseCabinaPasajero.getSelectedItem())) {
+                cbClaseCabinaPasajero.setSelectedItem(optDeseada);
+            }
+        }
+
+        boolean yaConfirmado = (pasajeroFilaConfirmada >= 0);
+
+        if (txtDniPasajeroReserva != null) txtDniPasajeroReserva.setEditable(!yaConfirmado);
+        if (txtNombrePasajeroReserva != null) txtNombrePasajeroReserva.setEditable(!yaConfirmado);
+        if (txtEmailPasajeroReserva != null) txtEmailPasajeroReserva.setEditable(!yaConfirmado);
+        if (cbClaseCabinaPasajero != null) cbClaseCabinaPasajero.setEnabled(!yaConfirmado);
+        if (btnAutoAsignarPasajero != null) btnAutoAsignarPasajero.setEnabled(!yaConfirmado);
+        if (btnVolverVuelosCabina != null) btnVolverVuelosCabina.setEnabled(!yaConfirmado);
+        if (btnVolverCabinaEquipaje != null) btnVolverCabinaEquipaje.setEnabled(!yaConfirmado);
+
+        if (lblVipBannerCabina != null) {
+            if (esEjecutiva) {
+                lblVipBannerCabina.setText("* CLASE EJECUTIVA VIP - Filas 1 a 3 (HABILITADA · Selección Activa)");
+                lblVipBannerCabina.setForeground(Theme.getWarning());
+            } else {
+                lblVipBannerCabina.setText("🔒 CLASE EJECUTIVA VIP - Filas 1 a 3 (BLOQUEADA · Exclusivo Clase Ejecutiva)");
+                lblVipBannerCabina.setForeground(new Color(100, 116, 139));
+            }
+        }
+        if (lblTuristaBannerCabina != null) {
+            if (esTurista) {
+                lblTuristaBannerCabina.setText("* CLASE TURISTA CONFORT - Filas 4 a 10 (HABILITADA · Selección Activa)");
+                lblTuristaBannerCabina.setForeground(Theme.getSuccess());
+            } else {
+                lblTuristaBannerCabina.setText("🔒 CLASE TURISTA CONFORT - Filas 4 a 10 (BLOQUEADA · Exclusivo Clase Turista)");
+                lblTuristaBannerCabina.setForeground(new Color(100, 116, 139));
+            }
+        }
+
         if (lblCabinaResumenLibres != null) {
-            lblCabinaResumenLibres.setText("Toca un asiento verde para elegirlo; los rojos están ocupados. (" + libres + " Libres de 50)");
+            if (yaConfirmado) {
+                char letC = (char) ('A' + pasajeroColConfirmada);
+                String codC = (pasajeroFilaConfirmada + 1) + "" + letC;
+                lblCabinaResumenLibres.setText("Reserva de asiento " + codC + " confirmada. Cabina asegurada contra modificaciones.");
+                lblCabinaResumenLibres.setForeground(Theme.getSuccess());
+            } else if (esEjecutiva) {
+                lblCabinaResumenLibres.setText("Modo Clase Ejecutiva: Solo Filas 1 a 3 (VIP) habilitadas. Filas 4-10 bloqueadas (🔒).");
+                lblCabinaResumenLibres.setForeground(Theme.getSecundario());
+            } else {
+                lblCabinaResumenLibres.setText("Modo Clase Turista: Solo Filas 4 a 10 habilitadas. Filas 1-3 VIP bloqueadas (🔒).");
+                lblCabinaResumenLibres.setForeground(Theme.getSecundario());
+            }
+        }
+
+        // Si la selección tentativa quedó en una fila bloqueada por clase, reubicarla automáticamente
+        if (!yaConfirmado && pasajeroFilaSel >= 0 && pasajeroColSel >= 0) {
+            boolean filaVipSel = (pasajeroFilaSel < 3);
+            if ((esEjecutiva && !filaVipSel) || (esTurista && filaVipSel)) {
+                int fIni = esTurista ? 3 : 0;
+                int fFin = esEjecutiva ? 3 : 10;
+                boolean reasignado = false;
+                for (int f = fIni; f < fFin && !reasignado; f++) {
+                    for (int c = 0; c < 5; c++) {
+                        if (mat[f][c] == 0) {
+                            pasajeroFilaSel = f;
+                            pasajeroColSel = c;
+                            reasignado = true;
+                            break;
+                        }
+                    }
+                }
+                if (!reasignado) {
+                    pasajeroFilaSel = -1;
+                    pasajeroColSel = -1;
+                }
+            }
         }
 
         for (int f = 0; f < 10; f++) {
@@ -5128,18 +5290,55 @@ public class VentanaPrincipal extends JFrame {
                 String codigoAsiento = (f + 1) + "" + letra;
                 String tipoUbic = (c == 0 || c == 4) ? "Ventana" : (c == 1 || c == 3) ? "Pasillo" : "Centro";
                 boolean esVip = (f < 3);
+                boolean bloqueadoPorClase = (esEjecutiva && !esVip) || (esTurista && esVip);
 
-                if (f == pasajeroFilaConfirmada && c == pasajeroColConfirmada) {
-                    if (btn instanceof BotonAsientoCabina) {
-                        ((BotonAsientoCabina) btn).setEstadoAsiento(BotonAsientoCabina.EstadoAsiento.CONFIRMADO);
+                if (yaConfirmado) {
+                    btn.setEnabled(false);
+                    btn.setCursor(Cursor.getDefaultCursor());
+                    if (f == pasajeroFilaConfirmada && c == pasajeroColConfirmada) {
+                        if (btn instanceof BotonAsientoCabina) {
+                            ((BotonAsientoCabina) btn).setEstadoAsiento(BotonAsientoCabina.EstadoAsiento.CONFIRMADO);
+                        } else {
+                            btn.setBackground(new Color(2, 132, 199));
+                            btn.setForeground(Color.WHITE);
+                            btn.setBorder(new LineBorder(new Color(56, 189, 248), 2));
+                        }
+                        btn.setText(codigoAsiento + " *");
+                        btn.setToolTipText("Asiento " + codigoAsiento + " (" + tipoUbic + ") | SU ASIENTO CONFIRMADO (Bloqueado)");
+                    } else if (mat[f][c] == 1) {
+                        if (btn instanceof BotonAsientoCabina) {
+                            ((BotonAsientoCabina) btn).setEstadoAsiento(BotonAsientoCabina.EstadoAsiento.OCUPADO);
+                        }
+                        btn.setText(codigoAsiento + " X");
+                        btn.setToolTipText("Asiento " + codigoAsiento + " (" + tipoUbic + ") | OCUPADO");
+                    } else if (bloqueadoPorClase) {
+                        if (btn instanceof BotonAsientoCabina) {
+                            ((BotonAsientoCabina) btn).setEstadoAsiento(BotonAsientoCabina.EstadoAsiento.BLOQUEADO_CLASE);
+                        }
+                        btn.setText(codigoAsiento + " 🔒");
+                        btn.setToolTipText("Asiento bloqueado por categoría de clase");
                     } else {
-                        btn.setBackground(new Color(2, 132, 199));
-                        btn.setForeground(Color.WHITE);
-                        btn.setBorder(new LineBorder(new Color(56, 189, 248), 2));
+                        if (btn instanceof BotonAsientoCabina) {
+                            ((BotonAsientoCabina) btn).setEstadoAsiento(esVip ? BotonAsientoCabina.EstadoAsiento.LIBRE_VIP : BotonAsientoCabina.EstadoAsiento.LIBRE_TURISTA);
+                        }
+                        btn.setText(codigoAsiento);
+                        btn.setToolTipText("Asiento " + codigoAsiento + " | Libre (No modificable: reserva ya confirmada)");
                     }
-                    btn.setText("[*] Su Asiento");
-                    btn.setToolTipText("Asiento " + codigoAsiento + " confirmado por usted");
+                } else if (f == pasajeroFilaSel && c == pasajeroColSel && !bloqueadoPorClase) {
+                    btn.setEnabled(true);
+                    btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    if (btn instanceof BotonAsientoCabina) {
+                        ((BotonAsientoCabina) btn).setEstadoAsiento(BotonAsientoCabina.EstadoAsiento.SELECCIONADO);
+                    } else {
+                        btn.setBackground(esVip ? new Color(217, 119, 6) : new Color(14, 116, 144));
+                        btn.setForeground(Color.WHITE);
+                        btn.setBorder(new LineBorder(Theme.esModoOscuro() ? Color.WHITE : new Color(15, 23, 42), 2));
+                    }
+                    btn.setText("[" + codigoAsiento + "]");
+                    btn.setToolTipText("¡Su asiento seleccionado actualmente!");
                 } else if (mat[f][c] == 1) {
+                    btn.setEnabled(false);
+                    btn.setCursor(Cursor.getDefaultCursor());
                     if (btn instanceof BotonAsientoCabina) {
                         ((BotonAsientoCabina) btn).setEstadoAsiento(BotonAsientoCabina.EstadoAsiento.OCUPADO);
                     } else {
@@ -5155,17 +5354,21 @@ public class VentanaPrincipal extends JFrame {
                     }
                     btn.setText(codigoAsiento + " X");
                     btn.setToolTipText("Asiento " + codigoAsiento + " (" + tipoUbic + ") | OCUPADO");
-                } else if (f == pasajeroFilaSel && c == pasajeroColSel) {
+                } else if (bloqueadoPorClase) {
+                    btn.setEnabled(true);
+                    btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
                     if (btn instanceof BotonAsientoCabina) {
-                        ((BotonAsientoCabina) btn).setEstadoAsiento(BotonAsientoCabina.EstadoAsiento.SELECCIONADO);
+                        ((BotonAsientoCabina) btn).setEstadoAsiento(BotonAsientoCabina.EstadoAsiento.BLOQUEADO_CLASE);
                     } else {
-                        btn.setBackground(esVip ? new Color(217, 119, 6) : new Color(14, 116, 144));
-                        btn.setForeground(Color.WHITE);
-                        btn.setBorder(new LineBorder(Theme.esModoOscuro() ? Color.WHITE : new Color(15, 23, 42), 2));
+                        btn.setBackground(new Color(20, 24, 33));
+                        btn.setForeground(new Color(75, 85, 99));
+                        btn.setBorder(new LineBorder(new Color(38, 44, 55), 1));
                     }
-                    btn.setText("[" + codigoAsiento + "]");
-                    btn.setToolTipText("¡Su asiento seleccionado actualmente!");
+                    btn.setText(codigoAsiento + " 🔒");
+                    btn.setToolTipText("No es de esta clase: " + (esEjecutiva ? "Pertenece a Turista. Cambie de clase para elegirlo." : "Pertenece a Ejecutiva VIP. Cambie de clase para elegirlo."));
                 } else {
+                    btn.setEnabled(true);
+                    btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
                     if (esVip) {
                         if (btn instanceof BotonAsientoCabina) {
                             ((BotonAsientoCabina) btn).setEstadoAsiento(BotonAsientoCabina.EstadoAsiento.LIBRE_VIP);
@@ -5256,6 +5459,12 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void accionConfirmarAsientoPasajero() {
+        if (pasajeroFilaConfirmada >= 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Su reserva ya está confirmada. No se permiten modificaciones.",
+                    "Reserva Bloqueada", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
         Vuelo v = controlador.obtenerVueloActivo();
         if (v == null) {
             JOptionPane.showMessageDialog(this, "No hay un vuelo seleccionado.", "Atención", JOptionPane.WARNING_MESSAGE);
@@ -5282,10 +5491,18 @@ public class VentanaPrincipal extends JFrame {
             return;
         }
 
+        boolean esCambio = (pasajeroFilaConfirmada >= 0 && (pasajeroFilaConfirmada != pasajeroFilaSel || pasajeroColConfirmada != pasajeroColSel));
+        int filaAnterior = pasajeroFilaConfirmada;
+        int colAnterior = pasajeroColConfirmada;
+
         int[][] mat = v.obtenerMatrizAsientos();
-        if (mat[pasajeroFilaSel][pasajeroColSel] == 1) {
+        if (mat[pasajeroFilaSel][pasajeroColSel] == 1 && (!esCambio || pasajeroFilaSel != filaAnterior || pasajeroColSel != colAnterior)) {
             JOptionPane.showMessageDialog(this, "El asiento seleccionado ya está ocupado.", "Atención", JOptionPane.WARNING_MESSAGE);
             return;
+        }
+
+        if (esCambio) {
+            controlador.liberarAsiento(filaAnterior, colAnterior);
         }
 
         boolean exito = controlador.ocuparAsiento(pasajeroFilaSel, pasajeroColSel, dni);
@@ -5344,15 +5561,29 @@ public class VentanaPrincipal extends JFrame {
             actualizarTablaVuelos();
             actualizarTablaVuelosPasajero();
 
-            mostrarToast("¡Asiento " + asiento + " confirmado para " + nombre + "!", Theme.getSuccess());
-            JOptionPane.showMessageDialog(this,
-                    "¡RESERVA DE ASIENTO CONFIRMADA CON ÉXITO!\n\n" +
-                    "- Pasajero: " + nombre + "\n" +
-                    "- Documento: DNI " + dni + "\n" +
-                    "- Vuelo: " + v.obtenerCodigo() + " (" + v.obtenerOrigen() + " -> " + v.obtenerDestino() + ")\n" +
-                    "- Asiento Asignado: " + asiento + " (" + (pasajeroFilaSel < 3 ? "Clase VIP" : "Clase Turista") + ")\n\n" +
-                    "Avanzando al registro de equipaje...",
-                    "Reserva Exitosa", JOptionPane.INFORMATION_MESSAGE);
+            if (esCambio) {
+                char letAnt = (char) ('A' + colAnterior);
+                String asientoAnt = (filaAnterior + 1) + "" + letAnt;
+                mostrarToast("Asiento cambiado de " + asientoAnt + " a " + asiento + " para " + nombre, Theme.getSuccess());
+                JOptionPane.showMessageDialog(this,
+                        "¡CAMBIO DE ASIENTO CONFIRMADO CON ÉXITO!\n\n" +
+                        "- Pasajero: " + nombre + "\n" +
+                        "- Documento: DNI " + dni + "\n" +
+                        "- Asiento Anterior Liberado: " + asientoAnt + "\n" +
+                        "- Nuevo Asiento Asignado: " + asiento + " (" + (pasajeroFilaSel < 3 ? "Clase VIP" : "Clase Turista") + ")\n\n" +
+                        "Avanzando al registro de equipaje...",
+                        "Cambio de Asiento Exitoso", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                mostrarToast("¡Asiento " + asiento + " confirmado para " + nombre + "!", Theme.getSuccess());
+                JOptionPane.showMessageDialog(this,
+                        "¡RESERVA DE ASIENTO CONFIRMADA CON ÉXITO!\n\n" +
+                        "- Pasajero: " + nombre + "\n" +
+                        "- Documento: DNI " + dni + "\n" +
+                        "- Vuelo: " + v.obtenerCodigo() + " (" + v.obtenerOrigen() + " -> " + v.obtenerDestino() + ")\n" +
+                        "- Asiento Asignado: " + asiento + " (" + (pasajeroFilaSel < 3 ? "Clase VIP" : "Clase Turista") + ")\n\n" +
+                        "Avanzando al registro de equipaje...",
+                        "Reserva Exitosa", JOptionPane.INFORMATION_MESSAGE);
+            }
             actualizarPanelEquipajePasajero();
             actualizarPaseAbordarPasajero();
             panelPestanas.setSelectedIndex(2);
@@ -5362,26 +5593,48 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void accionAutoAsignarPasajero() {
+        if (pasajeroFilaConfirmada >= 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Su reserva ya está confirmada. No se puede reasignar el asiento.",
+                    "Reserva Bloqueada", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         Vuelo v = controlador.obtenerVueloActivo();
         if (v == null) return;
         int[][] mat = v.obtenerMatrizAsientos();
 
+        String claseElegida = null;
+        if (cbClaseCabinaPasajero != null && cbClaseCabinaPasajero.getSelectedItem() != null) {
+            claseElegida = (String) cbClaseCabinaPasajero.getSelectedItem();
+        } else if (cbFiltroClasePasajero != null && cbFiltroClasePasajero.getSelectedItem() != null) {
+            String f = (String) cbFiltroClasePasajero.getSelectedItem();
+            if (!"Todas las Clases".equalsIgnoreCase(f)) {
+                claseElegida = f;
+            }
+        }
+        if (claseElegida == null || claseElegida.isEmpty() || claseElegida.contains("Todas")) {
+            claseElegida = (v.obtenerClase() != null) ? v.obtenerClase() : "Ejecutiva";
+        }
+        boolean esTurista = claseElegida.contains("Turista");
+        int filaInicio = esTurista ? 3 : 0;
+        int filaFin = esTurista ? 10 : 3;
+
         int mejorF = -1, mejorC = -1;
-        // Prioridad 1: Ventana libre
-        for (int f = 0; f < 10; f++) {
+        // Prioridad 1: Ventana libre dentro del rango de clase
+        for (int f = filaInicio; f < filaFin; f++) {
             if (mat[f][0] == 0) { mejorF = f; mejorC = 0; break; }
             if (mat[f][4] == 0) { mejorF = f; mejorC = 4; break; }
         }
-        // Prioridad 2: Pasillo libre
+        // Prioridad 2: Pasillo libre dentro del rango de clase
         if (mejorF == -1) {
-            for (int f = 0; f < 10; f++) {
+            for (int f = filaInicio; f < filaFin; f++) {
                 if (mat[f][1] == 0) { mejorF = f; mejorC = 1; break; }
                 if (mat[f][3] == 0) { mejorF = f; mejorC = 3; break; }
             }
         }
-        // Prioridad 3: Cualquier libre
+        // Prioridad 3: Cualquier libre dentro del rango de clase
         if (mejorF == -1) {
-            for (int f = 0; f < 10; f++) {
+            for (int f = filaInicio; f < filaFin; f++) {
                 for (int c = 0; c < 5; c++) {
                     if (mat[f][c] == 0) { mejorF = f; mejorC = c; break; }
                 }
@@ -5508,10 +5761,10 @@ public class VentanaPrincipal extends JFrame {
 
         int opc = JOptionPane.showConfirmDialog(this,
                 "Equipaje registrado exitosamente en el sistema:\n" +
-                "• Código de Etiqueta: " + cod + "\n" +
-                "• DNI Pasajero: " + dni + "\n" +
-                "• Peso: " + peso + " kg\n" +
-                "• Modalidad: " + tipo + "\n\n" +
+                "- Código de Etiqueta: " + cod + "\n" +
+                "- DNI Pasajero: " + dni + "\n" +
+                "- Peso: " + peso + " kg\n" +
+                "- Modalidad: " + tipo + "\n\n" +
                 "¿Desea avanzar a la emisión de su Pase de Abordar?",
                 "Equipaje Confirmado", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
         if (opc == JOptionPane.YES_OPTION) {
@@ -5973,10 +6226,10 @@ public class VentanaPrincipal extends JFrame {
                 mostrarToast("Vuelo " + encontrado.obtenerCodigo() + " localizado en Árbol AVL O(log n)", Theme.getSuccess());
                 JOptionPane.showMessageDialog(this,
                         "BÚSQUEDA INDEXADA EN ÁRBOL AVL EXITOSA:\n\n" +
-                        "• Código: " + encontrado.obtenerCodigo() + "\n" +
-                        "• Ruta: " + encontrado.obtenerOrigen() + " -> " + encontrado.obtenerDestino() + "\n" +
-                        "• Tarifa: S/. " + String.format(java.util.Locale.US, "%.2f", encontrado.obtenerPrecioBase()) + "\n" +
-                        "• Complejidad: O(log n) garantizado por auto-balanceo de factores de equilibrio",
+                        "- Código: " + encontrado.obtenerCodigo() + "\n" +
+                        "- Ruta: " + encontrado.obtenerOrigen() + " -> " + encontrado.obtenerDestino() + "\n" +
+                        "- Tarifa: S/. " + String.format(java.util.Locale.US, "%.2f", encontrado.obtenerPrecioBase()) + "\n" +
+                        "- Complejidad: O(log n) garantizado por auto-balanceo de factores de equilibrio",
                         "Árbol AVL - Vuelo Localizado", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "No se encontró ningún vuelo en el árbol con el código: " + codigoBuscado, "No Encontrado", JOptionPane.WARNING_MESSAGE);
@@ -6399,58 +6652,17 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public void mostrarDialogoArbolesYGrafos() {
-        mostrarDialogoVistaTecnicaLaboratorio(false);
+        if (panelPestanas != null && obtenerPanelArboles() != null) {
+            panelPestanas.setSelectedComponent(obtenerPanelArboles());
+        }
     }
 
     public void mostrarDialogoArbolesYGrafos(boolean soloLectura) {
-        mostrarDialogoVistaTecnicaLaboratorio(soloLectura);
+        mostrarDialogoArbolesYGrafos();
     }
 
     public void mostrarDialogoVistaTecnicaLaboratorio(boolean soloLectura) {
-        JDialog dialogo = new JDialog(this, "Laboratorio Algorítmico y Demostración de TADs Avanzados (CORPAC S.A.)", true);
-        dialogo.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialogo.setSize(1100, 720);
-        dialogo.setLocationRelativeTo(this);
-        dialogo.setResizable(true);
-
-        JPanel panelContenedor = new JPanel(new BorderLayout(0, 8));
-        panelContenedor.setBackground(Theme.getBg());
-        panelContenedor.setBorder(new EmptyBorder(10, 14, 10, 14));
-
-        JPanel panelHeader = new JPanel(new BorderLayout(10, 0));
-        panelHeader.setOpaque(false);
-
-        JLabel lblTitulo = new JLabel("Laboratorio de Algoritmos y Estructuras de Datos (Árboles, Grafos, Hash, Heap, Benchmark)");
-        lblTitulo.setFont(FontManager.getBarlowCondensed(Font.BOLD, 16f));
-        lblTitulo.setForeground(Theme.getTexto());
-        lblTitulo.setIcon(AppIcon.of("flask", 14, Theme.getAcento()));
-
-        JLabel lblModo = new JLabel(soloLectura ? "[ Modo Demostración / Examen - Solo Lectura ]" : "[ Modo Interactivo / Control Total ]");
-        lblModo.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
-        lblModo.setForeground(soloLectura ? Theme.getWarning() : Theme.getSuccess());
-
-        panelHeader.add(lblTitulo, BorderLayout.WEST);
-        panelHeader.add(lblModo, BorderLayout.EAST);
-        panelContenedor.add(panelHeader, BorderLayout.NORTH);
-
-        JComponent panelLab = crearPanelLaboratorioAvanzado(soloLectura);
-        panelContenedor.add(panelLab, BorderLayout.CENTER);
-
-        JPanel panelPie = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 4));
-        panelPie.setOpaque(false);
-
-        JButton btnCerrar = new JButton("Cerrar Laboratorio");
-        btnCerrar.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
-        btnCerrar.setBackground(Theme.getElevated());
-        btnCerrar.setForeground(Theme.getTexto());
-        btnCerrar.setFocusPainted(false);
-        btnCerrar.addActionListener(e -> dialogo.dispose());
-
-        panelPie.add(btnCerrar);
-        panelContenedor.add(panelPie, BorderLayout.SOUTH);
-
-        dialogo.setContentPane(panelContenedor);
-        dialogo.setVisible(true);
+        mostrarDialogoArbolesYGrafos();
     }
 
     public void mostrarDialogoVisor3DAeronave() {
@@ -6524,22 +6736,19 @@ public class VentanaPrincipal extends JFrame {
         dialogo.setVisible(true);
     }
 
-    private JComponent crearPanelLaboratorioAvanzado() {
-        return crearPanelLaboratorioAvanzado(false);
+    public JPanel obtenerPanelArboles() {
+        if (panelArbolesTab == null) {
+            panelArbolesTab = crearPanelArboles(false);
+        }
+        return panelArbolesTab;
     }
 
-    private JComponent crearPanelLaboratorioAvanzado(boolean soloLectura) {
+    private JPanel crearPanelArboles(boolean soloLectura) {
         controlador.sincronizarIndiceArbol();
-        JTabbedPane pestañas = new JTabbedPane();
-
-        // =========================================================================
-        // Pestaña 1: Árboles (ABB y AVL Auto-balanceado)
-        // =========================================================================
         JPanel pArboles = new JPanel(new BorderLayout(10, 10));
         pArboles.setBackground(fondoTarjeta);
         pArboles.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        // Panel de Botones de Árboles Organizado en 2 Apartados GlassPanel
         JPanel pArbolBotones = new JPanel(new GridLayout(1, 2, 8, 0));
         pArbolBotones.setOpaque(false);
 
@@ -6555,7 +6764,6 @@ public class VentanaPrincipal extends JFrame {
         estilizarBotonAccion(btnNiveles, new Color(30, 41, 59), textoBlanco);
         estilizarBotonAccion(btnDemoAVL, new Color(16, 185, 129), new Color(15, 20, 29));
 
-        // Apartado 1: Recorridos de Profundidad (DFS) - Botones en columna vertical
         JPanel pContenidoDFS = new JPanel(new GridLayout(0, 1, 0, 4));
         pContenidoDFS.setOpaque(false);
         pContenidoDFS.add(btnInOrden);
@@ -6563,7 +6771,6 @@ public class VentanaPrincipal extends JFrame {
         pContenidoDFS.add(btnPostOrden);
         GlassPanel cardDFS = GlassPanel.crearApartado("Recorridos en Profundidad (DFS)", "In-Order, Pre-Order, Post-Order", azulAccion, pContenidoDFS);
 
-        // Apartado 2: Amplitud y Balanceo AVL - Botones en columna vertical
         JPanel pContenidoBFS = new JPanel(new GridLayout(0, 1, 0, 4));
         pContenidoBFS.setOpaque(false);
         pContenidoBFS.add(btnNiveles);
@@ -6582,7 +6789,7 @@ public class VentanaPrincipal extends JFrame {
         txtArbolResultado.setCaretPosition(0);
         pArboles.add(new JScrollPane(txtArbolResultado), BorderLayout.CENTER);
 
-        JLabel lblMetricasArbol = new JLabel("Seleccione una operaci\u00f3n para visualizar los recorridos en el ABB o el auto-balanceo en el \u00c1rbol AVL.");
+        JLabel lblMetricasArbol = new JLabel("Seleccione una operación para visualizar los recorridos en el ABB o el auto-balanceo en el Árbol AVL.");
         lblMetricasArbol.setFont(new Font("Segoe UI", Font.ITALIC, 11));
         lblMetricasArbol.setForeground(azulCyan);
         pArboles.add(lblMetricasArbol, BorderLayout.SOUTH);
@@ -6592,10 +6799,10 @@ public class VentanaPrincipal extends JFrame {
             ArbolBinarioBusqueda<String, Vuelo> abb = controlador.obtenerServicioAeropuerto().obtenerArbolVuelos();
             List<Vuelo> lista = abb.recorridoInOrden();
             StringBuilder sb = new StringBuilder();
-            sb.append("=== RECORRIDO IN-ORDER EN \u00c1RBOL BINARIO DE B\u00daSQUEDA (ABB) ===\n");
-            sb.append("Propiedad: Visita sub\u00e1rbol izquierdo -> Ra\u00edz -> Sub\u00e1rbol derecho (Orden ascendente por clave)\n");
+            sb.append("=== RECORRIDO IN-ORDER EN ÁRBOL BINARIO DE BÚSQUEDA (ABB) ===\n");
+            sb.append("Propiedad: Visita subárbol izquierdo -> Raíz -> Subárbol derecho (Orden ascendente por clave)\n");
             sb.append("Total de Vuelos Indexados: ").append(abb.tamano()).append("\n");
-            sb.append("Altura del \u00c1rbol (h): ").append(abb.obtenerAltura()).append("\n");
+            sb.append("Altura del Árbol (h): ").append(abb.obtenerAltura()).append("\n");
             sb.append("Cantidad de Hojas: ").append(abb.contarHojas()).append("\n\n");
             for (int i = 0; i < lista.size(); i++) {
                 Vuelo v = lista.get(i);
@@ -6604,7 +6811,7 @@ public class VentanaPrincipal extends JFrame {
             }
             txtArbolResultado.setText(sb.toString());
             txtArbolResultado.setCaretPosition(0);
-            lblMetricasArbol.setText("ABB In-Order completado: " + lista.size() + " vuelos ordenados por c\u00f3digo | Altura: " + abb.obtenerAltura());
+            lblMetricasArbol.setText("ABB In-Order completado: " + lista.size() + " vuelos ordenados por código | Altura: " + abb.obtenerAltura());
         });
 
         btnPreOrden.addActionListener(ev -> {
@@ -6612,16 +6819,16 @@ public class VentanaPrincipal extends JFrame {
             ArbolBinarioBusqueda<String, Vuelo> abb = controlador.obtenerServicioAeropuerto().obtenerArbolVuelos();
             List<Vuelo> lista = abb.recorridoPreOrden();
             StringBuilder sb = new StringBuilder();
-            sb.append("=== RECORRIDO PRE-ORDER EN \u00c1RBOL BINARIO DE B\u00daSQUEDA (ABB) ===\n");
-            sb.append("Propiedad: Visita Ra\u00edz -> Sub\u00e1rbol izquierdo -> Sub\u00e1rbol derecho\n");
-            sb.append("Utilidad: Serializaci\u00f3n, clonaci\u00f3n y reconstrucci\u00f3n exacta de la topolog\u00eda del \u00e1rbol\n\n");
+            sb.append("=== RECORRIDO PRE-ORDER EN ÁRBOL BINARIO DE BÚSQUEDA (ABB) ===\n");
+            sb.append("Propiedad: Visita Raíz -> Subárbol izquierdo -> Subárbol derecho\n");
+            sb.append("Utilidad: Serialización, clonación y reconstrucción exacta de la topología del árbol\n\n");
             for (int i = 0; i < lista.size(); i++) {
                 Vuelo v = lista.get(i);
-                sb.append(String.format("  [%02d] Ra\u00edz/Nodo: %-8s | %s -> %s\n", i + 1, v.obtenerCodigo(), v.obtenerOrigen(), v.obtenerDestino()));
+                sb.append(String.format("  [%02d] Raíz/Nodo: %-8s | %s -> %s\n", i + 1, v.obtenerCodigo(), v.obtenerOrigen(), v.obtenerDestino()));
             }
             txtArbolResultado.setText(sb.toString());
             txtArbolResultado.setCaretPosition(0);
-            lblMetricasArbol.setText("ABB Pre-Order completado: " + lista.size() + " nodos visitados en secuencia jer\u00e1rquica.");
+            lblMetricasArbol.setText("ABB Pre-Order completado: " + lista.size() + " nodos visitados en secuencia jerárquica.");
         });
 
         btnPostOrden.addActionListener(ev -> {
@@ -6629,16 +6836,16 @@ public class VentanaPrincipal extends JFrame {
             ArbolBinarioBusqueda<String, Vuelo> abb = controlador.obtenerServicioAeropuerto().obtenerArbolVuelos();
             List<Vuelo> lista = abb.recorridoPostOrden();
             StringBuilder sb = new StringBuilder();
-            sb.append("=== RECORRIDO POST-ORDER EN \u00c1RBOL BINARIO DE B\u00daSQUEDA (ABB) ===\n");
-            sb.append("Propiedad: Visita Sub\u00e1rbol izquierdo -> Sub\u00e1rbol derecho -> Ra\u00edz\n");
-            sb.append("Utilidad: Liberaci\u00f3n de memoria de abajo hacia arriba, evaluaci\u00f3n de expresiones\n\n");
+            sb.append("=== RECORRIDO POST-ORDER EN ÁRBOL BINARIO DE BÚSQUEDA (ABB) ===\n");
+            sb.append("Propiedad: Visita Subárbol izquierdo -> Subárbol derecho -> Raíz\n");
+            sb.append("Utilidad: Liberación de memoria de abajo hacia arriba, evaluación de expresiones\n\n");
             for (int i = 0; i < lista.size(); i++) {
                 Vuelo v = lista.get(i);
                 sb.append(String.format("  [%02d] Nodo: %-8s | %s -> %s\n", i + 1, v.obtenerCodigo(), v.obtenerOrigen(), v.obtenerDestino()));
             }
             txtArbolResultado.setText(sb.toString());
             txtArbolResultado.setCaretPosition(0);
-            lblMetricasArbol.setText("ABB Post-Order completado: " + lista.size() + " nodos procesados de hojas a ra\u00edz.");
+            lblMetricasArbol.setText("ABB Post-Order completado: " + lista.size() + " nodos procesados de hojas a raíz.");
         });
 
         btnNiveles.addActionListener(ev -> {
@@ -6648,7 +6855,7 @@ public class VentanaPrincipal extends JFrame {
             StringBuilder sb = new StringBuilder();
             sb.append("=== RECORRIDO POR NIVELES (BFS - AMPLITUD) EN ABB ===\n");
             sb.append("Propiedad: Recorrido horizontal nivel por nivel utilizando Cola FIFO iterativa\n");
-            sb.append("Total de Nodos: ").append(lista.size()).append(" | Altura m\u00e1xima: ").append(abb.obtenerAltura()).append("\n\n");
+            sb.append("Total de Nodos: ").append(lista.size()).append(" | Altura máxima: ").append(abb.obtenerAltura()).append("\n\n");
             for (int i = 0; i < lista.size(); i++) {
                 Vuelo v = lista.get(i);
                 sb.append(String.format("  [%02d] Nivel/Pos: %-8s | %s -> %s\n", i + 1, v.obtenerCodigo(), v.obtenerOrigen(), v.obtenerDestino()));
@@ -6661,50 +6868,56 @@ public class VentanaPrincipal extends JFrame {
         btnDemoAVL.addActionListener(ev -> {
             ArbolAVL<String, String> demoAVL = new ArbolAVL<>();
             StringBuilder sb = new StringBuilder();
-            sb.append("=== DEMOSTRACI\u00d3N EN VIVO: \u00c1RBOL AVL AUTO-BALANCEADO ===\n");
-            sb.append("Mecanismo: C\u00e1lculo del Factor de Balance (FE = Altura_Izq - Altura_Der)\n");
-            sb.append("Condici\u00f3n de Balance Estricta: |FE| \u2264 1 en todos los nodos del \u00e1rbol\n\n");
+            sb.append("=== DEMOSTRACIÓN EN VIVO: ÁRBOL AVL AUTO-BALANCEADO ===\n");
+            sb.append("Mecanismo: Cálculo del Factor de Balance (FE = Altura_Izq - Altura_Der)\n");
+            sb.append("Condición de Balance Estricta: |FE| <= 1 en todos los nodos del árbol\n\n");
 
-            // Inserciones para provocar rotaciones
-            sb.append("1. Insertando claves en orden desbalanceado para verificar rotaciones can\u00f3nicas:\n");
+            sb.append("1. Inserción de claves para verificar rotaciones canónicas:\n");
             String[] clavesPrueba = {"LIM", "AQP", "CUZ", "JUL", "TRU", "PIU", "IQT", "TCQ", "CIX", "AYP"};
             for (String c : clavesPrueba) {
                 demoAVL.insertar(c, "Vuelo-" + c);
-                sb.append(String.format("   + Insertado '%s' -> Altura actual: %d | Total nodos: %d | Balance v\u00e1lido: %s\n",
-                        c, demoAVL.obtenerAltura(), demoAVL.tamano(), demoAVL.verificarBalance() ? "S\u00cd (CUMPLE |FE|<=1)" : "NO"));
+                sb.append(String.format("   + Insertado '%s' -> Altura actual: %d | Total nodos: %d | Balance válido: %s\n",
+                        c, demoAVL.obtenerAltura(), demoAVL.tamano(), demoAVL.verificarBalance() ? "SÍ (CUMPLE |FE|<=1)" : "NO"));
             }
 
-            sb.append("\n2. Registro de Rotaciones Can\u00f3nicas Disponibles en el TAD ArbolAVL:\n");
-            sb.append("   - Rotaci\u00f3n Simple Derecha (RSD / LL): Cuando FE > 1 y FE(hijo_izq) >= 0\n");
-            sb.append("   - Rotaci\u00f3n Simple Izquierda (RSI / RR): Cuando FE < -1 y FE(hijo_der) <= 0\n");
-            sb.append("   - Rotaci\u00f3n Doble Izquierda-Derecha (RDID / LR): Cuando FE > 1 y FE(hijo_izq) < 0\n");
-            sb.append("   - Rotaci\u00f3n Doble Derecha-Izquierda (RDDI / RL): Cuando FE < -1 y FE(hijo_der) > 0\n\n");
+            sb.append("\n2. Registro de Rotaciones Canónicas Disponibles en el TAD ArbolAVL:\n");
+            sb.append("   - Rotación Simple Derecha (RSD / LL): Cuando FE > 1 y FE(hijo_izq) >= 0\n");
+            sb.append("   - Rotación Simple Izquierda (RSI / RR): Cuando FE < -1 y FE(hijo_der) <= 0\n");
+            sb.append("   - Rotación Doble Izquierda-Derecha (RDID / LR): Cuando FE > 1 y FE(hijo_izq) < 0\n");
+            sb.append("   - Rotación Doble Derecha-Izquierda (RDDI / RL): Cuando FE < -1 y FE(hijo_der) > 0\n\n");
 
-            sb.append("3. Recorrido In-Order del \u00c1rbol AVL (Garantizado O(log n) en b\u00fasqueda):\n");
+            sb.append("3. Recorrido In-Order del Árbol AVL (Garantizado O(log n) en búsqueda):\n");
             List<String> inOrder = demoAVL.recorridoInOrden();
             sb.append("   Secuencia: ").append(inOrder).append("\n\n");
 
-            sb.append("4. Recorrido por Niveles (Topolog\u00eda Equilibrada):\n");
+            sb.append("4. Recorrido por Niveles (Topología Equilibrada):\n");
             List<String> niveles = demoAVL.recorridoPorNiveles();
             sb.append("   Por Niveles: ").append(niveles).append("\n\n");
 
             sb.append("Estado Final del AVL: Altura = ").append(demoAVL.obtenerAltura())
-              .append(" (En \u00e1rbol no balanceado ser\u00eda hasta ").append(demoAVL.tamano()).append(")\n")
-              .append("Garant\u00eda de B\u00fasqueda: O(log n) en el peor de los casos.\n");
+              .append(" (En árbol no balanceado sería hasta ").append(demoAVL.tamano()).append(")\n")
+              .append("Garantía de Búsqueda: O(log n) en el peor de los casos.\n");
 
             txtArbolResultado.setText(sb.toString());
             txtArbolResultado.setCaretPosition(0);
-            lblMetricasArbol.setText("Demostraci\u00f3n AVL ejecutada: 10 nodos balanceados con \u00e9xito. Altura = " + demoAVL.obtenerAltura());
+            lblMetricasArbol.setText("Demostración AVL ejecutada: 10 nodos balanceados con éxito. Altura = " + demoAVL.obtenerAltura());
         });
 
-        // =========================================================================
-        // Pestaña 2: Grafo de Rutas Aéreas (Dijkstra, Prim, Kruskal, Floyd-Warshall)
-        // =========================================================================
+        return pArboles;
+    }
+
+    public JPanel obtenerPanelGrafo() {
+        if (panelGrafoTab == null) {
+            panelGrafoTab = crearPanelGrafo(false);
+        }
+        return panelGrafoTab;
+    }
+
+    private JPanel crearPanelGrafo(boolean soloLectura) {
         JPanel pGrafo = new JPanel(new BorderLayout(10, 10));
         pGrafo.setBackground(fondoTarjeta);
         pGrafo.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        // Panel de Controles de Grafo Organizado en 3 Apartados GlassPanel
         JPanel pFormGrafo = new JPanel(new GridLayout(1, 3, 8, 0));
         pFormGrafo.setOpaque(false);
 
@@ -6715,17 +6928,16 @@ public class VentanaPrincipal extends JFrame {
         estilizarComboModerno(cbOrigen);
         estilizarComboModerno(cbDestino);
 
-        JButton btnCalcularDijkstra = new JButton("Dijkstra (Ruta M\u00ednima)");
+        JButton btnCalcularDijkstra = new JButton("Dijkstra (Ruta Mínima)");
         JButton btnCalcularPrim = new JButton("Prim (MST Troncal)");
         JButton btnCalcularKruskal = new JButton("Kruskal (MST - DSU)");
-        JButton btnCalcularFloyd = new JButton("Floyd-Warshall (Matriz O(V\u00b3))");
+        JButton btnCalcularFloyd = new JButton("Floyd-Warshall (Matriz O(V^3))");
 
         estilizarBotonAccion(btnCalcularDijkstra, azulAccion, new Color(15, 20, 29));
         estilizarBotonAccion(btnCalcularPrim, new Color(16, 185, 129), new Color(15, 20, 29));
         estilizarBotonAccion(btnCalcularKruskal, new Color(245, 158, 11), new Color(15, 20, 29));
         estilizarBotonAccion(btnCalcularFloyd, new Color(139, 92, 246), new Color(15, 20, 29));
 
-        // Apartado 1: Ruta Óptima Punto a Punto - En columna vertical
         JPanel pContenidoDijkstra = new JPanel(new GridLayout(0, 1, 0, 4));
         pContenidoDijkstra.setOpaque(false);
         JPanel pSelRuta = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
@@ -6739,18 +6951,16 @@ public class VentanaPrincipal extends JFrame {
         pContenidoDijkstra.add(btnCalcularDijkstra);
         GlassPanel cardDijkstra = GlassPanel.crearApartado("Ruta Óptima Punto a Punto", "Dijkstra O((V+E) log V)", azulAccion, pContenidoDijkstra);
 
-        // Apartado 2: Árboles de Expansión Mínima - Botones en columna vertical
         JPanel pContenidoMST = new JPanel(new GridLayout(0, 1, 0, 4));
         pContenidoMST.setOpaque(false);
         pContenidoMST.add(btnCalcularPrim);
         pContenidoMST.add(btnCalcularKruskal);
         GlassPanel cardMST = GlassPanel.crearApartado("Árboles de Expansión Mínima", "Prim y Kruskal (DSU)", new Color(16, 185, 129), pContenidoMST);
 
-        // Apartado 3: Todas las Parejas - Botones en columna vertical
         JPanel pContenidoFloyd = new JPanel(new GridLayout(0, 1, 0, 4));
         pContenidoFloyd.setOpaque(false);
         pContenidoFloyd.add(btnCalcularFloyd);
-        GlassPanel cardFloyd = GlassPanel.crearApartado("Todas las Parejas", "Floyd-Warshall O(V³)", new Color(139, 92, 246), pContenidoFloyd);
+        GlassPanel cardFloyd = GlassPanel.crearApartado("Todas las Parejas", "Floyd-Warshall O(V^3)", new Color(139, 92, 246), pContenidoFloyd);
 
         pFormGrafo.add(cardDijkstra);
         pFormGrafo.add(cardMST);
@@ -6762,7 +6972,7 @@ public class VentanaPrincipal extends JFrame {
         txtGrafoResultado.setFont(new Font("Consolas", Font.PLAIN, 12));
         txtGrafoResultado.setBackground(new Color(15, 23, 42));
         txtGrafoResultado.setForeground(new Color(248, 250, 252));
-        txtGrafoResultado.setText("Seleccione una operaci\u00f3n para ejecutar algoritmos sobre el Grafo Ponderado de Rutas CORPAC.");
+        txtGrafoResultado.setText("Seleccione una operación para ejecutar algoritmos sobre el Grafo Ponderado de Rutas CORPAC.");
         pGrafo.add(new JScrollPane(txtGrafoResultado), BorderLayout.CENTER);
 
         btnCalcularDijkstra.addActionListener(ev -> {
@@ -6773,7 +6983,7 @@ public class VentanaPrincipal extends JFrame {
                 txtGrafoResultado.setText("No existe una ruta disponible entre " + orig + " y " + dest + ".");
             } else {
                 StringBuilder sb = new StringBuilder();
-                sb.append("=== RUTA \u00d3PTIMA CALCULADA MEDIANTE ALGORITMO DE DIJKSTRA ===\n\n");
+                sb.append("=== RUTA ÓPTIMA CALCULADA MEDIANTE ALGORITMO DE DIJKSTRA ===\n\n");
                 sb.append("Origen: ").append(orig).append("\n");
                 sb.append("Destino: ").append(dest).append("\n");
                 sb.append("Tramos calculados: ").append(ruta.size() - 1).append(" tramos directos\n\n");
@@ -6783,7 +6993,7 @@ public class VentanaPrincipal extends JFrame {
                     sb.append("  [").append(i + 1).append("] ").append(vert.obtenerCodigoIATA())
                       .append(" - ").append(vert.obtenerCiudad()).append(" (").append(vert.obtenerNombreAeropuerto()).append(")\n");
                 }
-                sb.append("\nComplejidad Algor\u00edtmica: O((V + E) log V)\n");
+                sb.append("\nComplejidad Algorítmica: O((V + E) log V)\n");
                 sb.append("Estructura: Grafo Ponderado con Lista y Matriz de Adyacencia.\n");
                 txtGrafoResultado.setText(sb.toString());
                 txtGrafoResultado.setCaretPosition(0);
@@ -6809,18 +7019,24 @@ public class VentanaPrincipal extends JFrame {
             txtGrafoResultado.setCaretPosition(0);
         });
 
-        // =========================================================================
-        // Pestaña 3: Tablas Hash y Montículo Binario (Heap)
-        // =========================================================================
+        return pGrafo;
+    }
+
+    public JPanel obtenerPanelHashHeap() {
+        if (panelHashHeapTab == null) {
+            panelHashHeapTab = crearPanelHashHeap(false);
+        }
+        return panelHashHeapTab;
+    }
+
+    private JPanel crearPanelHashHeap(boolean soloLectura) {
         JPanel pHashHeap = new JPanel(new BorderLayout(10, 10));
         pHashHeap.setBackground(fondoTarjeta);
         pHashHeap.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        // Controles de Hash y Heap Organizados en 2 Apartados GlassPanel
         JPanel pHashControles = new JPanel(new GridLayout(1, 2, 8, 0));
         pHashControles.setOpaque(false);
 
-        // Fila Hash - Controles en columna vertical
         JPanel filaHash = new JPanel(new GridLayout(0, 1, 0, 4));
         filaHash.setOpaque(false);
         JPanel pDniInput = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
@@ -6840,7 +7056,6 @@ public class VentanaPrincipal extends JFrame {
         filaHash.add(btnEstadoHash);
         GlassPanel cardHash = GlassPanel.crearApartado("Tabla Hash (Separate Chaining)", "Acceso O(1) promedio y dispersión", azulAccion, filaHash);
 
-        // Fila Heap - Botones en columna vertical
         JPanel filaHeap = new JPanel(new GridLayout(0, 1, 0, 4));
         filaHeap.setOpaque(false);
         JButton btnPoblarHeap = new JButton("Encolar 5 Aeronaves");
@@ -6863,9 +7078,9 @@ public class VentanaPrincipal extends JFrame {
         txtHashHeapLog.setFont(new Font("Consolas", Font.PLAIN, 12));
         txtHashHeapLog.setBackground(new Color(15, 23, 42));
         txtHashHeapLog.setForeground(new Color(248, 250, 252));
-        txtHashHeapLog.setText("=== LABORATORIO DE ESTRUCTURAS HASH Y MONT\u00cdCULO BINARIO ===\n\n" +
-                "1. TABLA HASH: Acceso O(1) promedio por dispersi\u00f3n bit-shift, factor de carga <= 0.75 y encadenamiento.\n" +
-                "2. TAD HEAP (Min-Heap): Inserci\u00f3n y extracci\u00f3n O(log n) garantizado para control de pista ATC.");
+        txtHashHeapLog.setText("=== ESTRUCTURAS HASH Y MONTÍCULO BINARIO ===\n\n" +
+                "1. TABLA HASH: Acceso O(1) promedio por dispersión bit-shift, factor de carga <= 0.75 y encadenamiento.\n" +
+                "2. TAD HEAP (Min-Heap): Inserción y extracción O(log n) garantizado para control de pista ATC.");
         pHashHeap.add(new JScrollPane(txtHashHeapLog), BorderLayout.CENTER);
 
         btnBuscarHash.addActionListener(ev -> {
@@ -6883,12 +7098,12 @@ public class VentanaPrincipal extends JFrame {
                 sb.append("Estado: ENCONTRADO EN LA TABLA HASH\n");
                 sb.append("Valor asociado: ").append(datos).append("\n");
             } else {
-                sb.append("Estado: NO ENCONTRADO (Pasajero a\u00fan no registrado en la tabla hash actual)\n");
+                sb.append("Estado: NO ENCONTRADO (Pasajero aún no registrado en la tabla hash actual)\n");
             }
-            sb.append("\nM\u00e9tricas de la Tabla Hash:\n");
+            sb.append("\nMétricas de la Tabla Hash:\n");
             sb.append("  - Elementos almacenados: ").append(tabla.obtenerTamano()).append("\n");
             sb.append("  - Capacidad de cubetas: ").append(tabla.obtenerCapacidad()).append("\n");
-            sb.append(String.format("  - Factor de carga actual: %.4f (L\u00edmite m\u00e1ximo: 0.75)\n", tabla.obtenerFactorCargaActual()));
+            sb.append(String.format("  - Factor de carga actual: %.4f (Límite máximo: 0.75)\n", tabla.obtenerFactorCargaActual()));
             sb.append("  - Colisiones resueltas por encadenamiento: ").append(tabla.obtenerTotalColisiones()).append("\n");
             txtHashHeapLog.setText(sb.toString());
             txtHashHeapLog.setCaretPosition(0);
@@ -6897,13 +7112,13 @@ public class VentanaPrincipal extends JFrame {
         btnEstadoHash.addActionListener(ev -> {
             TablaHash<String, String> tabla = controlador.obtenerTablaHashPasajeros();
             StringBuilder sb = new StringBuilder();
-            sb.append("=== AUDITOR\u00cdA Y ESTADO T\u00c9CNICO DE LA TABLA HASH (SEMANA 15) ===\n\n");
-            sb.append("Funci\u00f3n de Dispersi\u00f3n: ((h ^ (h >>> 16)) & 0x7FFFFFFF) % capacidad\n");
-            sb.append("Resoluci\u00f3n de Colisiones: Encadenamiento Separado (Separate Chaining)\n");
+            sb.append("=== AUDITORÍA Y ESTADO TÉCNICO DE LA TABLA HASH ===\n\n");
+            sb.append("Función de Dispersión: ((h ^ (h >>> 16)) & 0x7FFFFFFF) % capacidad\n");
+            sb.append("Resolución de Colisiones: Encadenamiento Separado (Separate Chaining)\n");
             sb.append("Capacidad actual: ").append(tabla.obtenerCapacidad()).append(" cubetas primas\n");
             sb.append("Total de registros almacenados: ").append(tabla.obtenerTamano()).append("\n");
-            sb.append(String.format("Factor de Carga (\u03b1): %.4f\n", tabla.obtenerFactorCargaActual()));
-            sb.append("Total de Colisiones Hist\u00f3ricas: ").append(tabla.obtenerTotalColisiones()).append("\n\n");
+            sb.append(String.format("Factor de Carga (alpha): %.4f\n", tabla.obtenerFactorCargaActual()));
+            sb.append("Total de Colisiones Históricas: ").append(tabla.obtenerTotalColisiones()).append("\n\n");
             sb.append("Claves indexadas actualmente (primeras 15):\n");
             List<String> claves = tabla.listarClaves();
             for (int i = 0; i < Math.min(claves.size(), 15); i++) {
@@ -6911,7 +7126,7 @@ public class VentanaPrincipal extends JFrame {
                 sb.append(String.format("  [%02d] DNI: %-12s -> %s\n", i + 1, c, tabla.buscar(c)));
             }
             if (claves.size() > 15) {
-                sb.append("  ... y ").append(claves.size() - 15).append(" registros m\u00e1s.\n");
+                sb.append("  ... y ").append(claves.size() - 15).append(" registros más.\n");
             }
             txtHashHeapLog.setText(sb.toString());
             txtHashHeapLog.setCaretPosition(0);
@@ -6921,23 +7136,23 @@ public class VentanaPrincipal extends JFrame {
 
         btnPoblarHeap.addActionListener(ev -> {
             MonticuloBinario<String> heap = soloLectura ? heapDemoLocal : controlador.obtenerHeapATC();
-            heap.insertar("LAN-2041 (Emergencia M\u00e9dica)", 1);
-            heap.insertar("SKU-3012 (Combustible Cr\u00edtico)", 2);
+            heap.insertar("LAN-2041 (Emergencia Médica)", 1);
+            heap.insertar("SKU-3012 (Combustible Crítico)", 2);
             heap.insertar("JAT-4015 (Vuelo Comercial Regular)", 5);
             heap.insertar("AMZ-1102 (Carga Prioritaria)", 4);
             heap.insertar("VIP-0001 (Vuelo Gubernamental)", 3);
 
             StringBuilder sb = new StringBuilder();
-            sb.append("=== AERONAVES ENCOLADAS EN EL MONT\u00cdCULO BINARIO (MIN-HEAP)").append(soloLectura ? " [COPIA LOCAL DEMO] ===" : " ===").append("\n\n");
+            sb.append("=== AERONAVES ENCOLADAS EN EL MONTÍCULO BINARIO (MIN-HEAP)").append(soloLectura ? " [COPIA LOCAL DEMO] ===" : " ===").append("\n\n");
             sb.append("Total de aeronaves en espera: ").append(heap.obtenerTamano()).append("\n");
-            sb.append("Pr\u00f3xima aeronave con m\u00e1xima prioridad de pista:\n");
+            sb.append("Próxima aeronave con máxima prioridad de pista:\n");
             sb.append("  -> CIMA DEL HEAP: ").append(heap.cima()).append(" | Prioridad: ").append(heap.prioridadCima()).append("\n\n");
-            sb.append("Elementos en el arreglo del mont\u00edculo:\n");
+            sb.append("Elementos en el arreglo del montículo:\n");
             List<String> elem = heap.listarElementos();
             for (int i = 0; i < elem.size(); i++) {
                 sb.append(String.format("  [Pos %d] %s\n", i, elem.get(i)));
             }
-            sb.append("\nComplejidad de Inserci\u00f3n (flotar): O(log n)\n");
+            sb.append("\nComplejidad de Inserción (flotar): O(log n)\n");
             txtHashHeapLog.setText(sb.toString());
             txtHashHeapLog.setCaretPosition(0);
         });
@@ -6945,7 +7160,7 @@ public class VentanaPrincipal extends JFrame {
         btnDespacharHeap.addActionListener(ev -> {
             MonticuloBinario<String> heap = soloLectura ? heapDemoLocal : controlador.obtenerHeapATC();
             if (heap.estaVacio()) {
-                txtHashHeapLog.setText("El Mont\u00edculo Binario se encuentra vac\u00edo actualmente. Encole aeronaves primero.");
+                txtHashHeapLog.setText("El Montículo Binario se encuentra vacío actualmente. Encole aeronaves primero.");
                 return;
             }
             int prioridad = heap.prioridadCima();
@@ -6966,26 +7181,33 @@ public class VentanaPrincipal extends JFrame {
 
         if (soloLectura) {
             btnVaciarHeap.setEnabled(false);
-            btnVaciarHeap.setToolTipText("Deshabilitado en vista de demostración (solo lectura)");
+            btnVaciarHeap.setToolTipText("Deshabilitado en modo solo lectura");
         }
 
         btnVaciarHeap.addActionListener(ev -> {
             controlador.obtenerHeapATC().vaciar();
-            txtHashHeapLog.setText("Mont\u00edculo Binario (Min-Heap) vaciado correctamente. Capacidad reiniciada.");
+            txtHashHeapLog.setText("Montículo Binario (Min-Heap) vaciado correctamente. Capacidad reiniciada.");
         });
 
-        // =========================================================================
-        // Pestaña 4: Benchmarking y Algoritmos de Ordenamiento
-        // =========================================================================
+        return pHashHeap;
+    }
+
+    public JPanel obtenerPanelBenchmarking() {
+        if (panelBenchTab == null) {
+            panelBenchTab = crearPanelBenchmarking(false);
+        }
+        return panelBenchTab;
+    }
+
+    private JPanel crearPanelBenchmarking(boolean soloLectura) {
         JPanel pBench = new JPanel(new BorderLayout(10, 10));
         pBench.setBackground(fondoTarjeta);
         pBench.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        // Controles de Benchmark Organizados en 2 Apartados GlassPanel
         JPanel pBenchAcciones = new JPanel(new GridLayout(1, 2, 8, 0));
         pBenchAcciones.setOpaque(false);
 
-        JButton btnEjecutarBench = new JButton("\u26a1 Ejecutar Benchmark Completo");
+        JButton btnEjecutarBench = new JButton("Ejecutar Benchmark Completo");
         JButton btnSortQuick = new JButton("Quicksort (Precio Asc)");
         JButton btnSortMerge = new JButton("Mergesort (Destino)");
         JButton btnSortHeap = new JButton("Heapsort (Precio Desc)");
@@ -6995,13 +7217,11 @@ public class VentanaPrincipal extends JFrame {
         estilizarBotonAccion(btnSortMerge, new Color(30, 41, 59), textoBlanco);
         estilizarBotonAccion(btnSortHeap, new Color(30, 41, 59), textoBlanco);
 
-        // Apartado 1: Benchmarking Comparativo - Botones en columna vertical
         JPanel pContenidoBench = new JPanel(new GridLayout(0, 1, 0, 4));
         pContenidoBench.setOpaque(false);
         pContenidoBench.add(btnEjecutarBench);
         GlassPanel cardBench = GlassPanel.crearApartado("Evaluación Empírica", "Medición estricta en nanosegundos", new Color(16, 185, 129), pContenidoBench);
 
-        // Apartado 2: Algoritmos Avanzados - Botones en columna vertical
         JPanel pContenidoSort = new JPanel(new GridLayout(0, 1, 0, 4));
         pContenidoSort.setOpaque(false);
         pContenidoSort.add(btnSortQuick);
@@ -7018,8 +7238,8 @@ public class VentanaPrincipal extends JFrame {
         txtBenchResultado.setFont(new Font("Consolas", Font.PLAIN, 12));
         txtBenchResultado.setBackground(new Color(15, 23, 42));
         txtBenchResultado.setForeground(new Color(248, 250, 252));
-        txtBenchResultado.setText("Presione 'Ejecutar Benchmark Comparativo' para medir tiempos en nanosegundos y microsegundos\n" +
-                "entre algoritmos cuadr\u00e1ticos O(n\u00b2) y algoritmos avanzados O(n log n).");
+        txtBenchResultado.setText("Presione 'Ejecutar Benchmark Completo' para medir tiempos en nanosegundos y microsegundos\n" +
+                "entre algoritmos cuadráticos O(n^2) y algoritmos avanzados O(n log n).");
         pBench.add(new JScrollPane(txtBenchResultado), BorderLayout.CENTER);
 
         btnEjecutarBench.addActionListener(ev -> {
@@ -7097,13 +7317,20 @@ public class VentanaPrincipal extends JFrame {
                     "La tabla de vuelos en la vista principal y panel de administración ha sido actualizada.");
         });
 
-        // Ensamblar pestañas del diálogo
-        pesta\u00f1as.addTab("\u00c1rboles (ABB y AVL)", pArboles);
-        pesta\u00f1as.addTab("Grafo de Rutas (Dijkstra / MST / Floyd)", pGrafo);
-        pesta\u00f1as.addTab("Tablas Hash y Mont\u00edculo (Heap)", pHashHeap);
-        pesta\u00f1as.addTab("Benchmarking Ordenamiento O(n log n)", pBench);
+        return pBench;
+    }
 
-        return pesta\u00f1as;
+    private JComponent crearPanelLaboratorioAvanzado() {
+        return crearPanelLaboratorioAvanzado(false);
+    }
+
+    private JComponent crearPanelLaboratorioAvanzado(boolean soloLectura) {
+        JTabbedPane pestañas = new JTabbedPane();
+        pestañas.addTab("Árboles (ABB y AVL)", obtenerPanelArboles());
+        pestañas.addTab("Grafo de Rutas (Dijkstra / MST / Floyd)", obtenerPanelGrafo());
+        pestañas.addTab("Tablas Hash y Montículo (Heap)", obtenerPanelHashHeap());
+        pestañas.addTab("Benchmarking Ordenamiento O(n log n)", obtenerPanelBenchmarking());
+        return pestañas;
     }
 
     // Eventos de Equipaje (Lista Simple)
@@ -7273,9 +7500,9 @@ public class VentanaPrincipal extends JFrame {
         int sobrepeso = listaEquipaje.contarSobrepeso(23.0);
         String mensaje = String.format(java.util.Locale.US,
                 "CONTROL DE SOBREPESO DE EQUIPAJES (ESTÁNDAR IATA):\n\n" +
-                "• Total de piezas registradas: %d\n" +
-                "• Peso acumulado en bodega/cabina: %.2f kg\n" +
-                "• Maletas con sobrepeso (> 23.0 kg): %d\n\n" +
+                "- Total de piezas registradas: %d\n" +
+                "- Peso acumulado en bodega/cabina: %.2f kg\n" +
+                "- Maletas con sobrepeso (> 23.0 kg): %d\n\n" +
                 "%s",
                 listaEquipaje.obtenerTamano(), pesoTotal, sobrepeso,
                 sobrepeso > 0 ? "Atención: Las maletas con sobrepeso requieren pago de recargo por exceso de equipaje." : "Todos los equipajes cumplen el estándar de peso permitido.");
@@ -8037,14 +8264,7 @@ public class VentanaPrincipal extends JFrame {
                     BorderFactory.createLineBorder(Theme.getBorder(), 1),
                     BorderFactory.createEmptyBorder(3, 8, 3, 8)));
         }
-        if (btnVistaTecnicaLabHeader != null) {
-            btnVistaTecnicaLabHeader.setBackground(Theme.getElevated());
-            btnVistaTecnicaLabHeader.setForeground(Theme.getAcento());
-            btnVistaTecnicaLabHeader.setIcon(AppIcon.of("flask", 13, Theme.getAcento()));
-            btnVistaTecnicaLabHeader.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(Theme.getAcento(), 1),
-                    BorderFactory.createEmptyBorder(3, 8, 3, 8)));
-        }
+
         if (btnToggleTablaDetallada != null) {
             btnToggleTablaDetallada.setBackground(Theme.getElevated());
             btnToggleTablaDetallada.setForeground(Theme.getPasajeroAccent());

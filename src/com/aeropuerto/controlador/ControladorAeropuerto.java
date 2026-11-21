@@ -421,9 +421,9 @@ public class ControladorAeropuerto {
                     i, v.obtenerCodigo(), v.obtenerOrigen(), v.obtenerDestino(), v.obtenerHoraSalida(), v.obtenerPrecioBase(), v.contarAsientosLibres()));
         }
         sb.append("-----------------------------------------------------------------------\n");
-        sb.append(String.format("• Ocupación lógica del arreglo: %d elementos.\n", contadorVuelos));
-        sb.append(String.format("• Celdas contiguas disponibles (libres): %d celdas.\n", (vuelos.length - contadorVuelos)));
-        sb.append(String.format("• Integridad contigua: 100%% sin celdas nulas intermedias.\n"));
+        sb.append(String.format("- Ocupación lógica del arreglo: %d elementos.\n", contadorVuelos));
+        sb.append(String.format("- Celdas contiguas disponibles (libres): %d celdas.\n", (vuelos.length - contadorVuelos)));
+        sb.append(String.format("- Integridad contigua: 100%% sin celdas nulas intermedias.\n"));
         return sb.toString();
     }
 
@@ -434,11 +434,11 @@ public class ControladorAeropuerto {
         sb.append("=======================================================================\n");
         sb.append(" COPIA FÍSICA E INDEPENDIENTE DEL ARREGLO DE OBJETOS VUELO[]\n");
         sb.append("=======================================================================\n");
-        sb.append(String.format("• Arreglo Original: Capacidad = %d | Ocupados = %d | Memoria Referencial = @%x\n",
+        sb.append(String.format("- Arreglo Original: Capacidad = %d | Ocupados = %d | Memoria Referencial = @%x\n",
                 vuelos.length, contadorVuelos, System.identityHashCode(vuelos)));
-        sb.append(String.format("• Arreglo Duplicado (Copia): Longitud = %d | Elementos = %d | Memoria Referencial = @%x\n",
+        sb.append(String.format("- Arreglo Duplicado (Copia): Longitud = %d | Elementos = %d | Memoria Referencial = @%x\n",
                 copia.length, copia.length, System.identityHashCode(copia)));
-        sb.append(String.format("• Verificación de Independencia: (original != copia) -> %b\n", (vuelos != copia)));
+        sb.append(String.format("- Verificación de Independencia: (original != copia) -> %b\n", (vuelos != copia)));
         sb.append("-----------------------------------------------------------------------\n");
         sb.append("Detalle de elementos transferidos a la nueva dirección contigua de memoria:\n");
         for (int i = 0; i < copia.length; i++) {
@@ -480,9 +480,9 @@ public class ControladorAeropuerto {
             }
         }
         sb.append("-----------------------------------------------------------------------\n");
-        sb.append(String.format("• Total Asientos Ocupados: %d / 50 (%.1f%%)\n", ocupados, (ocupados * 100.0 / 50)));
-        sb.append(String.format("• Total Asientos Disponibles: %d / 50\n", (50 - ocupados)));
-        sb.append(String.format("• Complejidad del Recorrido: O(Filas * Columnas) = O(10 * 5) = O(50) operaciones elementales.\n"));
+        sb.append(String.format("- Total Asientos Ocupados: %d / 50 (%.1f%%)\n", ocupados, (ocupados * 100.0 / 50)));
+        sb.append(String.format("- Total Asientos Disponibles: %d / 50\n", (50 - ocupados)));
+        sb.append(String.format("- Complejidad del Recorrido: O(Filas * Columnas) = O(10 * 5) = O(50) operaciones elementales.\n"));
         return sb.toString();
     }
 
@@ -503,10 +503,10 @@ public class ControladorAeropuerto {
         double promedio = sumaTarifas / contadorVuelos;
         return String.format(java.util.Locale.US,
                 "ESTADÍSTICAS DEL CATÁLOGO DE VUELOS:\n" +
-                "• Total de vuelos programados: %d\n" +
-                "• Tarifa promedio: S/. %.2f\n" +
-                "• Vuelo más económico: %s (S/. %.2f)\n" +
-                "• Vuelo de mayor tarifa: %s (S/. %.2f)",
+                "- Total de vuelos programados: %d\n" +
+                "- Tarifa promedio: S/. %.2f\n" +
+                "- Vuelo más económico: %s (S/. %.2f)\n" +
+                "- Vuelo de mayor tarifa: %s (S/. %.2f)",
                 contadorVuelos, promedio, minVuelo.obtenerCodigo(), minVuelo.obtenerPrecioBase(),
                 maxVuelo.obtenerCodigo(), maxVuelo.obtenerPrecioBase());
     }
@@ -541,6 +541,22 @@ public class ControladorAeropuerto {
         if (fila < 0 || fila >= 10 || columna < 0 || columna >= 5) return false;
         Vuelo vActivo = buscarVueloPorCodigo(codigoVueloActivo);
         if (vActivo == null) return false;
+
+        // Regla estricta de negocio: Un pasajero (DNI) solo puede tener un único asiento en el vuelo.
+        // Si ya tenía un asiento previo en este vuelo, se libera automáticamente antes de asignar el nuevo.
+        if (dniPasajero != null && !dniPasajero.trim().isEmpty() && !"Reservado".equalsIgnoreCase(dniPasajero.trim())) {
+            String dniNorm = dniPasajero.trim();
+            String[][] matPas = vActivo.obtenerMatrizPasajeros();
+            if (matPas != null) {
+                for (int f = 0; f < 10; f++) {
+                    for (int c = 0; c < 5; c++) {
+                        if ((f != fila || c != columna) && dniNorm.equals(matPas[f][c])) {
+                            liberarAsiento(f, c);
+                        }
+                    }
+                }
+            }
+        }
 
         boolean exito = vActivo.ocuparAsiento(fila, columna, dniPasajero);
         if (exito) {
@@ -669,7 +685,7 @@ public class ControladorAeropuerto {
         // Se calcula el índice medio mediante: 'int medio = inicio + (fin - inicio) / 2;'
         // en lugar de '(inicio + fin) / 2' para prevenir el desbordamiento de enteros (Integer Overflow).
         // En cada iteración, el espacio de búsqueda se divide estrictamente a la mitad, garantizando
-        // una cota temporal logarítmica O(log₂ n) óptima para auditoría de vuelos CORPAC.
+        // una cota temporal logarítmica O(log2 n) óptima para auditoría de vuelos CORPAC.
         int inicio = 0;
         int fin = cantValidos - 1;
         while (inicio <= fin) {

@@ -2,29 +2,7 @@ package com.aeropuerto.estructuras;
 
 import com.aeropuerto.modelo.PuertaEmbarque;
 
-/**
- * ============================================================================
- * ESTRUCTURA DE DATOS DINÁMICA: LISTA ENLAZADA CIRCULAR (CIRCULAR LINKED LIST)
- * ============================================================================
- * Propósito en CORPAC:
- * - Asignación rotativa y equitativa de puertas de embarque (Planificación Round-Robin ATC).
- * - El último nodo enlaza perpetuamente con la cabeza (ultimo.siguiente = cabeza),
- *   formando un anillo continuo de terminales de abordaje.
- *
- * Análisis de Complejidad Temporal (Big-O):
- * - Inserción al final:     O(1) - Actualización directa mediante punteros cabeza y ultimo
- * - Rotación (Siguiente):   O(1) - Desplazamiento del cursor: cursorActual = cursorActual.siguiente
- * - Búsqueda por Puerta:    O(n) - Recorrido circular acotado (parada al retornar a cabeza)
- * - Eliminación de Puerta:  O(n) - Búsqueda y reconexión circular protegiendo la integridad del ciclo
- *
- * Tratamiento de Casos Borde:
- * 1. Estructura vacía (cabeza == null && ultimo == null).
- * 2. Un único nodo (cabeza == ultimo; nuevo.siguiente = cabeza).
- * 3. Eliminación de cabeza: el puntero 'ultimo.siguiente' se redirige a la nueva cabeza.
- * 4. Eliminación de cola: el puntero 'ultimo' retrocede al nodo anterior y cierra el ciclo.
- * 5. Reubicación de cursor: si el cursor apunta al nodo eliminado, avanza automáticamente.
- * ============================================================================
- */
+// Lista circular para asignacion rotativa de puertas de embarque
 public class ListaCircular {
 
     private static final int FACTOR_SEGURIDAD_ITERACIONES = 20;

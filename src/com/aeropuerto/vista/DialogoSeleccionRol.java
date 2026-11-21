@@ -410,7 +410,7 @@ public class DialogoSeleccionRol extends JDialog implements Theme.ThemeListener 
                     txtClaveAdmin.setEchoChar((char) 0);
                     btnAlternarMostrarClave.setText("Ocultar");
                 } else {
-                    txtClaveAdmin.setEchoChar('•');
+                    txtClaveAdmin.setEchoChar('-');
                     btnAlternarMostrarClave.setText("Mostrar");
                 }
             }
@@ -494,35 +494,12 @@ public class DialogoSeleccionRol extends JDialog implements Theme.ThemeListener 
                 BorderFactory.createMatteBorder(1, 0, 0, 0, Theme.getBorder()),
                 new EmptyBorder(8, 4, 4, 4)));
 
-        JLabel lblPie = new JLabel("Sistema Integrado de Gestion Aeroportuaria - CORPAC S.A.", SwingConstants.LEFT);
+        JLabel lblPie = new JLabel("Sistema Integrado de Gestion Aeroportuaria - CORPAC S.A.", SwingConstants.CENTER);
         lblPie.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 11f));
         lblPie.setForeground(Theme.getMuted());
 
-        JButton btnDemoExamen = new JButton("Demostración Técnica (Modo Examen)");
-        btnDemoExamen.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
-        btnDemoExamen.setBackground(Theme.getElevated());
-        btnDemoExamen.setForeground(Theme.getPasajeroAccent());
-        btnDemoExamen.setIcon(AppIcon.of("flask", 12, Theme.getPasajeroAccent()));
-        btnDemoExamen.setBorder(new CompoundBorder(
-                new LineBorder(Theme.getPasajeroAccent(), 1),
-                new EmptyBorder(4, 12, 4, 12)));
-        btnDemoExamen.setFocusPainted(false);
-        btnDemoExamen.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnDemoExamen.setToolTipText("Abrir Laboratorio de Algoritmos (ABB, AVL, Grafos, Hash, Heap, Benchmark) en modo lectura sin requerir credenciales");
-        btnDemoExamen.addActionListener(e -> abrirModoExamenSoloLectura());
-
-        pie.add(lblPie, BorderLayout.WEST);
-        pie.add(btnDemoExamen, BorderLayout.EAST);
+        pie.add(lblPie, BorderLayout.CENTER);
         return pie;
-    }
-
-    private void abrirModoExamenSoloLectura() {
-        if (marcoPadre instanceof VentanaPrincipal) {
-            ((VentanaPrincipal) marcoPadre).mostrarDialogoVistaTecnicaLaboratorio(true);
-        } else {
-            VentanaPrincipal vp = new VentanaPrincipal();
-            vp.mostrarDialogoVistaTecnicaLaboratorio(true);
-        }
     }
 
     private ImageIcon obtenerLogoCorpac(int w, int h) {

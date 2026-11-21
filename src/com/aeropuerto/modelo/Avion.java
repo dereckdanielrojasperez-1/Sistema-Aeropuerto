@@ -139,16 +139,16 @@ public class Avion implements Serializable {
         return "======================================================\n" +
                "     FICHA TÉCNICA OFICIAL - AERONAVE COMERCIAL       \n" +
                "======================================================\n" +
-               "• Modelo: " + modelo + "\n" +
-               "• Fabricante: " + fabricante + "\n" +
-               "• Matrícula Oficial: " + matricula + " (Flota Nacional)\n" +
-               "• Capacidad de Pasajeros: " + capacidadReal + " plazas (50 en simulación)\n" +
-               "• Velocidad Crucero: " + velocidadCrucero + " km/h (Mach 0.78)\n" +
-               "• Alcance Máximo: " + alcanceMaximo + " km (Rutas sin escalas en Perú)\n" +
-               "• Techo Máximo de Operación: " + techoServicio + " m (39,800 ft)\n" +
-               "• Planta de Poder: " + motores + "\n" +
-               "• Dimensiones: Envergadura " + envergadura + " m | Longitud " + longitud + " m\n" +
-               "• Distribución de Cabina:\n" +
+               "- Modelo: " + modelo + "\n" +
+               "- Fabricante: " + fabricante + "\n" +
+               "- Matrícula Oficial: " + matricula + " (Flota Nacional)\n" +
+               "- Capacidad de Pasajeros: " + capacidadReal + " plazas (50 en simulación)\n" +
+               "- Velocidad Crucero: " + velocidadCrucero + " km/h (Mach 0.78)\n" +
+               "- Alcance Máximo: " + alcanceMaximo + " km (Rutas sin escalas en Perú)\n" +
+               "- Techo Máximo de Operación: " + techoServicio + " m (39,800 ft)\n" +
+               "- Planta de Poder: " + motores + "\n" +
+               "- Dimensiones: Envergadura " + envergadura + " m | Longitud " + longitud + " m\n" +
+               "- Distribución de Cabina:\n" +
                "   - Filas 0-2: Primera Clase / Premium Economy (Ventana/Pasillo)\n" +
                "   - Filas 3-5: Clase Ejecutiva (Mayor espacio y prioridad)\n" +
                "   - Filas 6-9: Clase Turista Estándar (Tarifa base)\n" +

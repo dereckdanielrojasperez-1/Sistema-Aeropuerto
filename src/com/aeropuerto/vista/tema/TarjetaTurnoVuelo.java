@@ -104,7 +104,7 @@ public class TarjetaTurnoVuelo extends JPanel {
         lblTurnoTexto.setFont(FontManager.getBarlowCondensed(Font.BOLD, 10.5f));
         lblTurnoTexto.setForeground(turnoColor);
 
-        JLabel lblSep = new JLabel("•");
+        JLabel lblSep = new JLabel("-");
         lblSep.setForeground(Theme.getMuted());
 
         JLabel lblAerolinea = new JLabel("CORPAC Airways  |  " + vuelo.obtenerCodigo() + "  |  Airbus A320neo");
@@ -184,7 +184,7 @@ public class TarjetaTurnoVuelo extends JPanel {
         pLineaAvion.add(lblAvionIcon);
         pLineaAvion.add(lblL2);
 
-        JLabel lblDuracion = new JLabel(vuelo.obtenerDuracion() + " min • Vuelo Directo", SwingConstants.CENTER);
+        JLabel lblDuracion = new JLabel(vuelo.obtenerDuracion() + " min - Vuelo Directo", SwingConstants.CENTER);
         lblDuracion.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 10f));
         lblDuracion.setForeground(Theme.getSecundario());
 

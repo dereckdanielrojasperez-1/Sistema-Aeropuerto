@@ -15,9 +15,7 @@ import java.util.List;
  */
 public class AlgoritmosOrdenamientoAvanzado {
 
-    // =========================================================================
     // 1. QUICKSORT (Divide y Vencerás In-Place) O(n log n)
-    // =========================================================================
 
     public static void quicksortPorPrecio(Vuelo[] arreglo, boolean ascendente) {
         if (arreglo != null && arreglo.length > 1) {
@@ -81,9 +79,7 @@ public class AlgoritmosOrdenamientoAvanzado {
         return i + 1;
     }
 
-    // =========================================================================
     // 2. MERGESORT (Ordenamiento Estable Divide y Vencerás) O(n log n)
-    // =========================================================================
 
     public static void mergesortPorPrecio(Vuelo[] arreglo, boolean ascendente) {
         if (arreglo != null && arreglo.length > 1) {
@@ -168,9 +164,7 @@ public class AlgoritmosOrdenamientoAvanzado {
         while (j < n2) arr[k++] = R[j++];
     }
 
-    // =========================================================================
     // 3. HEAPSORT (Ordenamiento por Montículo) O(n log n)
-    // =========================================================================
 
     public static void heapsortPorPrecio(Vuelo[] arreglo, boolean ascendente) {
         if (arreglo == null || arreglo.length <= 1) return;
@@ -221,9 +215,7 @@ public class AlgoritmosOrdenamientoAvanzado {
         arr[j] = temp;
     }
 
-    // =========================================================================
     // BENCHMARKING COMPARATIVO DE RENDIMIENTO
-    // =========================================================================
 
     public static String ejecutarBenchmark(Vuelo[] vuelosBase) {
         if (vuelosBase == null || vuelosBase.length == 0) {
@@ -277,9 +269,9 @@ public class AlgoritmosOrdenamientoAvanzado {
         long tHeapsort = System.nanoTime() - tInicio;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("================================================================================\n");
+    // sb.append("\n");
         sb.append("    BENCHMARKING DE ALGORITMOS DE ORDENAMIENTO (SEMANA 15 - CORPAC)\n");
-        sb.append("================================================================================\n");
+    // sb.append("\n");
         sb.append(String.format("Volumen de Datos Evaluado: %d registros de vuelos comerciales\n\n", n));
         sb.append(String.format("%-22s %-16s %-18s %s\n", "Algoritmo", "Complejidad", "Tiempo (ns)", "Tiempo (µs)"));
         sb.append("--------------------------------------------------------------------------------\n");
@@ -288,7 +280,7 @@ public class AlgoritmosOrdenamientoAvanzado {
         sb.append(String.format("%-22s %-16s %-18d %.2f µs (Recomendado)\n", "Quicksort (Hoare)", "O(n log n)", tQuicksort, tQuicksort / 1000.0));
         sb.append(String.format("%-22s %-16s %-18d %.2f µs (Estable)\n", "Mergesort (Mezcla)", "O(n log n)", tMergesort, tMergesort / 1000.0));
         sb.append(String.format("%-22s %-16s %-18d %.2f µs (Heap in-place)\n", "Heapsort (Montículo)", "O(n log n)", tHeapsort, tHeapsort / 1000.0));
-        sb.append("================================================================================\n");
+    // sb.append("\n");
 
         return sb.toString();
     }

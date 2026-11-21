@@ -4,25 +4,7 @@ import com.aeropuerto.estructuras.Cola;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ============================================================================
- * TAD ÁRBOL BALANCEADO AVL (Adelson-Velsky y Landis)
- * Paquete: com.aeropuerto.estructuras.arbol
- * ============================================================================
- * Propósito en CORPAC: Indexación y búsqueda de alta velocidad para tarifas
- * y pasajes de vuelo, garantizando tiempo O(log n) estricto en el peor de los casos.
- * 
- * Invariante AVL: Para todo nodo x, |FE(x)| <= 1, donde FE = Altura(Der) - Altura(Izq).
- * 
- * Implementa las 4 rotaciones canónicas:
- * 1. Rotación Simple Derecha (RSD / LL): Desbalance exterior izquierdo.
- * 2. Rotación Simple Izquierda (RSI / RR): Desbalance exterior derecho.
- * 3. Rotación Doble Izquierda-Derecha (RDID / LR): Desbalance interior zigzag.
- * 4. Rotación Doble Derecha-Izquierda (RDDI / RL): Desbalance interior zigzag.
- *
- * @param <K> Tipo de la clave ordenable (Comparable)
- * @param <V> Tipo del valor almacenado
- */
+// Arbol AVL balanceado con 4 rotaciones canonicas (RSD, RSI, RDID, RDDI)
 public class ArbolAVL<K extends Comparable<K>, V> {
 
     public static final int FACTOR_BALANCE_MAXIMO = 1;
@@ -86,9 +68,7 @@ public class ArbolAVL<K extends Comparable<K>, V> {
         }
     }
 
-    // =========================================================================
     // ROTACIONES CANÓNICAS DEL ÁRBOL AVL
-    // =========================================================================
 
     /**
      * Rotación Simple a la Derecha (RSD / LL - Left-Left).
@@ -206,9 +186,7 @@ public class ArbolAVL<K extends Comparable<K>, V> {
         return nodo; // Ya se encuentra balanceado (-1, 0, +1)
     }
 
-    // =========================================================================
     // OPERACIONES DE INSERCIÓN, BÚSQUEDA Y ELIMINACIÓN
-    // =========================================================================
 
     public boolean insertar(K clave, V valor) {
         if (clave == null) return false;
@@ -303,9 +281,7 @@ public class ArbolAVL<K extends Comparable<K>, V> {
         return nodoActual;
     }
 
-    // =========================================================================
     // RECORRIDOS FUNDAMENTALES (IN-ORDER, PRE-ORDER, POST-ORDER, POR NIVELES)
-    // =========================================================================
 
     public List<V> recorridoInOrden() {
         List<V> resultado = new ArrayList<>();

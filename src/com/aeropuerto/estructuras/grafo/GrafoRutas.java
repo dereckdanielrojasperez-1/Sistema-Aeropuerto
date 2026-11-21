@@ -2,29 +2,7 @@ package com.aeropuerto.estructuras.grafo;
 
 import java.util.*;
 
-/**
- * ============================================================================
- * ESTRUCTURA DE DATOS AVANZADA: GRAFO PONDERADO DE RUTAS AÉREAS (WEIGHTED GRAPH)
- * ============================================================================
- * Propósito en CORPAC:
- * - Representación topológica de la red aeronáutica nacional e internacional
- *   (nodos = terminales IATA: LIM, CUZ, AQP, PIU, IQT, TPP, TRU; aristas = corredores aéreos).
- * - Optimización de navegación, combustible y tarifas entre cualquier par de aeropuertos.
- *
- * Algoritmos y Complejidades Temporales (Big-O):
- * 1. Dijkstra: Ruta de costo/distancia mínima con cola de prioridad - O((V + E) log V).
- *    Aplica la técnica de Relajación de Aristas (Edge Relaxation):
- *    si distancia[u] + peso(u, v) < distancia[v], se actualiza la distancia a 'v'.
- * 2. Prim: Árbol de Expansión Mínima (MST) de cobertura global - O((V + E) log V).
- *    Conecta todos los aeropuertos garantizando el menor costo total de red sin ciclos.
- * 3. Kruskal: Árbol de Expansión Mínima (MST) con Union-Find (DSU) - O(E log E).
- *    Ordena aristas por peso y utiliza DSU con compresión de caminos y unión por rango
- *    para detectar y descartar ciclos en tiempo casi constante O(α(V)).
- * 4. Floyd-Warshall: Todos los pares de rutas mínimas - O(V³).
- *    Programación dinámica iterativa: dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]).
- * 5. BFS y DFS Iterativo: Recorridos en amplitud y profundidad libres de desbordamiento (StackOverflow).
- * ============================================================================
- */
+// Grafo ponderado de rutas aereas con Dijkstra, Prim, Kruskal y Floyd-Warshall
 public class GrafoRutas {
 
     private final Map<String, Vertice> vertices;
@@ -440,7 +418,7 @@ public class GrafoRutas {
             }
         }
 
-        // 3. Relajación iterativa O(V³): Probar si usar k como escala reduce el costo entre i y j
+        // 3. Relajación iterativa O(V^3): Probar si usar k como escala reduce el costo entre i y j
         for (int k = 0; k < totalVertices; k++) {
             for (int i = 0; i < totalVertices; i++) {
                 for (int j = 0; j < totalVertices; j++) {

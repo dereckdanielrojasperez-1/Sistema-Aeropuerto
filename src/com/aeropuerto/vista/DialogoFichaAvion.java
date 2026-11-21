@@ -13,10 +13,24 @@ public class DialogoFichaAvion extends JDialog {
     private static final long serialVersionUID = 1L;
 
     public DialogoFichaAvion(JFrame ventanaPadre, ControladorAeropuerto controlador) {
-        super(ventanaPadre, "Ficha Técnica y Especificaciones de Aeronave - CORPAC / Airbus A320neo", true);
-        setSize(860, 780);
+        super(ventanaPadre, "Ficha Técnica y Especificaciones de Aeronave - CORPAC / Airbus A320neo", false);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Insets insets = null;
+        try {
+            insets = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
+        } catch (Exception ignored) {}
+        int maxH = (insets != null) ? screenSize.height - insets.top - insets.bottom : screenSize.height - 60;
+        int maxW = (insets != null) ? screenSize.width - insets.left - insets.right : screenSize.width - 40;
+        setSize(Math.min(860, maxW - 40), Math.min(620, maxH - 40));
         setLocationRelativeTo(ventanaPadre);
         setResizable(true);
+
+        getRootPane().registerKeyboardAction(
+                e -> dispose(),
+                KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW
+        );
+
         configurarIcono();
         inicializarComponentes(controlador.obtenerAvion());
     }

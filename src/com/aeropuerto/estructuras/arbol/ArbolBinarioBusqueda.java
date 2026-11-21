@@ -5,24 +5,7 @@ import com.aeropuerto.estructuras.Pila;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ============================================================================
- * TAD ÁRBOL BINARIO DE BÚSQUEDA (ABB / BST)
- * Paquete: com.aeropuerto.estructuras.arbol
- * ============================================================================
- * Propósito en CORPAC: Indexación jerárquica de vuelos comerciales por tarifa
- * y código alfanumérico, con algoritmos 100% iterativos para garantizar
- * inmunidad contra desbordamiento de pila de llamadas (StackOverflowError).
- * 
- * Complejidad Asintótica:
- * - Búsqueda / Inserción promedio: O(log n)
- * - Peor caso (árbol degenerado a lista): O(n)
- * - Recorridos (In-Order, Pre-Order, Post-Order, Por Niveles): O(n)
- * - Espacio en memoria: O(n)
- *
- * @param <K> Tipo de la clave ordenable (Comparable)
- * @param <V> Tipo del objeto almacenado
- */
+// Arbol Binario de Busqueda (ABB) con recorridos inorden, preorden, postorden y niveles
 public class ArbolBinarioBusqueda<K extends Comparable<K>, V> {
 
     public static final int MAX_PROFUNDIDAD_SEGURA = 2000;

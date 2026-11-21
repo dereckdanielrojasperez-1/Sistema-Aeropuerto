@@ -145,13 +145,21 @@ public class BarraEstadoFooter extends JPanel {
             this.valor = valor;
             this.ledColor = ledColor;
             setOpaque(false);
-            setPreferredSize(new Dimension(210, 26));
+            ajustarDimension();
+        }
+
+        private void ajustarDimension() {
+            int len = (prefijo != null ? prefijo.length() : 0) + (valor != null ? valor.length() : 0);
+            int ancho = Math.max(160, 42 + len * 7);
+            setPreferredSize(new Dimension(ancho, 26));
         }
 
         public void actualizar(String prefijo, String valor, Color ledColor) {
             this.prefijo = prefijo;
             this.valor = valor;
             this.ledColor = ledColor;
+            ajustarDimension();
+            revalidate();
             repaint();
         }
 

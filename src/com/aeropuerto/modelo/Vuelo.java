@@ -134,6 +134,7 @@ public class Vuelo implements Serializable, TADVuelo {
     public void establecerPrecioBase(double precioBase) { this.precioBase = precioBase; }
 
     public String obtenerClaseDisponible() { return claseDisponible; }
+    public String obtenerClase() { return claseDisponible; }
     public void establecerClaseDisponible(String claseDisponible) { this.claseDisponible = claseDisponible; }
 
     @Override

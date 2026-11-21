@@ -96,18 +96,18 @@ public class PanelRadarSmartAirport extends JPanel {
     private void inicializarComponentes() {
         // 1. Lienzo interactivo del Gemelo Digital
         lienzoVisual = new LienzoGemeloDigital();
-        lienzoVisual.setMinimumSize(new Dimension(600, 180));
-        lienzoVisual.setPreferredSize(new Dimension(1100, 320));
+        lienzoVisual.setMinimumSize(new Dimension(600, 160));
+        lienzoVisual.setPreferredSize(new Dimension(1100, 260));
 
         // 2. Panel HUD inferior con telemetria y tablas de vuelos
         JPanel panelHUD = crearPanelFlightInformation();
-        panelHUD.setMinimumSize(new Dimension(600, 130));
-        panelHUD.setPreferredSize(new Dimension(1100, 220));
+        panelHUD.setMinimumSize(new Dimension(600, 200));
+        panelHUD.setPreferredSize(new Dimension(1100, 250));
 
         // Divisor vertical que mantiene proporciones equilibradas para el Avance 2
         JSplitPane splitPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT, lienzoVisual, panelHUD);
-        splitPrincipal.setDividerLocation(280);
-        splitPrincipal.setResizeWeight(0.55);
+        splitPrincipal.setDividerLocation(230);
+        splitPrincipal.setResizeWeight(0.40);
         splitPrincipal.setBorder(null);
         splitPrincipal.setDividerSize(4);
         splitPrincipal.setBackground(Theme.getBg());
@@ -296,8 +296,11 @@ public class PanelRadarSmartAirport extends JPanel {
                 new LineBorder(conflictoActivo ? rojoNeon : verdeNeon, 1),
                 new EmptyBorder(6, 8, 6, 8)));
 
-        JPanel pNorte = new JPanel(new GridLayout(2, 1, 0, 2));
+        JPanel pNorte = new JPanel(new BorderLayout(0, 4));
         pNorte.setOpaque(false);
+
+        JPanel pTitulos = new JPanel(new GridLayout(2, 1, 0, 1));
+        pTitulos.setOpaque(false);
 
         lblConflictTitulo = new JLabel(conflictoActivo ? "ALERTA: CONFLICTO EN PUERTA B12" : "PUERTA B12 - CONFLICTO RESUELTO");
         lblConflictTitulo.setFont(new Font("Segoe UI", Font.BOLD, 11));
@@ -309,9 +312,9 @@ public class PanelRadarSmartAirport extends JPanel {
         lblConflictDetalle.setFont(new Font("Segoe UI", Font.PLAIN, 10));
         lblConflictDetalle.setForeground(new Color(148, 163, 184));
 
-        pNorte.add(lblConflictTitulo);
-        pNorte.add(lblConflictDetalle);
-        p.add(pNorte, BorderLayout.NORTH);
+        pTitulos.add(lblConflictTitulo);
+        pTitulos.add(lblConflictDetalle);
+        pNorte.add(pTitulos, BorderLayout.CENTER);
 
         btnResolverConflicto = new JButton(conflictoActivo ? "Resolver Conflicto con Lista Circular" : "Conflicto Resuelto");
         btnResolverConflicto.setFont(FontManager.getIBMPlexSans(Font.BOLD, 10.5f));
@@ -320,20 +323,24 @@ public class PanelRadarSmartAirport extends JPanel {
         btnResolverConflicto.setFocusPainted(false);
         btnResolverConflicto.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnResolverConflicto.setEnabled(conflictoActivo);
+        btnResolverConflicto.setPreferredSize(new Dimension(0, 26));
         btnResolverConflicto.addActionListener(e -> accionResolverConflicto());
+        pNorte.add(btnResolverConflicto, BorderLayout.SOUTH);
 
-        // Apartado Vertical de Comandos de Control ATC
-        JPanel pBotonesVerticalesATC = new JPanel(new GridLayout(0, 1, 0, 4));
-        pBotonesVerticalesATC.setOpaque(false);
-        pBotonesVerticalesATC.setBorder(new EmptyBorder(4, 0, 0, 0));
-        pBotonesVerticalesATC.add(btnResolverConflicto);
-        if (btnRotar != null) pBotonesVerticalesATC.add(btnRotar);
-        if (btnAlternarVista != null) pBotonesVerticalesATC.add(btnAlternarVista);
+        p.add(pNorte, BorderLayout.NORTH);
+
+        // Cuadrícula 2x2 para Comandos de Control ATC (Nunca se aplastan)
+        JPanel pGridBotones = new JPanel(new GridLayout(2, 2, 6, 4));
+        pGridBotones.setOpaque(false);
+        pGridBotones.setBorder(new EmptyBorder(4, 0, 0, 0));
+
+        if (btnRotar != null) pGridBotones.add(btnRotar);
+        if (btnAlternarVista != null) pGridBotones.add(btnAlternarVista);
         JButton btnInspeccion3D = PanelTelemetriaConsola.crearBotonOutline("Modelo 3D Interactivo", Theme.getPasajeroAccent(), e -> abrirVisorAeronave3D());
-        pBotonesVerticalesATC.add(btnInspeccion3D);
-        if (btnAccesoAdminRapido != null) pBotonesVerticalesATC.add(btnAccesoAdminRapido);
+        pGridBotones.add(btnInspeccion3D);
+        if (btnAccesoAdminRapido != null) pGridBotones.add(btnAccesoAdminRapido);
 
-        p.add(pBotonesVerticalesATC, BorderLayout.CENTER);
+        p.add(pGridBotones, BorderLayout.CENTER);
 
         return p;
     }
@@ -475,9 +482,8 @@ public class PanelRadarSmartAirport extends JPanel {
 
         lblConflictTitulo.setText("PUERTA B12 - CONFLICTO RESUELTO");
         lblConflictTitulo.setForeground(verdeNeon);
-        lblConflictDetalle.setText("<html><body style='width: 280px; color: #10B981; font-size: 10px;'>" +
-                "Vuelo " + vueloConflicto + " reasignado satisfactoriamente a Puerta 01. Plataforma en estado óptimo." +
-                "</body></html>");
+        lblConflictDetalle.setText("Vuelo " + vueloConflicto + " reasignado a Puerta 01 · Plataforma despejada");
+        lblConflictDetalle.setForeground(new Color(16, 185, 129));
 
         btnResolverConflicto.setText("Conflicto Resuelto");
         btnResolverConflicto.setBackground(Theme.getSuccess());
@@ -497,9 +503,9 @@ public class PanelRadarSmartAirport extends JPanel {
         if (!GraphicsEnvironment.isHeadless()) {
             JOptionPane.showMessageDialog(this,
                     "Resolución Operacional Completada:\n" +
-                    "• Conflicto en Gate B12 mitigado exitosamente.\n" +
-                    "• Vuelo " + vueloConflicto + " reasignado a Puerta 01 (C-646) mediante rotación de puertas.\n" +
-                    "• Estado sincronizado en tiempo real con MySQL.",
+                    "- Conflicto en Gate B12 mitigado exitosamente.\n" +
+                    "- Vuelo " + vueloConflicto + " reasignado a Puerta 01 (C-646) mediante rotación de puertas.\n" +
+                    "- Estado sincronizado en tiempo real con MySQL.",
                     "Gemelo Digital - Resolución de Puerta", JOptionPane.INFORMATION_MESSAGE);
         }
     }
@@ -768,10 +774,10 @@ public class PanelRadarSmartAirport extends JPanel {
                             } else {
                                 JOptionPane.showMessageDialog(PanelRadarSmartAirport.this,
                                         "Telemetría de Plataforma - " + m.nombreCompleto + "\n" +
-                                        "• Vuelo Asignado: " + m.vuelo + " (" + m.modeloAvion + ")\n" +
-                                        "• Ruta: " + m.destino + "\n" +
-                                        "• Estado: " + (m.esConflicto && conflictoActivo ? "CONFLICTO ACTIVO" : m.estado) + "\n" +
-                                        "• Nivel de Acceso: " + (controlador.esSesionAdmin() ? "Administrador (Control Total)" : "Modo Consulta / Registro"),
+                                        "- Vuelo Asignado: " + m.vuelo + " (" + m.modeloAvion + ")\n" +
+                                        "- Ruta: " + m.destino + "\n" +
+                                        "- Estado: " + (m.esConflicto && conflictoActivo ? "CONFLICTO ACTIVO" : m.estado) + "\n" +
+                                        "- Nivel de Acceso: " + (controlador.esSesionAdmin() ? "Administrador (Control Total)" : "Modo Consulta / Registro"),
                                         "Telemetría Stand Digital Twin", JOptionPane.INFORMATION_MESSAGE);
                             }
                             repaint();

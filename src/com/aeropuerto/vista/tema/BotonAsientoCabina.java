@@ -31,7 +31,8 @@ public class BotonAsientoCabina extends JButton {
         LIBRE_VIP,
         OCUPADO,
         SELECCIONADO,
-        CONFIRMADO
+        CONFIRMADO,
+        BLOQUEADO_CLASE
     }
 
     private EstadoAsiento estado = EstadoAsiento.LIBRE_TURISTA;
@@ -51,8 +52,10 @@ public class BotonAsientoCabina extends JButton {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                hover = true;
-                repaint();
+                if (isEnabled() && estado != EstadoAsiento.OCUPADO && estado != EstadoAsiento.BLOQUEADO_CLASE) {
+                    hover = true;
+                    repaint();
+                }
             }
 
             @Override
@@ -125,6 +128,17 @@ public class BotonAsientoCabina extends JButton {
                     colorFondo = new Color(254, 243, 199, 220);
                     colorBorde = new Color(245, 158, 11);
                     colorTexto = new Color(180, 83, 9);
+                }
+                break;
+            case BLOQUEADO_CLASE:
+                if (oscuro) {
+                    colorFondo = new Color(20, 24, 33, 160);
+                    colorBorde = new Color(38, 44, 55, 140);
+                    colorTexto = new Color(75, 85, 99, 140);
+                } else {
+                    colorFondo = new Color(241, 245, 249, 180);
+                    colorBorde = new Color(203, 213, 225, 160);
+                    colorTexto = new Color(148, 163, 184, 150);
                 }
                 break;
             case LIBRE_TURISTA:

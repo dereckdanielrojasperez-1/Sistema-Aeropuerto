@@ -3,31 +3,7 @@ package com.aeropuerto.estructuras.heap;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ============================================================================
- * ESTRUCTURA DE DATOS AVANZADA: MONTÍCULO BINARIO (MIN-HEAP / COLA DE PRIORIDAD)
- * ============================================================================
- * Propósito en CORPAC:
- * - Control de tráfico aéreo (ATC) en pista de aterrizaje / despegue.
- * - Asignación estricta por niveles de prioridad operacional:
- *     Nivel 1 (Prioridad Máxima): Emergencia aeronáutica (combustible crítico, falla mecánica).
- *     Nivel 2 (Prioridad Alta):   Vuelo comercial en aproximación o vuelo de Estado.
- *     Nivel 3 (Prioridad Normal): Tráfico comercial en itinerario regular.
- *
- * Propiedad Invariante de Min-Heap:
- * - Para todo nodo no raíz con índice 'i': prioridad(padre(i)) <= prioridad(i).
- * - La raíz en el índice 0 siempre contiene el elemento con el valor de prioridad menor
- *   (es decir, la mayor urgencia operacional).
- *
- * Análisis de Complejidad Temporal (Big-O):
- * - Inserción (Push / Flotar - Sift-Up):      O(log n) - Ascenso por niveles del árbol binario completo
- * - Extracción del mínimo (Pop / Hundir):    O(log n) - Reemplazo por último elemento y descenso
- * - Consulta de la cima (Peek):              O(1)     - Acceso inmediato a elementos[0]
- * - Redimensionamiento dinámico:             O(n)     - Duplicación de capacidad al saturar arreglo
- * ============================================================================
- *
- * @param <T> Tipo del dato administrado (ej. Código de vuelo, Aeronave, Ticket de equipaje)
- */
+// Monticulo Binario Min-Heap / Max-Heap para colas de prioridad
 public class MonticuloBinario<T> {
 
     public static final int CAPACIDAD_INICIAL_DEFECTO = 32;

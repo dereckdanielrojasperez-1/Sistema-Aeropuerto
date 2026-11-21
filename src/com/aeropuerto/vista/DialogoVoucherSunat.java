@@ -59,7 +59,7 @@ public class DialogoVoucherSunat extends JDialog {
                                double suplemento,
                                double precioTotal,
                                String localizador) {
-        super(ventanaPadre, "Voucher de Abordaje y Boleta Electrónica - CORPAC Airways", true);
+        super(ventanaPadre, "Voucher de Abordaje y Boleta Electrónica - CORPAC Airways", false);
         this.nombrePasajero = (nombrePasajero != null && !nombrePasajero.isEmpty()) ? nombrePasajero : "PASAJERO CORPAC";
         this.dniPasajero = (dniPasajero != null && !dniPasajero.isEmpty()) ? dniPasajero : "--------";
         this.correoPasajero = (correoPasajero != null && !correoPasajero.trim().isEmpty()) ? correoPasajero.trim() : "pasajero.corpac@aeropuerto.gob.pe";
@@ -98,9 +98,27 @@ public class DialogoVoucherSunat extends JDialog {
                     this.precioTotal, this.localizador, this.cadenaQrSunat);
         } catch (Exception ignored) {}
 
-        setSize(500, 780);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Insets insets = null;
+        try {
+            insets = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
+        } catch (Exception ignored) {}
+        int maxH = (insets != null) ? screenSize.height - insets.top - insets.bottom : screenSize.height - 60;
+        int maxW = (insets != null) ? screenSize.width - insets.left - insets.right : screenSize.width - 40;
+
+        int dialogWidth = Math.min(520, Math.max(460, maxW - 40));
+        int dialogHeight = Math.min(620, Math.max(480, maxH - 50));
+
+        setSize(dialogWidth, dialogHeight);
         setLocationRelativeTo(ventanaPadre);
-        setResizable(false);
+        setResizable(true);
+
+        getRootPane().registerKeyboardAction(
+                e -> dispose(),
+                KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW
+        );
+
         configurarIcono();
         inicializarComponentes();
     }
@@ -242,43 +260,48 @@ public class DialogoVoucherSunat extends JDialog {
         scrollTicket.getVerticalScrollBar().setUnitIncrement(14);
         panelContenedor.add(scrollTicket, BorderLayout.CENTER);
 
-        // Botonera de acciones
-        JPanel pBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
+        // Botonera de acciones fija en la parte inferior (Siempre visible)
+        JPanel pBotones = new JPanel(new GridLayout(2, 2, 8, 6));
         pBotones.setOpaque(false);
+        pBotones.setBorder(new EmptyBorder(8, 4, 4, 4));
 
         BotonPrimario btnEnviarCorreo = new BotonPrimario("Enviar a mi Correo", Theme.getPasajeroAccent());
-        btnEnviarCorreo.setPreferredSize(new Dimension(170, 32));
+        btnEnviarCorreo.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
+        btnEnviarCorreo.setPreferredSize(new Dimension(0, 32));
         btnEnviarCorreo.addActionListener(e -> accionEnviarCorreoVoucher());
 
-        JButton btnGuardar = new JButton("Guardar en Archivo (.txt)");
+        BotonPrimario btnImprimir = new BotonPrimario("Imprimir Voucher", Theme.getSuccess());
+        btnImprimir.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
+        btnImprimir.setPreferredSize(new Dimension(0, 32));
+        btnImprimir.addActionListener(e -> accionImprimirVoucher());
+
+        JButton btnGuardar = new JButton("Guardar Archivo (.txt)");
         btnGuardar.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 11f));
         btnGuardar.setBackground(Theme.getElevated());
         btnGuardar.setForeground(Theme.getTexto());
+        btnGuardar.setPreferredSize(new Dimension(0, 32));
         btnGuardar.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Theme.getBorder(), 1),
-                BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+                BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         btnGuardar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnGuardar.setFocusPainted(false);
         btnGuardar.addActionListener(e -> accionGuardarArchivoVoucher());
 
-        BotonPrimario btnImprimir = new BotonPrimario("Imprimir Voucher CORPAC", Theme.getSuccess());
-        btnImprimir.setPreferredSize(new Dimension(170, 32));
-        btnImprimir.addActionListener(e -> accionImprimirVoucher());
-
-        JButton btnCerrar = new JButton("Cerrar");
-        btnCerrar.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 11f));
-        btnCerrar.setBackground(Theme.getElevated());
-        btnCerrar.setForeground(Theme.getTexto());
+        JButton btnCerrar = new JButton("Cerrar Ventana (Esc)");
+        btnCerrar.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
+        btnCerrar.setBackground(new Color(220, 38, 38));
+        btnCerrar.setForeground(Color.WHITE);
+        btnCerrar.setPreferredSize(new Dimension(0, 32));
         btnCerrar.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Theme.getBorder(), 1),
-                BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+                BorderFactory.createLineBorder(new Color(185, 28, 28), 1),
+                BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         btnCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnCerrar.setFocusPainted(false);
         btnCerrar.addActionListener(e -> dispose());
 
         pBotones.add(btnEnviarCorreo);
-        pBotones.add(btnGuardar);
         pBotones.add(btnImprimir);
+        pBotones.add(btnGuardar);
         pBotones.add(btnCerrar);
         panelContenedor.add(pBotones, BorderLayout.SOUTH);
 
@@ -370,7 +393,7 @@ public class DialogoVoucherSunat extends JDialog {
                     File archivoDesktop = new File(dirDesktop, nombreArchivo);
                     try (PrintWriter pwDesktop = new PrintWriter(new FileWriter(archivoDesktop))) {
                         pwDesktop.print(generarTextoCompletoVoucher());
-                        infoDesktop = "\n• " + archivoDesktop.getAbsolutePath();
+                        infoDesktop = "\n- " + archivoDesktop.getAbsolutePath();
                     } catch (Exception ignored) {
                         // Si el escritorio está sincronizado o restringido, se preserva el archivo principal
                     }
@@ -380,7 +403,7 @@ public class DialogoVoucherSunat extends JDialog {
             JOptionPane.showMessageDialog(this,
                     "¡Voucher CORPAC y Boleta Electrónica guardados exitosamente!\n\n" +
                     "Archivos generados:\n" +
-                    "• " + archivoDestino.getAbsolutePath() + infoDesktop,
+                    "- " + archivoDestino.getAbsolutePath() + infoDesktop,
                     "Voucher CORPAC Guardado", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
@@ -422,11 +445,11 @@ public class DialogoVoucherSunat extends JDialog {
         if (reg != null && reg.isExitoso()) {
             JOptionPane.showMessageDialog(this,
                     "¡Boleta Electrónica y Pase de Abordar despachados!\n\n" +
-                    "• Destinatario: " + correo + "\n" +
-                    "• Comprobante : " + numeroSerie + "\n" +
-                    "• Pasajero    : " + nombrePasajero + " (DNI " + dniPasajero + ")\n" +
-                    "• Vuelo       : " + codigoVuelo + " (" + origenVuelo + " -> " + destinoVuelo + ")\n" +
-                    "• Asiento     : " + asiento + " (" + clase + ")\n\n" +
+                    "- Destinatario: " + correo + "\n" +
+                    "- Comprobante : " + numeroSerie + "\n" +
+                    "- Pasajero    : " + nombrePasajero + " (DNI " + dniPasajero + ")\n" +
+                    "- Vuelo       : " + codigoVuelo + " (" + origenVuelo + " -> " + destinoVuelo + ")\n" +
+                    "- Asiento     : " + asiento + " (" + clase + ")\n\n" +
                     "Archivo digital HTML generado y respaldado en:\n" +
                     reg.getRutaArchivoHtml(),
                     "Despacho Electrónico CORPAC", JOptionPane.INFORMATION_MESSAGE);
