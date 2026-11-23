@@ -3,7 +3,7 @@ package com.aeropuerto.estructuras;
 import com.aeropuerto.modelo.Equipaje;
 
 // Lista enlazada simple para gestion de equipajes
-public class ListaSimple {
+public class ListaSimple implements TADLista {
 
     public static final double LIMITE_SOBREPESO_IATA_KG = 23.0;
     private static final int FACTOR_SEGURIDAD_ITERACIONES = 20;
@@ -204,6 +204,11 @@ public class ListaSimple {
     }
 
     // Listar maletas registradas usando StringBuilder
+    @Override
+    public String listar() {
+        return listarMaletas();
+    }
+
     public String listarMaletas() {
         if (estaVacia()) {
             return "No hay equipaje registrado.";

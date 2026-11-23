@@ -406,6 +406,34 @@ public class ControladorAeropuerto {
         return copia;
     }
 
+    // Comparacion de arreglos de vuelos (Unidad 1 - Silabo)
+    public boolean compararArreglosVuelos(Vuelo[] arr1, Vuelo[] arr2) {
+        if (arr1 == null || arr2 == null) return arr1 == arr2;
+        if (arr1.length != arr2.length) return false;
+        for (int i = 0; i < arr1.length; i++) {
+            if (arr1[i] == null && arr2[i] == null) continue;
+            if (arr1[i] == null || arr2[i] == null) return false;
+            if (!arr1[i].obtenerCodigo().equalsIgnoreCase(arr2[i].obtenerCodigo())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Fusion de dos arreglos de vuelos en uno nuevo (Unidad 1 - Silabo)
+    public Vuelo[] fusionarArreglosVuelos(Vuelo[] arr1, Vuelo[] arr2) {
+        int n1 = (arr1 != null) ? arr1.length : 0;
+        int n2 = (arr2 != null) ? arr2.length : 0;
+        Vuelo[] fusion = new Vuelo[n1 + n2];
+        for (int i = 0; i < n1; i++) {
+            fusion[i] = arr1[i];
+        }
+        for (int j = 0; j < n2; j++) {
+            fusion[n1 + j] = arr2[j];
+        }
+        return fusion;
+    }
+
     // Recorrido secuencial del arreglo unidimensional Vuelo[]
     public String recorrerArregloVuelos() {
         if (contadorVuelos == 0) {

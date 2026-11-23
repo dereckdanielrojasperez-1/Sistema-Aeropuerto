@@ -96,18 +96,18 @@ public class PanelRadarSmartAirport extends JPanel {
     private void inicializarComponentes() {
         // 1. Lienzo interactivo del Gemelo Digital
         lienzoVisual = new LienzoGemeloDigital();
-        lienzoVisual.setMinimumSize(new Dimension(600, 160));
-        lienzoVisual.setPreferredSize(new Dimension(1100, 260));
+        lienzoVisual.setMinimumSize(new Dimension(600, 200));
+        lienzoVisual.setPreferredSize(new Dimension(1100, 310));
 
         // 2. Panel HUD inferior con telemetria y tablas de vuelos
         JPanel panelHUD = crearPanelFlightInformation();
         panelHUD.setMinimumSize(new Dimension(600, 200));
-        panelHUD.setPreferredSize(new Dimension(1100, 250));
+        panelHUD.setPreferredSize(new Dimension(1100, 240));
 
         // Divisor vertical que mantiene proporciones equilibradas para el Avance 2
         JSplitPane splitPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT, lienzoVisual, panelHUD);
-        splitPrincipal.setDividerLocation(230);
-        splitPrincipal.setResizeWeight(0.40);
+        splitPrincipal.setDividerLocation(310);
+        splitPrincipal.setResizeWeight(0.55);
         splitPrincipal.setBorder(null);
         splitPrincipal.setDividerSize(4);
         splitPrincipal.setBackground(Theme.getBg());
@@ -120,13 +120,13 @@ public class PanelRadarSmartAirport extends JPanel {
         if (btnAlternarVista != null) {
             switch (modoVisualizacion) {
                 case 0:
-                    btnAlternarVista.setText("Modo: Gemelo 3D Vectorial");
+                    btnAlternarVista.setText("Vista: Gemelo 3D Fotorrealista");
                     break;
                 case 1:
-                    btnAlternarVista.setText("Modo: Gemelo Híbrido (3D)");
+                    btnAlternarVista.setText("Vista: Radar Táctico ATC (A-SMGCS)");
                     break;
                 case 2:
-                    btnAlternarVista.setText("Modo: Radar Táctico AOC");
+                    btnAlternarVista.setText("Vista: Plataforma Isométrica HD");
                     break;
             }
         }
@@ -193,7 +193,7 @@ public class PanelRadarSmartAirport extends JPanel {
         // Inicializar botones de control para el panel vertical de acciones ATC
         btnAccesoAdminRapido = PanelTelemetriaConsola.crearBotonOutline("Identificarse como Admin", Theme.getAdminAccent(), e -> alternarSesionAdminRapida());
         btnRotar = PanelTelemetriaConsola.crearBotonOutline("Rotar Puerta en Turno", Theme.getInfo(), e -> accionAvanzarTurno());
-        btnAlternarVista = PanelTelemetriaConsola.crearBotonOutline("Modo: Gemelo 3D Vectorial", Theme.getTexto(), e -> alternarModoVisualizacion());
+        btnAlternarVista = PanelTelemetriaConsola.crearBotonOutline("Vista: Gemelo 3D Fotorrealista", Theme.getPasajeroAccent(), e -> alternarModoVisualizacion());
 
         panelTrafico.add(panelCabecera, BorderLayout.NORTH);
 
@@ -690,16 +690,16 @@ public class PanelRadarSmartAirport extends JPanel {
         private MarcadorPuerta marcadorHover = null;
         private Point posicionRaton = new Point(-1, -1);
 
-        // Posiciones de los 8 stands en el espacio base 1376x768
+        // Posiciones de los 8 stands en el espacio base 1376x510
         private final MarcadorPuerta[] marcadores = {
-                new MarcadorPuerta("02", "Stand C-638 (Gate 02)", 635, 75, 635, 135, false, "CP-2022", "Trujillo", "A320neo", "EN PLATAFORMA"),
-                new MarcadorPuerta("04", "Stand C-640 (Gate 04)", 380, 160, 380, 215, false, "CP-2026", "Iquitos", "A320neo", "APROXIMACIÓN"),
-                new MarcadorPuerta("03", "Stand C-641 (Gate 03 Norte)", 265, 260, 265, 315, false, "CP-2027", "Tarapoto", "A320neo", "A TIEMPO"),
-                new MarcadorPuerta("B12", "Stand C-642 (Gate B12)", 735, 335, 695, 385, true, "CP-2024", "Arequipa", "A320neo", "CONFLICTO PLATAFORMA"),
-                new MarcadorPuerta("01", "Stand C-646 (Gate 01)", 490, 420, 490, 475, false, "CP-2025", "Piura", "A320neo", "STAND RECOMENDADO"),
-                new MarcadorPuerta("11", "Stand C-648 (Gate 11)", 920, 475, 920, 525, false, "CP-2029", "Tacna", "A320neo", "EN EMBARQUE"),
-                new MarcadorPuerta("12", "Stand C-650 (Gate 12)", 770, 580, 770, 625, false, "CP-2030", "Juliaca", "A320neo", "EN ESPERA"),
-                new MarcadorPuerta("05", "Stand C-652 (Gate 05 Sur)", 1160, 350, 1160, 395, false, "CP-2028", "Chiclayo", "A320neo", "EN MANTENIMIENTO")
+                new MarcadorPuerta("02", "Stand C-638 (Gate 02)", 635, 45, 635, 95, false, "CP-2022", "Trujillo", "A320neo", "EN PLATAFORMA"),
+                new MarcadorPuerta("04", "Stand C-640 (Gate 04)", 380, 115, 380, 165, false, "CP-2026", "Iquitos", "A320neo", "APROXIMACIÓN"),
+                new MarcadorPuerta("03", "Stand C-641 (Gate 03 Norte)", 265, 205, 265, 255, false, "CP-2027", "Tarapoto", "A320neo", "A TIEMPO"),
+                new MarcadorPuerta("B12", "Stand C-642 (Gate B12)", 735, 275, 695, 325, true, "CP-2024", "Arequipa", "A320neo", "CONFLICTO PLATAFORMA"),
+                new MarcadorPuerta("01", "Stand C-646 (Gate 01)", 490, 360, 490, 410, false, "CP-2025", "Piura", "A320neo", "STAND RECOMENDADO"),
+                new MarcadorPuerta("11", "Stand C-648 (Gate 11)", 920, 410, 920, 455, false, "CP-2029", "Tacna", "A320neo", "EN EMBARQUE"),
+                new MarcadorPuerta("12", "Stand C-650 (Gate 12)", 770, 440, 770, 410, false, "CP-2030", "Juliaca", "A320neo", "EN ESPERA"),
+                new MarcadorPuerta("05", "Stand C-652 (Gate 05 Sur)", 1160, 290, 1160, 340, false, "CP-2028", "Chiclayo", "A320neo", "EN MANTENIMIENTO")
         };
 
         public LienzoGemeloDigital() {
@@ -721,7 +721,7 @@ public class PanelRadarSmartAirport extends JPanel {
                 public void mouseMoved(MouseEvent e) {
                     posicionRaton = e.getPoint();
                     double escalaX = (double) getWidth() / 1376.0;
-                    double escalaY = (double) getHeight() / 768.0;
+                    double escalaY = (double) getHeight() / 510.0;
 
                     MarcadorPuerta previoHover = marcadorHover;
                     marcadorHover = null;
@@ -756,7 +756,7 @@ public class PanelRadarSmartAirport extends JPanel {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     double escalaX = (double) getWidth() / 1376.0;
-                    double escalaY = (double) getHeight() / 768.0;
+                    double escalaY = (double) getHeight() / 510.0;
 
                     for (MarcadorPuerta m : marcadores) {
                         int mx = (int) (m.xInsignia * escalaX);
@@ -818,46 +818,238 @@ public class PanelRadarSmartAirport extends JPanel {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
             int w = getWidth();
             int h = getHeight();
 
-            double escalaX = (double) w / 1376.0;
-            double escalaY = (double) h / 768.0;
-
             if (modoVisualizacion == 0) {
-                // Modo 100% Vectorial Interactivo: renderizado Java2D de alta fidelidad
-                dibujarFondoPlataformaIsometrico(g2, w, h);
-                dibujarTerminalFingersIsometricos(g2, escalaX, escalaY);
-                dibujarAvionesEnStands(g2, escalaX, escalaY);
-                dibujarZonaAlertaNeon(g2, escalaX, escalaY);
-                dibujarLineaConexionVectorial(g2, escalaX, escalaY);
-                dibujarMarcadoresNumerados(g2, escalaX, escalaY);
-                dibujarTarjetaTooltipHover(g2, w, h);
-                dibujarLeyendaOperacional(g2);
-                dibujarBannerAlerta(g2, w);
-            } else if (modoVisualizacion == 1 && imagenGemelo != null) {
-                // Modo Hibrido: Render fotorrealista + capas vectoriales de telemetria
-                g2.drawImage(imagenGemelo, 0, 0, w, h, null);
-                dibujarZonaAlertaNeon(g2, escalaX, escalaY);
-                dibujarLineaConexionVectorial(g2, escalaX, escalaY);
-                dibujarMarcadoresNumerados(g2, escalaX, escalaY);
-                dibujarTarjetaTooltipHover(g2, w, h);
-                dibujarLeyendaOperacional(g2);
-                dibujarBannerAlerta(g2, w);
+                // Modo 0: Gemelo Digital 3D Fotorrealista de Alta Definicion
+                dibujarModoGemelo3D(g2, w, h);
+            } else if (modoVisualizacion == 1) {
+                // Modo 1: Radar Tactico de Superficie A-SMGCS Nivel 4 con Pista 16L/34R y Barrido 360°
+                dibujarModoRadarAOC(g2, w, h);
             } else {
-                // Modo Radar Tactico AOC
-                dibujarRadarVectorialAOC(g2, w, h);
-                dibujarAvionesEnStands(g2, escalaX, escalaY);
-                dibujarZonaAlertaNeon(g2, escalaX, escalaY);
-                dibujarLineaConexionVectorial(g2, escalaX, escalaY);
-                dibujarMarcadoresNumerados(g2, escalaX, escalaY);
-                dibujarTarjetaTooltipHover(g2, w, h);
-                dibujarLeyendaOperacional(g2);
-                dibujarBannerAlerta(g2, w);
+                // Modo 2: Plataforma Isometrica Vectorial HD
+                dibujarModoPlataformaIsometrica(g2, w, h);
             }
 
             g2.dispose();
+        }
+
+        // Modo 0: Render fotorrealista 3D con capas vectoriales interactivas
+        private void dibujarModoGemelo3D(Graphics2D g2, int w, int h) {
+            if (imagenGemelo != null) {
+                g2.drawImage(imagenGemelo, 0, 0, w, h, null);
+            } else {
+                g2.setColor(Theme.getBg());
+                g2.fillRect(0, 0, w, h);
+            }
+
+            double sx = (double) w / 1376.0;
+            double sy = (double) h / 510.0;
+
+            dibujarZonaAlertaNeon(g2, sx, sy);
+            dibujarLineaConexionVectorial(g2, sx, sy);
+            dibujarMarcadoresNumerados(g2, sx, sy);
+            dibujarTarjetaTooltipHover(g2, w, h);
+            dibujarLeyendaOperacional(g2);
+            dibujarBannerAlerta(g2, w);
+            dibujarBadgeModoActivo(g2, "GEMELO DIGITAL 3D FOTORREALISTA · CORPAC AOC", w, h);
+        }
+
+        // Modo 1: Radar Tactico de Superficie A-SMGCS (Advanced Surface Movement Guidance & Control System)
+        private void dibujarModoRadarAOC(Graphics2D g2, int w, int h) {
+            // 1. Fondo de radar tactico
+            g2.setColor(new Color(6, 11, 20));
+            g2.fillRect(0, 0, w, h);
+
+            // Rejilla de coordenadas tactica en azul marino tenue
+            g2.setColor(new Color(13, 27, 42, 140));
+            g2.setStroke(new BasicStroke(1.0f));
+            for (int x = 0; x < w; x += 45) g2.drawLine(x, 0, x, h);
+            for (int y = 0; y < h; y += 45) g2.drawLine(0, y, w, y);
+
+            int cx = w / 2;
+            int cy = (int) (h * 0.48);
+
+            // 2. Anillos concentricos de distancia de radar (Range Rings)
+            g2.setColor(new Color(56, 189, 248, 45));
+            g2.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, new float[]{4, 4}, 0.0f));
+            int[] radios = {(int)(h * 0.22), (int)(h * 0.42), (int)(h * 0.65), (int)(h * 0.88), (int)(h * 1.15)};
+            String[] etiquetasNM = {"0.5 NM", "1.0 NM", "1.5 NM", "2.0 NM", "2.5 NM"};
+            for (int i = 0; i < radios.length; i++) {
+                int r = radios[i];
+                g2.drawOval(cx - r, cy - r, r * 2, r * 2);
+                if (cx + r + 4 < w - 20) {
+                    g2.setFont(new Font("Consolas", Font.PLAIN, 9));
+                    g2.setColor(new Color(56, 189, 248, 120));
+                    g2.drawString(etiquetasNM[i], cx + r + 4, cy - 2);
+                }
+            }
+
+            // Marcadores de azimut / brujula cada 30 grados
+            for (int deg = 0; deg < 360; deg += 30) {
+                double rad = Math.toRadians(deg);
+                int r2 = radios[3];
+                int x1 = cx + (int)(Math.cos(rad) * (r2 - 12));
+                int y1 = cy + (int)(Math.sin(rad) * (r2 - 12));
+                int x2 = cx + (int)(Math.cos(rad) * r2);
+                int y2 = cy + (int)(Math.sin(rad) * r2);
+                g2.setColor(new Color(56, 189, 248, 70));
+                g2.drawLine(x1, y1, x2, y2);
+                if (deg % 90 == 0) {
+                    String brujula = (deg == 0) ? "E 090°" : (deg == 90) ? "S 180°" : (deg == 180) ? "W 270°" : "N 360°";
+                    g2.setFont(new Font("Consolas", Font.BOLD, 9));
+                    g2.setColor(new Color(56, 189, 248, 160));
+                    g2.drawString(brujula, x2 + (deg == 0 ? 4 : (deg == 180 ? -36 : -14)), y2 + (deg == 90 ? 12 : (deg == 270 ? -4 : 4)));
+                }
+            }
+
+            // 3. Haz de barrido animado 360° (Radar Sweep)
+            double anguloSweep = (fasePulso * 1.6) % (Math.PI * 2);
+            int maxR = Math.max(w, h);
+            int sxSweep = cx + (int)(Math.cos(anguloSweep) * maxR);
+            int sySweep = cy + (int)(Math.sin(anguloSweep) * maxR);
+
+            // Estela fosforescente luminiscente
+            for (int d = 0; d < 35; d += 2) {
+                double aTrail = anguloSweep - Math.toRadians(d);
+                float alphaTrail = (float)(1.0 - d / 35.0) * 0.16f;
+                g2.setColor(new Color(56, 189, 248, (int)(alphaTrail * 255)));
+                int tx = cx + (int)(Math.cos(aTrail) * maxR);
+                int ty = cy + (int)(Math.sin(aTrail) * maxR);
+                g2.setStroke(new BasicStroke(4.0f));
+                g2.drawLine(cx, cy, tx, ty);
+            }
+            g2.setColor(new Color(56, 189, 248, 240));
+            g2.setStroke(new BasicStroke(1.8f));
+            g2.drawLine(cx, cy, sxSweep, sySweep);
+
+            // 4. Pista Principal de Despegue / Aterrizaje (RWY 16L/34R)
+            int rwyW = (int)(w * 0.76);
+            int rwyH = 32;
+            int rwyX = (int)(w * 0.12);
+            int rwyY = (int)(h * 0.12);
+
+            // Asfalto de pista
+            g2.setColor(new Color(20, 28, 41));
+            g2.fillRect(rwyX, rwyY, rwyW, rwyH);
+            g2.setColor(new Color(56, 189, 248, 180));
+            g2.setStroke(new BasicStroke(1.5f));
+            g2.drawRect(rwyX, rwyY, rwyW, rwyH);
+
+            // Umbrales de pista (Piano keys)
+            g2.setColor(new Color(248, 250, 252, 220));
+            for (int k = 0; k < 6; k++) {
+                g2.fillRect(rwyX + 8 + k * 6, rwyY + 4, 3, rwyH - 8);
+                g2.fillRect(rwyX + rwyW - 42 + k * 6, rwyY + 4, 3, rwyH - 8);
+            }
+
+            // Numeracion ICAO de pista
+            g2.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            g2.setColor(new Color(248, 250, 252));
+            g2.drawString("16L", rwyX + 48, rwyY + 21);
+            g2.drawString("34R", rwyX + rwyW - 74, rwyY + 21);
+
+            // Eje central de pista con luces amarillas
+            g2.setColor(new Color(254, 240, 138, 220));
+            g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, new float[]{14, 10}, 0.0f));
+            g2.drawLine(rwyX + 80, rwyY + rwyH / 2, rwyX + rwyW - 85, rwyY + rwyH / 2);
+
+            // 5. Calles de rodaje de alta velocidad (TWY A, B, C) conectando pista a terminal
+            g2.setColor(new Color(56, 189, 248, 120));
+            g2.setStroke(new BasicStroke(2.0f));
+            int twyExit1 = rwyX + (int)(rwyW * 0.35);
+            int twyExit2 = rwyX + (int)(rwyW * 0.65);
+            int apronY = (int)(h * 0.36);
+
+            g2.drawLine(twyExit1, rwyY + rwyH, twyExit1 - 40, apronY);
+            g2.drawLine(twyExit2, rwyY + rwyH, twyExit2 + 40, apronY);
+            g2.drawLine(rwyX + 40, apronY, rwyX + rwyW - 40, apronY);
+
+            // Luces verdes de calle de rodaje
+            g2.setColor(new Color(34, 197, 94, 200));
+            for (int lx = rwyX + 60; lx < rwyX + rwyW - 60; lx += 35) {
+                g2.fillOval(lx - 2, apronY - 2, 4, 4);
+            }
+
+            // 6. Terminal Principal y Fingers de abordaje
+            GeneralPath terminal = new GeneralPath();
+            terminal.moveTo(w * 0.22, h * 0.42);
+            terminal.lineTo(w * 0.78, h * 0.42);
+            terminal.lineTo(w * 0.70, h * 0.62);
+            terminal.lineTo(w * 0.30, h * 0.62);
+            terminal.closePath();
+
+            GradientPaint gpTerminal = new GradientPaint(
+                    (float)(w * 0.5), (float)(h * 0.42), new Color(30, 41, 59),
+                    (float)(w * 0.5), (float)(h * 0.62), new Color(15, 23, 42)
+            );
+            g2.setPaint(gpTerminal);
+            g2.fill(terminal);
+            g2.setColor(new Color(56, 189, 248, 160));
+            g2.setStroke(new BasicStroke(1.8f));
+            g2.draw(terminal);
+
+            // Rotulo de terminal
+            g2.setFont(new Font("Segoe UI", Font.BOLD, 11));
+            g2.setColor(new Color(248, 250, 252));
+            g2.drawString("CORPAC A-SMGCS · TERMINAL INTERNACIONAL JORGE CHÁVEZ", (int)(w * 0.30), (int)(h * 0.51));
+
+            g2.setFont(new Font("Consolas", Font.PLAIN, 10));
+            g2.setColor(new Color(56, 189, 248));
+            g2.drawString("PLATAFORMA PRINCIPAL DE CONTACTO · 8 STANDS COMERCIALES", (int)(w * 0.31), (int)(h * 0.56));
+
+            double sx = (double) w / 1376.0;
+            double sy = (double) h / 510.0;
+
+            // 7. Aeronaves, Telemetria, Conflicto y Rutas
+            dibujarAvionesEnStands(g2, sx, sy);
+            dibujarZonaAlertaNeon(g2, sx, sy);
+            dibujarLineaConexionVectorial(g2, sx, sy);
+            dibujarMarcadoresNumerados(g2, sx, sy);
+            dibujarTarjetaTooltipHover(g2, w, h);
+            dibujarLeyendaOperacional(g2);
+            dibujarBannerAlerta(g2, w);
+            dibujarBadgeModoActivo(g2, "RADAR TÁCTICO DE SUPERFICIE A-SMGCS (NIVEL 4)", w, h);
+        }
+
+        // Modo 2: Plataforma Isometrica Vectorial HD
+        private void dibujarModoPlataformaIsometrica(Graphics2D g2, int w, int h) {
+            double sx = (double) w / 1376.0;
+            double sy = (double) h / 510.0;
+
+            dibujarFondoPlataformaIsometrico(g2, w, h);
+            dibujarTerminalFingersIsometricos(g2, sx, sy);
+            dibujarAvionesEnStands(g2, sx, sy);
+            dibujarZonaAlertaNeon(g2, sx, sy);
+            dibujarLineaConexionVectorial(g2, sx, sy);
+            dibujarMarcadoresNumerados(g2, sx, sy);
+            dibujarTarjetaTooltipHover(g2, w, h);
+            dibujarLeyendaOperacional(g2);
+            dibujarBannerAlerta(g2, w);
+            dibujarBadgeModoActivo(g2, "PLATAFORMA ISOMÉTRICA HD · OPERACIONES CORPAC", w, h);
+        }
+
+        // Chip de modo activo en la esquina inferior izquierda
+        private void dibujarBadgeModoActivo(Graphics2D g2, String texto, int w, int h) {
+            g2.setFont(new Font("Segoe UI", Font.BOLD, 10));
+            FontMetrics fm = g2.getFontMetrics();
+            int tw = fm.stringWidth(texto);
+            int bw = tw + 22;
+            int bh = 22;
+            int bx = 14;
+            int by = h - bh - 8;
+
+            g2.setColor(new Color(15, 23, 42, 215));
+            g2.fillRoundRect(bx, by, bw, bh, 6, 6);
+            g2.setColor(new Color(56, 189, 248, 140));
+            g2.setStroke(new BasicStroke(1.0f));
+            g2.drawRoundRect(bx, by, bw, bh, 6, 6);
+
+            g2.setColor(new Color(56, 189, 248));
+            g2.drawString(texto, bx + 11, by + 15);
         }
 
         // Renderizado del asfalto de plataforma aeroportuaria, rejilla tenue y taxiways continuas/discontinuas
@@ -1283,32 +1475,6 @@ public class PanelRadarSmartAirport extends JPanel {
             g2.setColor(Theme.getDanger());
             g2.fillOval(lx + 230, ly + 12, 10, 10);
             g2.drawString("CONFLICTO ATC", lx + 245, ly + 21);
-        }
-
-        private void dibujarRadarVectorialAOC(Graphics2D g2, int w, int h) {
-            g2.setColor(new Color(15, 19, 27));
-            g2.fillRect(0, 0, w, h);
-
-            g2.setColor(new Color(25, 34, 48));
-            for (int x = 0; x < w; x += 40) g2.drawLine(x, 0, x, h);
-            for (int y = 0; y < h; y += 40) g2.drawLine(0, y, w, y);
-
-            GeneralPath terminal = new GeneralPath();
-            terminal.moveTo(w * 0.25, h * 0.15);
-            terminal.lineTo(w * 0.75, h * 0.15);
-            terminal.lineTo(w * 0.65, h * 0.45);
-            terminal.lineTo(w * 0.35, h * 0.45);
-            terminal.closePath();
-
-            g2.setColor(new Color(20, 27, 39));
-            g2.fill(terminal);
-            g2.setColor(cyanNeon);
-            g2.setStroke(new BasicStroke(1.8f));
-            g2.draw(terminal);
-
-            g2.setFont(new Font("Segoe UI", Font.BOLD, 12));
-            g2.setColor(textoBlanco);
-            g2.drawString("TERMINAL PRINCIPAL - RADAR VECTORIAL AOC", (int)(w * 0.32), (int)(h * 0.30));
         }
     }
 
