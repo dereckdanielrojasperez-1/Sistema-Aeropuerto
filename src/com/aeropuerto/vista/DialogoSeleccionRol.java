@@ -191,22 +191,6 @@ public class DialogoSeleccionRol extends JDialog implements Theme.ThemeListener 
         JPanel panelDerecho = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
         panelDerecho.setOpaque(false);
 
-        // Toggle persistente Claro / Oscuro
-        btnAlternarTema = new JButton(Theme.esModoOscuro() ? "Modo Claro" : "Modo Oscuro");
-        btnAlternarTema.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 11f));
-        btnAlternarTema.setForeground(Theme.getTexto());
-        btnAlternarTema.setBackground(Theme.getElevated());
-        btnAlternarTema.setFocusPainted(false);
-        btnAlternarTema.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnAlternarTema.setBorder(new CompoundBorder(new LineBorder(Theme.getBorder(), 1), new EmptyBorder(4, 10, 4, 10)));
-        btnAlternarTema.addActionListener(e -> {
-            Theme.toggleTheme();
-            capturarFondoBlur();
-            actualizarTextosTema();
-            repaint();
-        });
-        panelDerecho.add(btnAlternarTema);
-
         // Boton de salida discreto
         JButton btnCerrar = new JButton("Salir");
         btnCerrar.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 11f));

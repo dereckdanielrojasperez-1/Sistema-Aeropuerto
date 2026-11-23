@@ -843,17 +843,7 @@ public class VentanaPrincipal extends JFrame {
         btnSesionAdmin.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnSesionAdmin.addActionListener(e -> alternarSesionAdmin());
 
-        btnAlternarTemaHeader = new JButton(Theme.esModoOscuro() ? "Modo Claro" : "Modo Oscuro");
-        btnAlternarTemaHeader.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
-        btnAlternarTemaHeader.setBackground(Theme.getElevated());
-        btnAlternarTemaHeader.setForeground(Theme.getTexto());
-        btnAlternarTemaHeader.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Theme.getBorder(), 1),
-                BorderFactory.createEmptyBorder(3, 8, 3, 8)));
-        btnAlternarTemaHeader.setFocusPainted(false);
-        btnAlternarTemaHeader.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnAlternarTemaHeader.setIcon(AppIcon.of(Theme.esModoOscuro() ? "sun" : "moon", 12, Theme.getTexto()));
-        btnAlternarTemaHeader.addActionListener(e -> Theme.toggleTheme());
+        btnAlternarTemaHeader = null; // Modo Oscuro permanente por directriz oficial CORPAC
 
         btnToggleVistaTecnica = new JButton("Vista Técnica");
         btnToggleVistaTecnica.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
@@ -874,8 +864,6 @@ public class VentanaPrincipal extends JFrame {
         panelSesionCentro.add(btnToggleVistaTecnica);
         panelSesionCentro.add(Box.createHorizontalStrut(8));
         panelSesionCentro.add(btnSesionAdmin);
-        panelSesionCentro.add(Box.createHorizontalStrut(8));
-        panelSesionCentro.add(btnAlternarTemaHeader);
         panelSesionCentro.add(Box.createHorizontalGlue());
         panelEncabezado.add(panelSesionCentro, BorderLayout.CENTER);
 

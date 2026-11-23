@@ -24,7 +24,7 @@ public final class Theme {
     private static final String PREF_KEY_DARK = "corpac_ui_dark_mode";
     private static final String PREF_KEY_ROL = "corpac_ui_active_role";
 
-    private static boolean modoOscuro = PREFS.getBoolean(PREF_KEY_DARK, true);
+    private static boolean modoOscuro = true;
     private static String rolActivo = PREFS.get(PREF_KEY_ROL, "PASAJERO");
 
     private static final List<ThemeListener> LISTENERS = new ArrayList<>();
@@ -79,10 +79,12 @@ public final class Theme {
 
     private Theme() {}
 
-    // Inicializa FlatLaf segun la preferencia persistida y registra fuentes institucionales
+    // Inicializa FlatLaf en modo oscuro permanente segun directriz oficial de CORPAC
     public static void inicializar() {
         FontManager.inicializar();
-        configurarFlatLaf(modoOscuro);
+        modoOscuro = true;
+        PREFS.putBoolean(PREF_KEY_DARK, true);
+        configurarFlatLaf(true);
     }
 
     private static void configurarFlatLaf(boolean oscuro) {
@@ -94,25 +96,21 @@ public final class Theme {
             UIManager.put("ScrollBar.showButtons", false);
             UIManager.put("TabbedPane.showTabSeparators", true);
 
-            if (oscuro) {
-                FlatDarkLaf.setup();
-            } else {
-                FlatLightLaf.setup();
-            }
+            FlatDarkLaf.setup();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Alterna entre modo claro y oscuro con persistencia y refresco visual
+    // Modo oscuro permanente
     public static void toggleTheme() {
-        setModoOscuro(!modoOscuro);
+        setModoOscuro(true);
     }
 
     public static void setModoOscuro(boolean oscuro) {
-        modoOscuro = oscuro;
-        PREFS.putBoolean(PREF_KEY_DARK, modoOscuro);
-        configurarFlatLaf(modoOscuro);
+        modoOscuro = true; // Forzado estrictamente a modo oscuro
+        PREFS.putBoolean(PREF_KEY_DARK, true);
+        configurarFlatLaf(true);
         FlatLaf.updateUI();
 
         // Repintado recursivo en todas las ventanas activas
@@ -126,7 +124,7 @@ public final class Theme {
     }
 
     public static boolean esModoOscuro() {
-        return modoOscuro;
+        return true;
     }
 
     public static void setRolActivo(String rol) {
