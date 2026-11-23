@@ -6528,7 +6528,7 @@ public class VentanaPrincipal extends JFrame {
         JOptionPane.showMessageDialog(this, "DNI " + dni + " cargado en el formulario de equipaje.", "Transferencia Exitosa", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void mostrarFichaAvion() {
+    public void mostrarFichaAvion() {
         try {
             DialogoFichaAvion dialogo = new DialogoFichaAvion(this, controlador);
             dialogo.setVisible(true);
@@ -6634,74 +6634,7 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public void mostrarDialogoVisor3DAeronave() {
-        JDialog dialogo = new JDialog(this, "Telemetría de Aeronave - Vista 3D Airbus A320neo (CORPAC S.A.)", false);
-        dialogo.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialogo.setSize(840, 620);
-        dialogo.setLocationRelativeTo(this);
-        dialogo.setResizable(true);
-
-        JPanel panelContenedor = new JPanel(new BorderLayout(0, 8));
-        panelContenedor.setBackground(Theme.getBg());
-        panelContenedor.setBorder(new EmptyBorder(10, 14, 10, 14));
-
-        JPanel panelInfo = new JPanel(new BorderLayout());
-        panelInfo.setOpaque(false);
-
-        JLabel lblTitulo = new JLabel("Telemetría Física y Visualizador 3D Vectorial (Airbus A320neo)");
-        lblTitulo.setFont(FontManager.getBarlowCondensed(Font.BOLD, 16f));
-        lblTitulo.setForeground(Theme.getTexto());
-        lblTitulo.setIcon(AppIcon.of("plane", 14, Theme.getPasajeroAccent()));
-
-        JLabel lblSub = new JLabel("Herramienta complementaria de inspección externa · Arrastre para orbitar / Rueda para zoom");
-        lblSub.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 11f));
-        lblSub.setForeground(Theme.getSecundario());
-
-        JPanel pTit = new JPanel(new GridLayout(2, 1, 0, 2));
-        pTit.setOpaque(false);
-        pTit.add(lblTitulo);
-        pTit.add(lblSub);
-        panelInfo.add(pTit, BorderLayout.WEST);
-
-        panelContenedor.add(panelInfo, BorderLayout.NORTH);
-
-        PanelVisorAvion3D visor3D = new PanelVisorAvion3D();
-        panelContenedor.add(visor3D, BorderLayout.CENTER);
-
-        JPanel panelBarra = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
-        panelBarra.setOpaque(false);
-
-        JButton btnReset = new JButton("Reiniciar Cámara");
-        btnReset.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 11f));
-        btnReset.setBackground(Theme.getElevated());
-        btnReset.setForeground(Theme.getTexto());
-        btnReset.addActionListener(e -> visor3D.reiniciarCamara());
-
-        JButton btnWireframe = new JButton("Modo Alambre / Sólido");
-        btnWireframe.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 11f));
-        btnWireframe.setBackground(Theme.getElevated());
-        btnWireframe.setForeground(Theme.getTexto());
-        btnWireframe.addActionListener(e -> visor3D.alternarModoAlambre());
-
-        JButton btnAnim = new JButton("Pausar / Reanudar Giro");
-        btnAnim.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 11f));
-        btnAnim.setBackground(Theme.getElevated());
-        btnAnim.setForeground(Theme.getTexto());
-        btnAnim.addActionListener(e -> visor3D.alternarAnimacion());
-
-        JButton btnCerrar = new JButton("Volver a Matriz 2D");
-        btnCerrar.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
-        btnCerrar.setBackground(Theme.getPasajeroSoft());
-        btnCerrar.setForeground(Theme.getPasajeroAccent());
-        btnCerrar.addActionListener(e -> dialogo.dispose());
-
-        panelBarra.add(btnReset);
-        panelBarra.add(btnWireframe);
-        panelBarra.add(btnAnim);
-        panelBarra.add(btnCerrar);
-        panelContenedor.add(panelBarra, BorderLayout.SOUTH);
-
-        dialogo.setContentPane(panelContenedor);
-        dialogo.setVisible(true);
+        mostrarFichaAvion();
     }
 
     public JPanel obtenerPanelArboles() {

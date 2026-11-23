@@ -336,7 +336,7 @@ public class PanelRadarSmartAirport extends JPanel {
 
         if (btnRotar != null) pGridBotones.add(btnRotar);
         if (btnAlternarVista != null) pGridBotones.add(btnAlternarVista);
-        JButton btnInspeccion3D = PanelTelemetriaConsola.crearBotonOutline("Modelo 3D Interactivo", Theme.getPasajeroAccent(), e -> abrirVisorAeronave3D());
+        JButton btnInspeccion3D = PanelTelemetriaConsola.crearBotonOutline("Ficha Técnica de Aeronave", Theme.getPasajeroAccent(), e -> abrirVisorAeronave3D());
         pGridBotones.add(btnInspeccion3D);
         if (btnAccesoAdminRapido != null) pGridBotones.add(btnAccesoAdminRapido);
 
@@ -533,63 +533,13 @@ public class PanelRadarSmartAirport extends JPanel {
     }
 
     public void abrirVisorAeronave3D() {
+        if (ventanaPrincipal != null) {
+            ventanaPrincipal.mostrarFichaAvion();
+            return;
+        }
         Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
-        JDialog diag3D = new JDialog(parent, "Inspeccion 3D Interactiva - Airbus A320neo / Flota CORPAC S.A.", true);
-        diag3D.setSize(920, 700);
-        diag3D.setLocationRelativeTo(this);
-
-        JPanel pPrincipal = new JPanel(new BorderLayout(0, 8));
-        pPrincipal.setBackground(Theme.getBg());
-        pPrincipal.setBorder(new EmptyBorder(10, 12, 10, 12));
-
-        PanelVisorAvion3D visor = new PanelVisorAvion3D();
-        visor.setBorder(BorderFactory.createLineBorder(Theme.getBorder(), 1));
-
-        JPanel pBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 6));
-        pBotones.setOpaque(false);
-
-        JButton bGiro = new JButton("Pausar / Rotar Auto");
-        bGiro.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        bGiro.setBackground(Theme.getElevated());
-        bGiro.setForeground(Theme.getPasajeroAccent());
-        bGiro.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        bGiro.setFocusPainted(false);
-        bGiro.addActionListener(ev -> visor.alternarAnimacion());
-
-        JButton bMalla = new JButton("Malla Vectorial / Solido");
-        bMalla.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        bMalla.setBackground(Theme.getElevated());
-        bMalla.setForeground(Theme.getTexto());
-        bMalla.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        bMalla.setFocusPainted(false);
-        bMalla.addActionListener(ev -> visor.alternarModoAlambre());
-
-        JButton bReset = new JButton("Reiniciar Camara");
-        bReset.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        bReset.setBackground(Theme.getElevated());
-        bReset.setForeground(Theme.getWarning());
-        bReset.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        bReset.setFocusPainted(false);
-        bReset.addActionListener(ev -> visor.reiniciarCamara());
-
-        JButton bCerrar = new JButton("Cerrar Visor 3D");
-        bCerrar.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        bCerrar.setBackground(Theme.getElevated());
-        bCerrar.setForeground(Color.WHITE);
-        bCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        bCerrar.setFocusPainted(false);
-        bCerrar.addActionListener(ev -> diag3D.dispose());
-
-        pBotones.add(bGiro);
-        pBotones.add(bMalla);
-        pBotones.add(bReset);
-        pBotones.add(bCerrar);
-
-        pPrincipal.add(visor, BorderLayout.CENTER);
-        pPrincipal.add(pBotones, BorderLayout.SOUTH);
-
-        diag3D.setContentPane(pPrincipal);
-        diag3D.setVisible(true);
+        DialogoFichaAvion ficha = new DialogoFichaAvion(parent instanceof JFrame ? (JFrame) parent : null, controlador);
+        ficha.setVisible(true);
     }
 
     // Sincronización con el tema global Claro / Oscuro

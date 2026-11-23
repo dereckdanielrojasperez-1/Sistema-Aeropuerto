@@ -234,7 +234,7 @@ public class DialogoFichaAvion extends JDialog {
 
         btnVerFoto = new JButton("Fotografía HD en Vuelo");
         btnVerPlano = new JButton("Plano Técnico y Dimensiones");
-        btnVer3D = new JButton("Modelo 3D Interactivo");
+        btnVer3D = new JButton("Visor CAD y Dimensiones");
 
         estilizarBotonPill(btnVerFoto, true);
         estilizarBotonPill(btnVerPlano, false);
@@ -275,20 +275,15 @@ public class DialogoFichaAvion extends JDialog {
         JPanel barraBotones3D = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
         barraBotones3D.setOpaque(false);
 
-        JButton btnGiro = new JButton("Pausar / Rotar Auto");
+        JButton btnGiro = new JButton("Alternar Plano CAD / Foto");
         estilizarBotonSecundario(btnGiro, azulCyan, fondoHeader);
-        btnGiro.addActionListener(e -> visor3D.alternarAnimacion());
+        btnGiro.addActionListener(e -> visor3D.alternarModoAlambre());
 
-        JButton btnMalla = new JButton("Malla 3D / Sólido");
-        estilizarBotonSecundario(btnMalla, textoBlanco, fondoHeader);
-        btnMalla.addActionListener(e -> visor3D.alternarModoAlambre());
-
-        JButton btnReset = new JButton("Centrar Cámara");
+        JButton btnReset = new JButton("Centrar Imagen");
         estilizarBotonSecundario(btnReset, doradoSmart, fondoHeader);
         btnReset.addActionListener(e -> visor3D.reiniciarCamara());
 
         barraBotones3D.add(btnGiro);
-        barraBotones3D.add(btnMalla);
         barraBotones3D.add(btnReset);
 
         panelContenedor3D.add(visor3D, BorderLayout.CENTER);
