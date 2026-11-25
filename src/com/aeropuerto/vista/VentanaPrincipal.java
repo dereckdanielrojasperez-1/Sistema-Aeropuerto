@@ -317,7 +317,6 @@ public class VentanaPrincipal extends JFrame {
     private JLabel lblFiltroTurnoPasajero;
     private JLabel lblFiltroClasePasajero;
     private JScrollPane scrollTablaPasajero;
-    private JButton btnFichaAvionPasajeroVuelos;
     private JButton btnVerRutaPasajeroVuelos;
     private JButton btnContinuarAsientoPasajeroVuelos;
     private JLabel lblResumenCodigoVuelo;
@@ -339,7 +338,6 @@ public class VentanaPrincipal extends JFrame {
     private JLabel lblTuristaBannerCabina;
     private JComboBox<String> cbClaseCabinaPasajero;
     private JButton btnAutoAsignarPasajero;
-    private JButton btnFichaAvionPasajero;
     private JButton btnVolverVuelosCabina;
     private JButton btnContinuarEquipajeCabina;
 
@@ -3294,11 +3292,6 @@ public class VentanaPrincipal extends JFrame {
             panelPestanas.setSelectedIndex(1);
         });
 
-        btnFichaAvionPasajeroVuelos = new JButton("Ver Ficha Técnica");
-        estilizarBotonAccion(btnFichaAvionPasajeroVuelos, Theme.getElevated(), Theme.getPasajeroAccent());
-        btnFichaAvionPasajeroVuelos.setFont(FontManager.getIBMPlexSans(Font.BOLD, 10.5f));
-        btnFichaAvionPasajeroVuelos.addActionListener(e -> mostrarFichaAvion());
-
         btnVerRutaPasajeroVuelos = new JButton("Consultar Ruta Aérea");
         estilizarBotonAccion(btnVerRutaPasajeroVuelos, Theme.getElevated(), Theme.getTexto());
         btnVerRutaPasajeroVuelos.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 10.5f));
@@ -3311,7 +3304,7 @@ public class VentanaPrincipal extends JFrame {
                         "- Origen: " + act.obtenerOrigen() + " (LIM)\n" +
                         "- Destino: " + act.obtenerDestino() + " (" + obtenerIata(act.obtenerDestino()) + ")\n" +
                         "- Duración estimada: " + act.obtenerDuracion() + " minutos\n" +
-                        "- Aeronave: Airbus A320neo (50 Asientos)\n" +
+                        "- Aeronave: " + controlador.obtenerAvion().obtenerModelo() + " (50 Asientos)\n" +
                         "- Operador: CORPAC Airways / Servicio Nacional",
                         "Detalle de Ruta", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -3323,9 +3316,8 @@ public class VentanaPrincipal extends JFrame {
         btnActualizarCatalogo.setToolTipText("Reprogramar y ajustar horario de vuelo con recálculo dinámico");
         btnActualizarCatalogo.addActionListener(e -> accionReprogramarHorarioVuelo());
 
-        JPanel pBotonesSecundarios = new JPanel(new GridLayout(3, 1, 0, 5));
+        JPanel pBotonesSecundarios = new JPanel(new GridLayout(2, 1, 0, 5));
         pBotonesSecundarios.setOpaque(false);
-        pBotonesSecundarios.add(btnFichaAvionPasajeroVuelos);
         pBotonesSecundarios.add(btnVerRutaPasajeroVuelos);
         pBotonesSecundarios.add(btnActualizarCatalogo);
 
@@ -3937,17 +3929,6 @@ public class VentanaPrincipal extends JFrame {
         btnAutoAsignarPasajero.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnAutoAsignarPasajero.addActionListener(e -> accionAutoAsignarPasajero());
 
-        btnFichaAvionPasajero = new JButton("Especificaciones Airbus A320neo");
-        btnFichaAvionPasajero.setFont(FontManager.getIBMPlexSans(Font.PLAIN, 11f));
-        btnFichaAvionPasajero.setBackground(Theme.getElevated());
-        btnFichaAvionPasajero.setForeground(Theme.getTexto());
-        btnFichaAvionPasajero.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Theme.getBorder(), 1),
-                BorderFactory.createEmptyBorder(6, 10, 6, 10)));
-        btnFichaAvionPasajero.setFocusPainted(false);
-        btnFichaAvionPasajero.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnFichaAvionPasajero.addActionListener(e -> mostrarFichaAvion());
-
         btnContinuarEquipajeCabina = new JButton("Continuar a Registro de Equipaje ->");
         estilizarBotonAccion(btnContinuarEquipajeCabina, Theme.getElevated(), Theme.getPasajeroAccent());
         btnContinuarEquipajeCabina.setFont(FontManager.getIBMPlexSans(Font.BOLD, 11f));
@@ -3983,7 +3964,6 @@ public class VentanaPrincipal extends JFrame {
         pBotonesColumnaCabina.add(btnConfirmarAsientoPasajero);
         pBotonesColumnaCabina.add(btnContinuarEquipajeCabina);
         pBotonesColumnaCabina.add(btnAutoAsignarPasajero);
-        pBotonesColumnaCabina.add(btnFichaAvionPasajero);
         pBotonesColumnaCabina.add(btnVolverVuelosCabina);
 
         GlassPanel cardAccionesCabina = GlassPanel.crearApartado("Acciones de Reserva", "Asignación y Validación", Theme.getPasajeroAccent(), pBotonesColumnaCabina);
@@ -6560,6 +6540,12 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public void mostrarFichaAvion() {
+        if (!vistaTecnicaActiva) {
+            JOptionPane.showMessageDialog(this,
+                    "La Ficha Técnica y los planos de aeronave están restringidos al Modo Administrador / Operaciones.",
+                    "Acceso Restringido", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         try {
             DialogoFichaAvion dialogo = new DialogoFichaAvion(this, controlador);
             dialogo.setVisible(true);
