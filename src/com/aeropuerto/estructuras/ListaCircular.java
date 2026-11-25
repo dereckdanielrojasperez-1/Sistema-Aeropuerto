@@ -3,7 +3,7 @@ package com.aeropuerto.estructuras;
 import com.aeropuerto.modelo.PuertaEmbarque;
 
 // Lista circular para asignacion rotativa de puertas de embarque
-public class ListaCircular {
+public class ListaCircular implements TADLista {
 
     private static final int FACTOR_SEGURIDAD_ITERACIONES = 20;
 
@@ -206,6 +206,12 @@ public class ListaCircular {
         return cursorActual;
     }
 
+    @Override
+    public String listar() {
+        return listarPuertas();
+    }
+
+    @Override
     public void vaciar() {
         this.cabeza = null;
         this.ultimo = null;

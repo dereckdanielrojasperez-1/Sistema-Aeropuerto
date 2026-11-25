@@ -4,10 +4,12 @@ package com.aeropuerto.estructuras;
 public class NodoPila {
     public Object dato;
     public NodoPila siguiente;
+    public NodoPila anterior;
 
     public NodoPila(Object dato) {
         this.dato = dato;
         this.siguiente = null;
+        this.anterior = null;
     }
 
     public Object obtenerDato() {

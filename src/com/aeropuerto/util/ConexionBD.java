@@ -196,7 +196,7 @@ public class ConexionBD {
                 ")"
             );
 
-            // 3. Tabla Asientos (Matriz 10x5 con identificador de vuelo)
+            // 3. Tabla Asientos (Matriz 10x5 con identificador de vuelo y FK)
             stmt.executeUpdate(
                 "CREATE TABLE IF NOT EXISTS asientos (" +
                 "  codigo_vuelo VARCHAR(20) NOT NULL DEFAULT 'CP-2023'," +
@@ -204,7 +204,8 @@ public class ConexionBD {
                 "  columna INT NOT NULL," +
                 "  estado INT NOT NULL DEFAULT 0," +
                 "  dni_pasajero VARCHAR(20)," +
-                "  PRIMARY KEY (codigo_vuelo, fila, columna)" +
+                "  PRIMARY KEY (codigo_vuelo, fila, columna)," +
+                "  CONSTRAINT fk_asientos_vuelo FOREIGN KEY (codigo_vuelo) REFERENCES vuelos(codigo) ON DELETE CASCADE" +
                 ")"
             );
 
@@ -213,9 +214,10 @@ public class ConexionBD {
                 "CREATE TABLE IF NOT EXISTS equipaje (" +
                 "  id VARCHAR(20) PRIMARY KEY," +
                 "  dni_pasajero VARCHAR(20) NOT NULL," +
-                "  codigo_vuelo VARCHAR(20) NOT NULL DEFAULT 'General'," +
+                "  codigo_vuelo VARCHAR(20) NOT NULL DEFAULT 'CP-2023'," +
                 "  peso DOUBLE NOT NULL," +
-                "  tipo VARCHAR(20) NOT NULL" +
+                "  tipo VARCHAR(20) NOT NULL," +
+                "  CONSTRAINT fk_equipaje_vuelo FOREIGN KEY (codigo_vuelo) REFERENCES vuelos(codigo) ON DELETE CASCADE" +
                 ")"
             );
 
@@ -239,20 +241,57 @@ public class ConexionBD {
                 ")"
             );
 
-            // 7. Tabla Pasajeros
+            // 7. Tabla Pasajes (Reservas y Boletas)
             stmt.executeUpdate(
-                "CREATE TABLE IF NOT EXISTS pasajeros (" +
-                "  dni VARCHAR(20) PRIMARY KEY," +
-                "  nombre VARCHAR(100) NOT NULL," +
-                "  clase VARCHAR(20) NOT NULL," +
+                "CREATE TABLE IF NOT EXISTS pasajes (" +
+                "  id_pasaje VARCHAR(30) PRIMARY KEY," +
+                "  usuario VARCHAR(50) NOT NULL," +
                 "  codigo_vuelo VARCHAR(20) NOT NULL," +
-                "  asiento_fila INT DEFAULT -1," +
-                "  asiento_columna INT DEFAULT -1" +
+                "  dni_pasajero VARCHAR(20) NOT NULL," +
+                "  nombre_pasajero VARCHAR(100) NOT NULL," +
+                "  fila INT NOT NULL," +
+                "  columna INT NOT NULL," +
+                "  tarifa_total DOUBLE NOT NULL," +
+                "  estado VARCHAR(20) NOT NULL DEFAULT 'CONFIRMADO'," +
+                "  CONSTRAINT fk_pasajes_vuelo FOREIGN KEY (codigo_vuelo) REFERENCES vuelos(codigo) ON DELETE CASCADE," +
+                "  CONSTRAINT fk_pasajes_usuario FOREIGN KEY (usuario) REFERENCES usuarios(usuario) ON DELETE CASCADE" +
                 ")"
             );
 
-            // Insertar administrador si no existe
-            stmt.executeUpdate("INSERT IGNORE INTO usuarios (usuario, clave, rol, dni, nombre) VALUES ('admin', 'admin123', 'ADMIN', '00000000', 'Administrador Principal')");
+            // 8. Tabla Aeropuertos
+            stmt.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS aeropuertos (" +
+                "  codigo_iata VARCHAR(10) PRIMARY KEY," +
+                "  nombre VARCHAR(100) NOT NULL," +
+                "  ciudad VARCHAR(50) NOT NULL," +
+                "  total_pistas INT NOT NULL," +
+                "  pistas_libres INT NOT NULL," +
+                "  capacidad_stands INT NOT NULL," +
+                "  aeronaves_actuales INT NOT NULL," +
+                "  estado VARCHAR(20) NOT NULL," +
+                "  clima VARCHAR(50)," +
+                "  supervisor_cargo VARCHAR(100)" +
+                ")"
+            );
+
+            // 9. Tabla Supervisores
+            stmt.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS supervisores (" +
+                "  id VARCHAR(20) PRIMARY KEY," +
+                "  nombre VARCHAR(100) NOT NULL," +
+                "  dni VARCHAR(20) NOT NULL," +
+                "  turno VARCHAR(20) NOT NULL," +
+                "  rol VARCHAR(50) NOT NULL," +
+                "  aeropuerto_asignado VARCHAR(10)," +
+                "  estado VARCHAR(20) NOT NULL" +
+                ")"
+            );
+
+            // Insertar credenciales por defecto si no existen
+            stmt.executeUpdate("INSERT IGNORE INTO usuarios (usuario, clave, rol, dni, nombre) VALUES ('admin', 'admin123', 'ADMIN', '00000000', 'Administrador Principal CORPAC')");
+            stmt.executeUpdate("INSERT IGNORE INTO usuarios (usuario, clave, rol, dni, nombre) VALUES ('operador', 'operador123', 'OPERADOR', '11111111', 'Operador de Vuelos CORPAC')");
+            stmt.executeUpdate("INSERT IGNORE INTO usuarios (usuario, clave, rol, dni, nombre) VALUES ('supervisor', 'sup123', 'SUPERVISOR', '22222222', 'Supervisor de Operaciones CORPAC')");
+            stmt.executeUpdate("INSERT IGNORE INTO usuarios (usuario, clave, rol, dni, nombre) VALUES ('pasajero', '123456', 'PASAJERO', '72345678', 'Pasajero Comercial')");
 
             stmt.close();
             System.out.println("[ConexionBD] Base de datos y tablas inicializadas con exito en MySQL.");

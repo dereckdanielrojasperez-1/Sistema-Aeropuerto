@@ -9,10 +9,12 @@ public class ListaSimple implements TADLista {
     private static final int FACTOR_SEGURIDAD_ITERACIONES = 20;
 
     private NodoSimple cabeza;
+    private NodoSimple ultimo;
     private int tamano;
 
     public ListaSimple() {
         this.cabeza = null;
+        this.ultimo = null;
         this.tamano = 0;
     }
 
@@ -100,16 +102,14 @@ public class ListaSimple implements TADLista {
         }
 
         NodoSimple nodoNuevo = new NodoSimple(equipaje);
-        // Caso 1: Inserción en lista vacía
+        // Caso 1: Inserción en lista vacía O(1)
         if (estaVacia()) {
             this.cabeza = nodoNuevo;
+            this.ultimo = nodoNuevo;
         } else {
-            // Caso 2: Recorrido hasta el último nodo
-            NodoSimple nodoActual = this.cabeza;
-            while (nodoActual.siguiente != null) {
-                nodoActual = nodoActual.siguiente;
-            }
-            nodoActual.siguiente = nodoNuevo;
+            // Caso 2: Inserción directa al final en O(1) mediante puntero ultimo
+            this.ultimo.siguiente = nodoNuevo;
+            this.ultimo = nodoNuevo;
         }
         this.tamano++;
         return true;
@@ -135,7 +135,10 @@ public class ListaSimple implements TADLista {
                 && this.cabeza.dato.obtenerId().equalsIgnoreCase(idBuscado)) {
             this.cabeza = this.cabeza.siguiente;
             this.tamano--;
-            if (this.tamano <= 0) this.cabeza = null;
+            if (this.tamano <= 0 || this.cabeza == null) {
+                this.cabeza = null;
+                this.ultimo = null;
+            }
             return true;
         }
 
@@ -150,8 +153,14 @@ public class ListaSimple implements TADLista {
                 if (nodoAnterior != null) {
                     nodoAnterior.siguiente = nodoActual.siguiente;
                 }
+                if (nodoActual == this.ultimo) {
+                    this.ultimo = nodoAnterior;
+                }
                 this.tamano--;
-                if (this.tamano <= 0) this.cabeza = null;
+                if (this.tamano <= 0) {
+                    this.cabeza = null;
+                    this.ultimo = null;
+                }
                 return true;
             }
             nodoAnterior = nodoActual;
@@ -273,6 +282,7 @@ public class ListaSimple implements TADLista {
 
     public void vaciar() {
         this.cabeza = null;
+        this.ultimo = null;
         this.tamano = 0;
     }
 }

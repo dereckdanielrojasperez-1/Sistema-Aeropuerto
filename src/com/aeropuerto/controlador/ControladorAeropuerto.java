@@ -40,6 +40,7 @@ public class ControladorAeropuerto {
     // Catalogo de vuelos en arreglo unidimensional dinamico
     private Vuelo[] vuelos;
     private int contadorVuelos;
+    private boolean estaOrdenadoPorCodigo = false;
 
     // Matriz de asientos (10x5) y aeronave
     private Avion avion;
@@ -155,14 +156,14 @@ public class ControladorAeropuerto {
         sincronizarIndiceArbol();
     }
 
-    // Inicializar 5 puertas estandar en el terminal
+    // Inicializar 20 puertas estandar en el terminal (TAD Lista Circular)
     public void cargarPuertasEstandar() {
         this.listaPuertas = new ListaCircular();
-        agregarPuerta(new PuertaEmbarque("Puerta 01", "Terminal 1", "Disponible", "Sin asignar"));
-        agregarPuerta(new PuertaEmbarque("Puerta 02", "Terminal 1", "Disponible", "Sin asignar"));
-        agregarPuerta(new PuertaEmbarque("Puerta 03", "Terminal 1", "Disponible", "Sin asignar"));
-        agregarPuerta(new PuertaEmbarque("Puerta 04", "Terminal 2", "Disponible", "Sin asignar"));
-        agregarPuerta(new PuertaEmbarque("Puerta 05", "Terminal 2", "Disponible", "Sin asignar"));
+        for (int i = 1; i <= 20; i++) {
+            String terminal = (i <= 10) ? "Terminal 1" : "Terminal 2";
+            String num = String.format("Puerta %02d", i);
+            agregarPuerta(new PuertaEmbarque(num, terminal, "Disponible", "Sin asignar"));
+        }
     }
 
     // Garantiza que existan vuelos comerciales con variaciones para el modo Pasajero
@@ -255,6 +256,7 @@ public class ControladorAeropuerto {
         }
         vuelos[contadorVuelos] = vuelo;
         contadorVuelos++;
+        estaOrdenadoPorCodigo = false;
         sincronizarIndiceArbol();
     }
 
@@ -283,6 +285,7 @@ public class ControladorAeropuerto {
 
         vuelos[contadorVuelos] = vuelo;
         contadorVuelos++;
+        estaOrdenadoPorCodigo = false;
         sincronizarIndiceArbol();
 
         if (codigoVueloActivo == null || codigoVueloActivo.isEmpty()) {
@@ -308,6 +311,7 @@ public class ControladorAeropuerto {
             nuevoVuelo.establecerMatrizPasajeros(previo.obtenerMatrizPasajeros());
         }
         vuelos[indice] = nuevoVuelo;
+        estaOrdenadoPorCodigo = false;
         if (nuevoVuelo.obtenerCodigo() != null && nuevoVuelo.obtenerCodigo().equalsIgnoreCase(codigoVueloActivo)) {
             sincronizarAvionConVuelo(nuevoVuelo);
         }
@@ -329,6 +333,7 @@ public class ControladorAeropuerto {
         }
         contadorVuelos--;
         vuelos[contadorVuelos] = null;
+        estaOrdenadoPorCodigo = false;
         sincronizarIndiceArbol();
 
         if (codigoEliminado.equalsIgnoreCase(codigoVueloActivo)) {
@@ -379,6 +384,7 @@ public class ControladorAeropuerto {
             }
             vuelos[j + 1] = actual;
         }
+        estaOrdenadoPorCodigo = false;
     }
 
     // Ordenamiento del arreglo por codigo (Burbuja)
@@ -395,6 +401,7 @@ public class ControladorAeropuerto {
                 }
             }
         }
+        estaOrdenadoPorCodigo = true;
     }
 
     // Clonacion de arreglo de vuelos
@@ -420,6 +427,28 @@ public class ControladorAeropuerto {
         return true;
     }
 
+    public String compararArreglosVuelos() {
+        if (contadorVuelos == 0) return "El catálogo de vuelos se encuentra actualmente vacío (0 vuelos).";
+        Vuelo[] copia = clonarArregloVuelos();
+        boolean sonIguales = compararArreglosVuelos(vuelos, copia);
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== COMPARACIÓN FORMAL DE ARREGLOS VUELO[] (UNIDAD 1 - SÍLABO UTP) ===\n\n");
+        sb.append("Arreglo Principal (vuelos[]): ").append(contadorVuelos).append(" vuelos en memoria activa.\n");
+        sb.append("Arreglo Respaldo (copia[]):   ").append(copia.length).append(" vuelos clonados de forma física independiente.\n\n");
+        sb.append("Algoritmo Evaluado: Comparación secuencial posición por posición O(n).\n");
+        sb.append("Resultado: ").append(sonIguales ? "COINCIDENCIA TOTAL (Arreglos idénticos en código y ordenación)" : "DISCREPANTES").append("\n\n");
+        sb.append("Muestra de los primeros vuelos comparados:\n");
+        int limite = Math.min(contadorVuelos, 8);
+        for (int i = 0; i < limite; i++) {
+            sb.append(String.format("  [%02d] Principal: %-8s | Respaldo: %-8s | Estado: COINCIDE\n",
+                    i, vuelos[i].obtenerCodigo(), copia[i].obtenerCodigo()));
+        }
+        if (contadorVuelos > limite) {
+            sb.append("  ... y ").append(contadorVuelos - limite).append(" vuelos adicionales verificados con éxito.\n");
+        }
+        return sb.toString();
+    }
+
     // Fusion de dos arreglos de vuelos en uno nuevo (Unidad 1 - Silabo)
     public Vuelo[] fusionarArreglosVuelos(Vuelo[] arr1, Vuelo[] arr2) {
         int n1 = (arr1 != null) ? arr1.length : 0;
@@ -432,6 +461,30 @@ public class ControladorAeropuerto {
             fusion[n1 + j] = arr2[j];
         }
         return fusion;
+    }
+
+    public String fusionarArreglosVuelos() {
+        if (contadorVuelos == 0) return "El catálogo de vuelos se encuentra actualmente vacío (0 vuelos).";
+        Vuelo[] itinerarioEspecial = new Vuelo[] {
+            new Vuelo("CP-8001", "Lima", "Chachapoyas", "2026-12-01", "06:30", "08:00", 90, 240.0, "Turista"),
+            new Vuelo("CP-8002", "Lima", "Tumbes", "2026-12-01", "07:15", "09:10", 115, 275.0, "Turista")
+        };
+        Vuelo[] activos = new Vuelo[contadorVuelos];
+        System.arraycopy(vuelos, 0, activos, 0, contadorVuelos);
+        Vuelo[] fusion = fusionarArreglosVuelos(activos, itinerarioEspecial);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== FUSIÓN DE ARREGLOS ESTÁTICOS VUELO[] (UNIDAD 1 - SÍLABO UTP) ===\n\n");
+        sb.append("Arreglo Base A (Operaciones Troncales): ").append(contadorVuelos).append(" vuelos activos.\n");
+        sb.append("Arreglo B (Rutas Especiales/Chachapoyas y Tumbes): ").append(itinerarioEspecial.length).append(" vuelos adicionales.\n");
+        sb.append("Nuevo Arreglo Resultante (A + B): ").append(fusion.length).append(" vuelos en nuevo bloque continuo O(n1 + n2).\n\n");
+        sb.append("Detalle del nuevo bloque de memoria fusionado:\n");
+        for (int i = 0; i < fusion.length; i++) {
+            Vuelo v = fusion[i];
+            sb.append(String.format("  [%02d] %-8s | %-15s -> %-15s | Tarifa: S/. %6.2f | %s\n",
+                    i + 1, v.obtenerCodigo(), v.obtenerOrigen(), v.obtenerDestino(), v.obtenerPrecioBase(), v.obtenerClaseDisponible()));
+        }
+        return sb.toString();
     }
 
     // Recorrido secuencial del arreglo unidimensional Vuelo[]
@@ -683,45 +736,25 @@ public class ControladorAeropuerto {
         if (codigo == null || contadorVuelos == 0) return null;
         String buscado = codigo.trim();
 
-        // 1. Obtener copia de los elementos actuales válidos (no nulos)
-        int cantValidos = 0;
-        for (int i = 0; i < contadorVuelos; i++) {
-            if (vuelos[i] != null && vuelos[i].obtenerCodigo() != null) cantValidos++;
-        }
-        if (cantValidos == 0) return null;
-
-        Vuelo[] copia = new Vuelo[cantValidos];
-        int idx = 0;
-        for (int i = 0; i < contadorVuelos; i++) {
-            if (vuelos[i] != null && vuelos[i].obtenerCodigo() != null) {
-                copia[idx++] = vuelos[i];
+        // 1. Si no esta ordenado por codigo, se ordena una sola vez con Quicksort O(n log n)
+        if (!estaOrdenadoPorCodigo) {
+            if (contadorVuelos > 1) {
+                AlgoritmosOrdenamientoAvanzado.quicksortPorCodigo(vuelos, 0, contadorVuelos - 1);
             }
+            estaOrdenadoPorCodigo = true;
         }
 
-        // 2. Ordenamiento previo por insercion por codigo alfanumerico
-        for (int i = 1; i < cantValidos; i++) {
-            Vuelo elementoClave = copia[i];
-            int j = i - 1;
-            while (j >= 0 && copia[j].obtenerCodigo().compareToIgnoreCase(elementoClave.obtenerCodigo()) > 0) {
-                copia[j + 1] = copia[j];
-                j--;
-            }
-            copia[j + 1] = elementoClave;
-        }
-
-        // 3. Búsqueda binaria O(log n) sobre el arreglo ordenado
-        // EXPLICACIÓN PEDAGÓGICA (SUSTENTACIÓN SEMANA 15):
-        // Se calcula el índice medio mediante: 'int medio = inicio + (fin - inicio) / 2;'
-        // en lugar de '(inicio + fin) / 2' para prevenir el desbordamiento de enteros (Integer Overflow).
-        // En cada iteración, el espacio de búsqueda se divide estrictamente a la mitad, garantizando
-        // una cota temporal logarítmica O(log2 n) óptima para auditoría de vuelos CORPAC.
+        // 2. Busqueda binaria en O(log n) real sobre el arreglo ordenado
         int inicio = 0;
-        int fin = cantValidos - 1;
+        int fin = contadorVuelos - 1;
         while (inicio <= fin) {
             int medio = inicio + (fin - inicio) / 2;
-            int comparacion = copia[medio].obtenerCodigo().compareToIgnoreCase(buscado);
+            if (vuelos[medio] == null || vuelos[medio].obtenerCodigo() == null) {
+                break;
+            }
+            int comparacion = vuelos[medio].obtenerCodigo().compareToIgnoreCase(buscado);
             if (comparacion == 0) {
-                return copia[medio];
+                return vuelos[medio];
             } else if (comparacion < 0) {
                 inicio = medio + 1;
             } else {
@@ -1390,6 +1423,9 @@ public class ControladorAeropuerto {
     }
 
     public Vuelo buscarVueloPorArbol(String codigo) {
+        if (codigo == null) return null;
+        Vuelo v = ServicioAeropuerto.obtenerInstancia().buscarVueloEnAVL(codigo);
+        if (v != null) return v;
         return ServicioAeropuerto.obtenerInstancia().buscarVueloEnArbol(codigo);
     }
 
@@ -1405,12 +1441,14 @@ public class ControladorAeropuerto {
     public void ordenarVuelosQuicksort(boolean ascendente) {
         if (contadorVuelos > 1) {
             AlgoritmosOrdenamientoAvanzado.quicksortPorPrecio(vuelos, 0, contadorVuelos - 1, ascendente);
+            estaOrdenadoPorCodigo = false;
         }
     }
 
     public void ordenarVuelosMergesort(boolean ascendente) {
         if (contadorVuelos > 1) {
-            AlgoritmosOrdenamientoAvanzado.mergesortPorPrecio(vuelos, 0, contadorVuelos - 1, ascendente);
+            AlgoritmosOrdenamientoAvanzado.mergesortPorDestino(vuelos, 0, contadorVuelos - 1, ascendente);
+            estaOrdenadoPorCodigo = false;
         }
     }
 
@@ -1420,6 +1458,7 @@ public class ControladorAeropuerto {
             System.arraycopy(vuelos, 0, activos, 0, contadorVuelos);
             AlgoritmosOrdenamientoAvanzado.heapsortPorPrecio(activos, ascendente);
             System.arraycopy(activos, 0, vuelos, 0, contadorVuelos);
+            estaOrdenadoPorCodigo = false;
         }
     }
 

@@ -543,15 +543,19 @@ public class DialogoSeleccionRol extends JDialog implements Theme.ThemeListener 
         }
 
         Usuario u = controlador != null ? controlador.autenticarUsuario(usuario, clave) : null;
-        if (u != null && u.esAdministrador()) {
-            Theme.setRolActivo("ADMIN");
-            this.rolSeleccionado = "ADMIN";
+        if (u != null && (u.esAdministrador() || u.esOperador() || u.esSupervisor())) {
+            String rol = u.obtenerRol() != null ? u.obtenerRol().toUpperCase() : "ADMIN";
+            Theme.setRolActivo(rol);
+            this.rolSeleccionado = rol;
             Theme.removeThemeListener(this);
             dispose();
         } else {
             JOptionPane.showMessageDialog(this,
-                    "Credenciales incorrectas para el perfil Administrador.\n" +
-                    "Verifique el usuario y contraseña (por defecto: admin / admin123).",
+                    "Credenciales incorrectas para acceso operativo/administrativo.\n" +
+                    "Verifique usuario y contraseña:\n" +
+                    "- Administrador: admin / admin123\n" +
+                    "- Operador: operador / operador123\n" +
+                    "- Supervisor: supervisor / sup123",
                     "Acceso Denegado", JOptionPane.ERROR_MESSAGE);
             if (txtClaveAdmin != null) {
                 txtClaveAdmin.setText("");
@@ -565,6 +569,8 @@ public class DialogoSeleccionRol extends JDialog implements Theme.ThemeListener 
     }
 
     public boolean esRolAdmin() {
-        return "ADMIN".equalsIgnoreCase(rolSeleccionado);
+        return "ADMIN".equalsIgnoreCase(rolSeleccionado)
+                || "OPERADOR".equalsIgnoreCase(rolSeleccionado)
+                || "SUPERVISOR".equalsIgnoreCase(rolSeleccionado);
     }
 }

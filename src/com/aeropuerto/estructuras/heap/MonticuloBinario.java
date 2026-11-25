@@ -10,11 +10,21 @@ public class MonticuloBinario<T> {
 
     private NodoPrioridad<T>[] elementos;
     private int tamano;
+    private final boolean esMaxHeap;
+
+    public MonticuloBinario() {
+        this(false);
+    }
 
     @SuppressWarnings("unchecked")
-    public MonticuloBinario() {
+    public MonticuloBinario(boolean esMaxHeap) {
+        this.esMaxHeap = esMaxHeap;
         this.elementos = new NodoPrioridad[CAPACIDAD_INICIAL_DEFECTO];
         this.tamano = 0;
+    }
+
+    public boolean esMaxHeap() {
+        return esMaxHeap;
     }
 
     public boolean estaVacio() {
@@ -57,11 +67,9 @@ public class MonticuloBinario<T> {
     }
 
     /**
-     * Extracción de la raíz (mínimo) en tiempo O(log n).
-     * Extrae el elemento prioritario en índice 0, mueve el último elemento
-     * a la cima y lo hunde (Sift-Down) para reequilibrar el montículo.
+     * Extracción de la raíz (mínimo en Min-Heap o máximo en Max-Heap) en tiempo O(log n).
      */
-    public T extraerMinimo() {
+    private T extraerRaiz() {
         if (estaVacio()) return null;
 
         T datoRetorno = elementos[0].dato;
@@ -76,15 +84,71 @@ public class MonticuloBinario<T> {
         return datoRetorno;
     }
 
+    public T extraerMinimo() {
+        if (!esMaxHeap) {
+            return extraerRaiz();
+        }
+        if (estaVacio()) return null;
+        int idxMin = 0;
+        int primeraHoja = tamano / 2;
+        for (int i = Math.max(0, primeraHoja); i < tamano; i++) {
+            if (elementos[i] != null && elementos[i].prioridad < elementos[idxMin].prioridad) {
+                idxMin = i;
+            }
+        }
+        T datoRetorno = elementos[idxMin].dato;
+        elementos[idxMin] = elementos[tamano - 1];
+        elementos[tamano - 1] = null;
+        tamano--;
+        if (idxMin < tamano) {
+            flotar(idxMin);
+            hundir(idxMin);
+        }
+        return datoRetorno;
+    }
+
     /**
-     * Operación Flotar (Sift-Up): Sube el nodo por el árbol mientras su prioridad
-     * sea menor que la de su nodo padre. Complejidad O(log n).
+     * Extracción del máximo en tiempo O(log n) cuando opera en modo Max-Heap.
+     */
+    public T extraerMaximo() {
+        if (esMaxHeap) {
+            return extraerRaiz();
+        }
+        if (estaVacio()) return null;
+        int idxMax = 0;
+        int primeraHoja = tamano / 2;
+        for (int i = Math.max(0, primeraHoja); i < tamano; i++) {
+            if (elementos[i] != null && elementos[i].prioridad > elementos[idxMax].prioridad) {
+                idxMax = i;
+            }
+        }
+        T datoRetorno = elementos[idxMax].dato;
+        elementos[idxMax] = elementos[tamano - 1];
+        elementos[tamano - 1] = null;
+        tamano--;
+        if (idxMax < tamano) {
+            flotar(idxMax);
+            hundir(idxMax);
+        }
+        return datoRetorno;
+    }
+
+    private boolean tieneMayorPrecedencia(int idxA, int idxB) {
+        if (esMaxHeap) {
+            return elementos[idxA].prioridad > elementos[idxB].prioridad;
+        }
+        return elementos[idxA].prioridad < elementos[idxB].prioridad;
+    }
+
+    /**
+     * Operación Flotar (Sift-Up): Sube el nodo por el árbol según modo Min-Heap o Max-Heap.
+     * Complejidad O(log n).
      */
     private void flotar(int indice) {
         int indiceActual = indice;
         while (indiceActual > 0) {
             int indicePadre = (indiceActual - 1) / 2;
-            if (elementos[indiceActual].prioridad < elementos[indicePadre].prioridad) {
+            if (tieneMayorPrecedencia(indiceActual, indicePadre)) {
                 intercambiar(indiceActual, indicePadre);
                 indiceActual = indicePadre;
             } else {
@@ -95,7 +159,7 @@ public class MonticuloBinario<T> {
 
     /**
      * Operación Hundir (Sift-Down): Desciende el nodo por el árbol comparándolo
-     * con sus hijos izquierdo y derecho, permutando con el hijo de menor prioridad.
+     * con sus hijos izquierdo y derecho según modo Min-Heap o Max-Heap.
      * Complejidad O(log n).
      */
     private void hundir(int indice) {
@@ -103,15 +167,15 @@ public class MonticuloBinario<T> {
         while (indiceActual * 2 + 1 < tamano) {
             int indiceHijoIzq = indiceActual * 2 + 1;
             int indiceHijoDer = indiceActual * 2 + 2;
-            int indiceHijoMenor = indiceHijoIzq;
+            int indiceMejorHijo = indiceHijoIzq;
 
-            if (indiceHijoDer < tamano && elementos[indiceHijoDer].prioridad < elementos[indiceHijoIzq].prioridad) {
-                indiceHijoMenor = indiceHijoDer;
+            if (indiceHijoDer < tamano && tieneMayorPrecedencia(indiceHijoDer, indiceHijoIzq)) {
+                indiceMejorHijo = indiceHijoDer;
             }
 
-            if (elementos[indiceHijoMenor].prioridad < elementos[indiceActual].prioridad) {
-                intercambiar(indiceActual, indiceHijoMenor);
-                indiceActual = indiceHijoMenor;
+            if (tieneMayorPrecedencia(indiceMejorHijo, indiceActual)) {
+                intercambiar(indiceActual, indiceMejorHijo);
+                indiceActual = indiceMejorHijo;
             } else {
                 break;
             }

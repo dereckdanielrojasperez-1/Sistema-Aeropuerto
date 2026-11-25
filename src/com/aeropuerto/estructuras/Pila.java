@@ -6,6 +6,7 @@ public class Pila implements TADPila {
     public static final int CAPACIDAD_POR_DEFECTO = 1000;
     private final int capacidadMaxima;
     private NodoPila tope;
+    private NodoPila fondo;
     private int tamano;
 
     public Pila() {
@@ -15,6 +16,7 @@ public class Pila implements TADPila {
     public Pila(int capacidadMaxima) {
         this.capacidadMaxima = Math.max(1, capacidadMaxima);
         this.tope = null;
+        this.fondo = null;
         this.tamano = 0;
     }
 
@@ -37,28 +39,32 @@ public class Pila implements TADPila {
     public void apilar(Object dato) {
         if (dato == null) return;
         if (this.tamano >= this.capacidadMaxima) {
-            // Política FIFO de descarte: se elimina la acción más antigua en el fondo para proteger la memoria heap
+            // Política FIFO de descarte: se elimina la acción más antigua en el fondo en O(1)
             desapilarFondo();
         }
         NodoPila nodoNuevo = new NodoPila(dato);
         nodoNuevo.siguiente = this.tope;
+        if (this.tope != null) {
+            this.tope.anterior = nodoNuevo;
+        }
         this.tope = nodoNuevo;
+        if (this.fondo == null) {
+            this.fondo = nodoNuevo;
+        }
         this.tamano++;
     }
 
-    // Eliminar el elemento más antiguo en el fondo si se alcanza la capacidad máxima
+    // Eliminar el elemento más antiguo en el fondo en estricto O(1) mediante puntero fondo
     private void desapilarFondo() {
-        if (this.tope == null) return;
-        if (this.tope.siguiente == null) {
+        if (this.fondo == null) return;
+        if (this.fondo.anterior == null) {
             this.tope = null;
+            this.fondo = null;
             this.tamano = 0;
             return;
         }
-        NodoPila nodoActual = this.tope;
-        while (nodoActual.siguiente != null && nodoActual.siguiente.siguiente != null) {
-            nodoActual = nodoActual.siguiente;
-        }
-        nodoActual.siguiente = null;
+        this.fondo = this.fondo.anterior;
+        this.fondo.siguiente = null;
         if (this.tamano > 0) this.tamano--;
     }
 
@@ -70,6 +76,11 @@ public class Pila implements TADPila {
         }
         Object datoRetorno = this.tope.dato;
         this.tope = this.tope.siguiente;
+        if (this.tope != null) {
+            this.tope.anterior = null;
+        } else {
+            this.fondo = null;
+        }
         this.tamano--;
         return datoRetorno;
     }
@@ -87,6 +98,7 @@ public class Pila implements TADPila {
     @Override
     public void vaciar() {
         this.tope = null;
+        this.fondo = null;
         this.tamano = 0;
     }
 

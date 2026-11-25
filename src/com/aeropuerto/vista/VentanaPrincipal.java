@@ -1270,6 +1270,20 @@ public class VentanaPrincipal extends JFrame {
         botonEstadisticas.setToolTipText("Cálculo de métricas de catálogo O(n)");
         botonEstadisticas.addActionListener(e -> accionMostrarEstadisticasCatalogo());
 
+        JButton botonCompararVuelos = new JButton("Comparar Flotas");
+        estilizarBotonAccion(botonCompararVuelos, new Color(24, 34, 50), doradoAlerta);
+        botonCompararVuelos.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        botonCompararVuelos.setMargin(new Insets(2, 4, 2, 4));
+        botonCompararVuelos.setToolTipText("Comparación de arreglos posición a posición O(n)");
+        botonCompararVuelos.addActionListener(e -> accionCompararArreglosVuelos());
+
+        JButton botonFusionarVuelos = new JButton("Fusionar Itinerarios");
+        estilizarBotonAccion(botonFusionarVuelos, new Color(24, 34, 50), Theme.getSuccess());
+        botonFusionarVuelos.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        botonFusionarVuelos.setMargin(new Insets(2, 4, 2, 4));
+        botonFusionarVuelos.setToolTipText("Fusión de arreglos en nuevo bloque continuo O(n1 + n2)");
+        botonFusionarVuelos.addActionListener(e -> accionFusionarArreglosVuelos());
+
         // Apartado 1: Operaciones del Catálogo (CRUD) - 2x2 grid
         JPanel contenidoCrud = new JPanel(new GridLayout(2, 2, 4, 3));
         contenidoCrud.setOpaque(false);
@@ -1287,8 +1301,8 @@ public class VentanaPrincipal extends JFrame {
         contenidoBusqueda.add(botonBuscarAVL);
         GlassPanel cardBusqueda = GlassPanel.crearApartado("Algoritmos Búsqueda", "Lineal, Binaria y AVL", doradoAlerta, contenidoBusqueda);
 
-        // Apartado 3: Ordenamiento y Recorridos Algorítmicos - 3x2 grid
-        JPanel contenidoOrden = new JPanel(new GridLayout(3, 2, 4, 3));
+        // Apartado 3: Ordenamiento y Recorridos Algorítmicos - 4x2 grid
+        JPanel contenidoOrden = new JPanel(new GridLayout(4, 2, 4, 3));
         contenidoOrden.setOpaque(false);
         contenidoOrden.add(botonQuicksort);
         contenidoOrden.add(botonOrdenarPrecio);
@@ -1296,6 +1310,8 @@ public class VentanaPrincipal extends JFrame {
         contenidoOrden.add(botonRecorrerVuelos);
         contenidoOrden.add(botonCopiarVuelos);
         contenidoOrden.add(botonEstadisticas);
+        contenidoOrden.add(botonCompararVuelos);
+        contenidoOrden.add(botonFusionarVuelos);
         GlassPanel cardOrden = GlassPanel.crearApartado("Ordenamiento y Métricas", "Quicksort O(n log n) y reporte", azulCyan, contenidoOrden);
 
         panelBotonesCRUD.add(cardCrud);
@@ -6207,7 +6223,7 @@ public class VentanaPrincipal extends JFrame {
         String codigoBuscado = JOptionPane.showInputDialog(this, "Ingrese el código de vuelo para Búsqueda Indexada en Árbol AVL:");
         if (codigoBuscado != null && !codigoBuscado.trim().isEmpty()) {
             controlador.sincronizarIndiceArbol();
-            Vuelo encontrado = controlador.buscarVueloPorCodigo(codigoBuscado.trim().toUpperCase());
+            Vuelo encontrado = controlador.buscarVueloPorArbol(codigoBuscado.trim().toUpperCase());
             if (encontrado != null) {
                 cargarVueloEnFormulario(encontrado);
                 controlador.seleccionarVueloActivo(encontrado.obtenerCodigo());
@@ -6273,6 +6289,18 @@ public class VentanaPrincipal extends JFrame {
         String reporte = controlador.copiarArregloVuelosConReporte();
         log("[ARREGLO VUELOS] Copia física e independiente del arreglo Vuelo[] realizada con éxito.");
         mostrarDialogoTextoLargo("Copia Física Independiente del Arreglo Vuelo[]", reporte, 680, 420);
+    }
+
+    private void accionCompararArreglosVuelos() {
+        String reporte = controlador.compararArreglosVuelos();
+        log("[ARREGLO VUELOS] Comparación de arreglos unidimensionales ejecutada exitosamente.");
+        mostrarDialogoTextoLargo("Comparación de Arreglos Vuelo[] (Unidad 1)", reporte, 680, 420);
+    }
+
+    private void accionFusionarArreglosVuelos() {
+        String reporte = controlador.fusionarArreglosVuelos();
+        log("[ARREGLO VUELOS] Fusión de itinerarios y creación de nuevo arreglo continuo ejecutada con éxito.");
+        mostrarDialogoTextoLargo("Fusión de Arreglos Vuelo[] (Unidad 1)", reporte, 680, 420);
     }
 
     // Eventos de Cabina y Pase de Abordar
@@ -6773,7 +6801,7 @@ public class VentanaPrincipal extends JFrame {
             ArbolAVL<String, String> demoAVL = new ArbolAVL<>();
             StringBuilder sb = new StringBuilder();
             sb.append("=== DEMOSTRACIÓN EN VIVO: ÁRBOL AVL AUTO-BALANCEADO ===\n");
-            sb.append("Mecanismo: Cálculo del Factor de Balance (FE = Altura_Izq - Altura_Der)\n");
+            sb.append("Mecanismo: Cálculo del Factor de Balance (FE = Altura_Der - Altura_Izq)\n");
             sb.append("Condición de Balance Estricta: |FE| <= 1 en todos los nodos del árbol\n\n");
 
             sb.append("1. Inserción de claves para verificar rotaciones canónicas:\n");

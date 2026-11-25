@@ -3,7 +3,7 @@ package com.aeropuerto.estructuras;
 import com.aeropuerto.modelo.Ruta;
 
 // Lista doblemente enlazada para gestion bidireccional de rutas
-public class ListaDoble {
+public class ListaDoble implements TADLista {
 
     private static final int FACTOR_SEGURIDAD_ITERACIONES = 20;
 
@@ -295,6 +295,12 @@ public class ListaDoble {
         return sb.toString();
     }
 
+    @Override
+    public String listar() {
+        return recorrerAdelante();
+    }
+
+    @Override
     public void vaciar() {
         this.cabeza = null;
         this.cola = null;
