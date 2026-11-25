@@ -182,6 +182,24 @@ public class AlgoritmosOrdenamientoAvanzado {
         }
     }
 
+    public static void shellsortPorPrecio(Vuelo[] arreglo, boolean ascendente) {
+        if (arreglo == null || arreglo.length <= 1) return;
+        int n = arreglo.length;
+        for (int brecha = n / 2; brecha > 0; brecha /= 2) {
+            for (int i = brecha; i < n; i++) {
+                Vuelo temp = arreglo[i];
+                int j = i;
+                while (j >= brecha && arreglo[j - brecha] != null && temp != null &&
+                       (ascendente ? (arreglo[j - brecha].obtenerPrecioBase() > temp.obtenerPrecioBase())
+                                   : (arreglo[j - brecha].obtenerPrecioBase() < temp.obtenerPrecioBase()))) {
+                    arreglo[j] = arreglo[j - brecha];
+                    j -= brecha;
+                }
+                arreglo[j] = temp;
+            }
+        }
+    }
+
     private static void amontonarPrecio(Vuelo[] arr, int n, int i, boolean ascendente) {
         int mayor = i;
         int izq = 2 * i + 1;
@@ -228,6 +246,7 @@ public class AlgoritmosOrdenamientoAvanzado {
         Vuelo[] copia3 = clonar(vuelosBase);
         Vuelo[] copia4 = clonar(vuelosBase);
         Vuelo[] copia5 = clonar(vuelosBase);
+        Vuelo[] copia6 = clonar(vuelosBase);
 
         // 1. Burbuja O(n^2)
         long tInicio = System.nanoTime();
@@ -268,19 +287,22 @@ public class AlgoritmosOrdenamientoAvanzado {
         heapsortPorPrecio(copia5, true);
         long tHeapsort = System.nanoTime() - tInicio;
 
+        // 6. Shellsort O(n^1.5)
+        tInicio = System.nanoTime();
+        shellsortPorPrecio(copia6, true);
+        long tShellsort = System.nanoTime() - tInicio;
+
         StringBuilder sb = new StringBuilder();
-    // sb.append("\n");
         sb.append("    BENCHMARKING DE ALGORITMOS DE ORDENAMIENTO (SEMANA 15 - CORPAC)\n");
-    // sb.append("\n");
         sb.append(String.format("Volumen de Datos Evaluado: %d registros de vuelos comerciales\n\n", n));
         sb.append(String.format("%-22s %-16s %-18s %s\n", "Algoritmo", "Complejidad", "Tiempo (ns)", "Tiempo (µs)"));
         sb.append("--------------------------------------------------------------------------------\n");
         sb.append(String.format("%-22s %-16s %-18d %.2f µs\n", "Burbuja (Bubble)", "O(n²)", tBurbuja, tBurbuja / 1000.0));
         sb.append(String.format("%-22s %-16s %-18d %.2f µs\n", "Inserción (Insertion)", "O(n²)", tInsercion, tInsercion / 1000.0));
+        sb.append(String.format("%-22s %-16s %-18d %.2f µs (Brechas h)\n", "Shellsort (Incrementos)", "O(n^1.5)", tShellsort, tShellsort / 1000.0));
         sb.append(String.format("%-22s %-16s %-18d %.2f µs (Recomendado)\n", "Quicksort (Hoare)", "O(n log n)", tQuicksort, tQuicksort / 1000.0));
         sb.append(String.format("%-22s %-16s %-18d %.2f µs (Estable)\n", "Mergesort (Mezcla)", "O(n log n)", tMergesort, tMergesort / 1000.0));
         sb.append(String.format("%-22s %-16s %-18d %.2f µs (Heap in-place)\n", "Heapsort (Montículo)", "O(n log n)", tHeapsort, tHeapsort / 1000.0));
-    // sb.append("\n");
 
         return sb.toString();
     }
@@ -309,6 +331,7 @@ public class AlgoritmosOrdenamientoAvanzado {
         Vuelo[] c3 = clonar(vuelosBase);
         Vuelo[] c4 = clonar(vuelosBase);
         Vuelo[] c5 = clonar(vuelosBase);
+        Vuelo[] c6 = clonar(vuelosBase);
 
         // 1. Burbuja
         long tIni = System.nanoTime();

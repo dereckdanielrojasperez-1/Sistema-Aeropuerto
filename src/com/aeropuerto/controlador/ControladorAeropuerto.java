@@ -856,6 +856,14 @@ public class ControladorAeropuerto {
             this.usuarioActual = new Usuario("admin", "admin123", "ADMIN", "00000000", "Administrador CORPAC");
             return this.usuarioActual;
         }
+        if ("operador".equalsIgnoreCase(usuario) && "operador123".equals(clave)) {
+            this.usuarioActual = new Usuario("operador", "operador123", "OPERADOR", "11111111", "Operador de Vuelos CORPAC");
+            return this.usuarioActual;
+        }
+        if ("supervisor".equalsIgnoreCase(usuario) && "sup123".equals(clave)) {
+            this.usuarioActual = new Usuario("supervisor", "sup123", "SUPERVISOR", "22222222", "Supervisor de Equipajes CORPAC");
+            return this.usuarioActual;
+        }
         if ("pasajero".equalsIgnoreCase(usuario) && "123456".equals(clave)) {
             this.usuarioActual = new Usuario("pasajero", "123456", "PASAJERO", "", "");
             return this.usuarioActual;
@@ -1372,9 +1380,7 @@ public class ControladorAeropuerto {
         return false;
     }
 
-    // ==========================================================
-    // CAPA DE SERVICIO EXTENSIBLE (ABB, GRAFOS, DIAGNÓSTICO)
-    // ==========================================================
+    // Capa de servicio extensible (ABB, Grafos, Diagnostico)
     public ServicioAeropuerto obtenerServicioAeropuerto() {
         return ServicioAeropuerto.obtenerInstancia();
     }
@@ -1395,9 +1401,7 @@ public class ControladorAeropuerto {
         return ServicioAeropuerto.obtenerInstancia().ejecutarDiagnosticoIntegralTADs(this);
     }
 
-    // ==========================================================
-    // ALGORITMOS DE ORDENAMIENTO AVANZADO (SEMANA 15)
-    // ==========================================================
+    // Algoritmos de ordenamiento avanzado
     public void ordenarVuelosQuicksort(boolean ascendente) {
         if (contadorVuelos > 1) {
             AlgoritmosOrdenamientoAvanzado.quicksortPorPrecio(vuelos, 0, contadorVuelos - 1, ascendente);
@@ -1426,9 +1430,7 @@ public class ControladorAeropuerto {
         return AlgoritmosOrdenamientoAvanzado.ejecutarBenchmark(activos);
     }
 
-    // ==========================================================
-    // ESTRUCTURAS SEMANA 15: AVL, HASH, HEAP, MST Y FLOYD
-    // ==========================================================
+    // Estructuras avanzadas: AVL, Hash, Heap, MST y Floyd
     public ArbolAVL<String, Vuelo> obtenerArbolAVL() {
         return ServicioAeropuerto.obtenerInstancia().obtenerArbolAVL();
     }

@@ -64,6 +64,14 @@ public class Usuario implements Serializable {
         return rol != null && rol.equalsIgnoreCase("ADMIN");
     }
 
+    public boolean esOperador() {
+        return rol != null && (rol.equalsIgnoreCase("OPERADOR") || rol.equalsIgnoreCase("OPERADOR_VUELOS"));
+    }
+
+    public boolean esSupervisor() {
+        return rol != null && (rol.equalsIgnoreCase("SUPERVISOR") || rol.equalsIgnoreCase("SUPERVISOR_EQUIPAJE"));
+    }
+
     public boolean esPasajero() {
         return rol != null && rol.equalsIgnoreCase("PASAJERO");
     }

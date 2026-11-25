@@ -121,10 +121,7 @@ public class ServicioAeropuerto {
         return arbolVuelos;
     }
 
-    // =========================================================================
-    // GRAFOS: DIJKSTRA, MST (PRIM Y KRUSKAL) Y FLOYD-WARSHALL
-    // =========================================================================
-
+    // Grafos: Dijkstra, MST (Prim y Kruskal) y Floyd-Warshall
     public List<Vertice> calcularRutaOptima(String codigoOrigen, String codigoDestino) {
         return redRutas.obtenerRutaOptimaDijkstra(codigoOrigen, codigoDestino);
     }
@@ -145,10 +142,7 @@ public class ServicioAeropuerto {
         return redRutas;
     }
 
-    // =========================================================================
-    // TABLA HASH Y MONTÍCULO BINARIO
-    // =========================================================================
-
+    // Tabla Hash y Monticulo Binario
     public TablaHash<String, String> obtenerTablaHashPasajeros() {
         return tablaHashPasajeros;
     }
@@ -176,18 +170,12 @@ public class ServicioAeropuerto {
         return heapDespachoATC.extraerMinimo();
     }
 
-    // =========================================================================
-    // ORDENAMIENTOS AVANZADOS Y BENCHMARKING
-    // =========================================================================
-
+    // Ordenamientos avanzados y Benchmarking
     public String ejecutarBenchmarkOrdenamientos(Vuelo[] vuelos) {
         return AlgoritmosOrdenamientoAvanzado.ejecutarBenchmark(vuelos);
     }
 
-    // =========================================================================
-    // MÓDULOS EXTENSIBLES Y DIAGNÓSTICO INTEGRAL
-    // =========================================================================
-
+    // Modulos extensibles y Diagnostico integral
     public void registrarModulo(ModuloExtensible modulo) {
         if (modulo != null && !modulosRegistrados.contains(modulo)) {
             modulo.inicializar();

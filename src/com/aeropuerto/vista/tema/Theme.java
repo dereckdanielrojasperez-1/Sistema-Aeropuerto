@@ -29,9 +29,7 @@ public final class Theme {
 
     private static final List<ThemeListener> LISTENERS = new ArrayList<>();
 
-    // ==========================================
-    // PALETA OSCURA (Base GitHub Dark Pro / Aviation)
-    // ==========================================
+    // Paleta Oscura (Base GitHub Dark Pro / Aviation)
     private static final Color DARK_BG         = new Color(0x0D, 0x11, 0x17); // #0D1117
     private static final Color DARK_SURFACE    = new Color(0x16, 0x1B, 0x22); // #161B22
     private static final Color DARK_ELEVATED   = new Color(0x1C, 0x21, 0x28); // #1C2128
@@ -45,9 +43,7 @@ public final class Theme {
     private static final Color DARK_WARNING    = new Color(0xD2, 0x99, 0x22); // #D29922
     private static final Color DARK_DANGER     = new Color(0xF8, 0x51, 0x49); // #F85149
 
-    // ==========================================
-    // PALETA CLARA (Base GitHub Light Clean / Aviation)
-    // ==========================================
+    // Paleta Clara (Base GitHub Light Clean / Aviation)
     private static final Color LIGHT_BG         = new Color(0xF4, 0xF6, 0xF8); // #F4F6F8
     private static final Color LIGHT_SURFACE    = new Color(0xFF, 0xFF, 0xFF); // #FFFFFF
     private static final Color LIGHT_ELEVATED   = new Color(0xEE, 0xF1, 0xF4); // #EEF1F4
@@ -61,9 +57,7 @@ public final class Theme {
     private static final Color LIGHT_WARNING    = new Color(0x9A, 0x67, 0x00); // #9A6700
     private static final Color LIGHT_DANGER     = new Color(0xCF, 0x22, 0x2E); // #CF222E
 
-    // ==========================================
-    // IDENTIDADES POR ROL (data-mode)
-    // ==========================================
+    // Identidades por rol (data-mode)
     // Pasajero:
     private static final Color PASAJERO_ACCENT_DARK  = new Color(0x58, 0xA6, 0xFF); // #58A6FF (6.82:1)
     private static final Color PASAJERO_ACCENT_LIGHT = new Color(0x09, 0x69, 0xDA); // #0969DA (5.58:1 en fondo claro)

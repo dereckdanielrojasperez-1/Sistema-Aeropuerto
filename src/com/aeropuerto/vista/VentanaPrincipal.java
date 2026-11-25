@@ -6039,6 +6039,11 @@ public class VentanaPrincipal extends JFrame {
                 return;
             }
 
+            if (duracion <= 0 || precio <= 0.0) {
+                JOptionPane.showMessageDialog(this, "La duración y el precio base deben ser valores numéricos positivos mayores a cero.", "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             Vuelo nuevoVuelo = new Vuelo(codigo, origen, destino, fecha, salida, llegada, duracion, precio, clase);
             String mensaje = controlador.agregarVuelo(nuevoVuelo);
             log(mensaje);
@@ -6083,6 +6088,16 @@ public class VentanaPrincipal extends JFrame {
             int duracion = Integer.parseInt(txtDuracion.getText().trim());
             double precio = Double.parseDouble(txtPrecioBase.getText().trim().replace(',', '.'));
             String clase = (String) cbClase.getSelectedItem();
+
+            if (codigo.isEmpty() || origen.equalsIgnoreCase(destino)) {
+                JOptionPane.showMessageDialog(this, "El código es obligatorio y el destino debe ser distinto al origen.", "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (duracion <= 0 || precio <= 0.0) {
+                JOptionPane.showMessageDialog(this, "La duración y el precio base deben ser valores numéricos positivos mayores a cero.", "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
             Vuelo vAct = new Vuelo(codigo, origen, destino, fecha, salida, llegada, duracion, precio, clase);
             boolean exito = controlador.actualizarVuelo(filaSel, vAct);

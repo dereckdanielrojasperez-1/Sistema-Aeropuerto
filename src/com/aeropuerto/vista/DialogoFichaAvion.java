@@ -129,9 +129,7 @@ public class DialogoFichaAvion extends JDialog {
         panelContenedorRaiz.setBackground(fondoOscuro);
         setContentPane(panelContenedorRaiz);
 
-        // =========================================================================
-        // 1. Encabezado Institucional CORPAC con Selector Rápido de Vuelos de la Flota
-        // =========================================================================
+        // 1. Encabezado Institucional CORPAC con Selector Rapido de Vuelos de la Flota
         JPanel panelEncabezado = new JPanel();
         panelEncabezado.setLayout(new BoxLayout(panelEncabezado, BoxLayout.Y_AXIS));
         panelEncabezado.setBackground(fondoHeader);
@@ -211,9 +209,7 @@ public class DialogoFichaAvion extends JDialog {
 
         panelContenedorRaiz.add(panelEncabezado, BorderLayout.NORTH);
 
-        // =========================================================================
-        // 2. Contenido Central Desplazable (JScrollPane para máxima compatibilidad)
-        // =========================================================================
+        // 2. Contenido Central Desplazable (JScrollPane para maxima compatibilidad)
         JPanel panelCuerpo = new JPanel();
         panelCuerpo.setLayout(new BoxLayout(panelCuerpo, BoxLayout.Y_AXIS));
         panelCuerpo.setBackground(fondoOscuro);
@@ -314,9 +310,7 @@ public class DialogoFichaAvion extends JDialog {
             estilizarBotonPill(btnVer3D, true);
         });
 
-        // =========================================================================
-        // 3. Cuadrícula de Especificaciones Técnicas (4 Paneles Estructurados)
-        // =========================================================================
+        // 3. Cuadricula de Especificaciones Tecnicas (4 Paneles Estructurados)
         JPanel panelCuadricula = new JPanel(new GridLayout(2, 2, 12, 10));
         panelCuadricula.setOpaque(false);
         panelCuadricula.setMaximumSize(new Dimension(32767, 240));
@@ -372,9 +366,7 @@ public class DialogoFichaAvion extends JDialog {
         panelCuerpo.add(panelCuadricula);
         panelCuerpo.add(Box.createVerticalStrut(10));
 
-        // =========================================================================
-        // 4. Reseña Técnica Oficial
-        // =========================================================================
+        // 4. Resena Tecnica Oficial
         txtDescripcion = new JTextArea();
         txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtDescripcion.setLineWrap(true);
@@ -397,9 +389,7 @@ public class DialogoFichaAvion extends JDialog {
         scrollPrincipal.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         panelContenedorRaiz.add(scrollPrincipal, BorderLayout.CENTER);
 
-        // =========================================================================
-        // 5. Barra Inferior con Botón de Cierre
-        // =========================================================================
+        // 5. Barra Inferior con Boton de Cierre
         JPanel panelPie = new JPanel(new FlowLayout(FlowLayout.RIGHT, 14, 8));
         panelPie.setBackground(fondoHeader);
 

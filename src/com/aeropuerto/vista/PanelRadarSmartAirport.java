@@ -653,6 +653,7 @@ public class PanelRadarSmartAirport extends JPanel {
         };
 
         public LienzoGemeloDigital() {
+            setDoubleBuffered(true);
             setBackground(fondoOscuro);
             cargarImagenRender();
 
