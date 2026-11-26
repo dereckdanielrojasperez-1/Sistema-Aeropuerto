@@ -1,4 +1,4 @@
-// HUMANIZACION UI - Botón de Asiento de Cabina con Glassmorphism para CORPAC
+// Botón de Asiento de Cabina con Glassmorphism para CORPAC
 package com.aeropuerto.vista.tema;
 
 import javax.swing.JButton;

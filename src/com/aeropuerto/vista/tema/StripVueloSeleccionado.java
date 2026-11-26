@@ -1,4 +1,3 @@
-// HUMANIZACION UI
 package com.aeropuerto.vista.tema;
 
 import com.aeropuerto.modelo.Vuelo;

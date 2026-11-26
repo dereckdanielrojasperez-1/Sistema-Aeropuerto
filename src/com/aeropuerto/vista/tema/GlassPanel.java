@@ -1,4 +1,4 @@
-// HUMANIZACION UI - Glassmorphism Container para CORPAC Smart Airport
+// Glassmorphism Container para CORPAC Smart Airport
 package com.aeropuerto.vista.tema;
 
 import javax.swing.BorderFactory;

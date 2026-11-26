@@ -1,4 +1,3 @@
-// HUMANIZACION UI
 package com.aeropuerto.vista.tema;
 
 import org.kordamp.ikonli.Ikon;

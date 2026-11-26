@@ -9,16 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * ============================================================================
- * PATRÓN DATA ACCESS OBJECT (DAO): AUTENTICACIÓN Y CONTROL RBAC DE USUARIOS
- * ============================================================================
- * Seguridad y Robustez Clean Code:
- * - Parámetros bind (?) en PreparedStatement contra SQL Injection (OWASP).
- * - Manejo automático de recursos mediante try-with-resources.
- * - Tolerancia a fallos: En ausencia de MySQL, autentica contra credenciales maestras en RAM.
- * ============================================================================
- */
+// DAO para autenticacion y control RBAC de usuarios en MySQL
 public class UsuarioDAO {
 
     // Insertar usuario

@@ -1,14 +1,9 @@
 package com.aeropuerto.modelo;
 
+// Especificacion formal del TAD Vuelo
 /**
- * =========================================================================
- * ESPECIFICACIÓN FORMAL DEL TIPO ABSTRACTO DE DATOS: TAD VUELO
- * =========================================================================
- * 
  * DOMINIO CONCEPTUAL:
- * Modela una frecuencia de transporte aerocomercial itinerada en CORPAC S.A.
- * Gestiona su código alfanumérico IATA/OACI, ruta, horarios, tarifa base y
- * el estado físico de los 50 asientos de su cabina Airbus A320neo.
+ * Modela una frecuencia aerocomercial itinerada en CORPAC S.A. y su cabina 10x5.
  * 
  * SINTAXIS (Signatura de Operaciones):
  * - Constructores:

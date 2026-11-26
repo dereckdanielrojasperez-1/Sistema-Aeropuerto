@@ -1,13 +1,9 @@
 package com.aeropuerto.modelo;
 
+// Especificacion formal del TAD Equipaje
 /**
- * =========================================================================
- * ESPECIFICACIÓN FORMAL DEL TIPO ABSTRACTO DE DATOS: TAD EQUIPAJE
- * =========================================================================
- * 
  * DOMINIO CONCEPTUAL:
- * Modela una pieza de carga de un pasajero comercial procesada en los mostradores
- * de check-in de CORPAC S.A.
+ * Modela una pieza de carga de un pasajero comercial procesada en CORPAC S.A.
  * 
  * SINTAXIS:
  * - Constructores:

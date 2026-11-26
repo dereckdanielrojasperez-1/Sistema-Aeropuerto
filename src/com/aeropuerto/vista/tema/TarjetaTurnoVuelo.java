@@ -1,4 +1,4 @@
-// HUMANIZACION UI - Tarjeta Comercial Ejecutiva de Vuelo
+// Tarjeta Comercial Ejecutiva de Vuelo
 package com.aeropuerto.vista.tema;
 
 import com.aeropuerto.modelo.Vuelo;

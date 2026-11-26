@@ -1,13 +1,9 @@
 package com.aeropuerto.modelo;
 
+// Especificacion formal del TAD Ruta
 /**
- * =========================================================================
- * ESPECIFICACIÓN FORMAL DEL TIPO ABSTRACTO DE DATOS: TAD RUTA
- * =========================================================================
- * 
  * DOMINIO CONCEPTUAL:
- * Modela un segmento o arco de navegación aérea troncal dentro de la red
- * aeroportuaria administrada por CORPAC S.A.
+ * Modela un segmento o arco de navegacion aerea troncal en CORPAC S.A.
  * 
  * SINTAXIS:
  * - Constructores:

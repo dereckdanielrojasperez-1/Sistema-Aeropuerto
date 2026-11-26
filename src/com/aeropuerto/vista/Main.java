@@ -8,7 +8,7 @@ public class Main {
         // Arranque instantaneo y silencioso en JDK 21+ sin advertencias de carga nativa
         System.setProperty("flatlaf.useNativeLibrary", "false");
 
-        // HUMANIZACION UI: Inicializacion de FlatLaf y fuentes institucionales
+        // Inicializacion de FlatLaf y fuentes institucionales
         com.aeropuerto.vista.tema.Theme.inicializar();
 
         SwingUtilities.invokeLater(() -> {

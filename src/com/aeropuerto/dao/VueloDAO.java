@@ -9,17 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * ============================================================================
- * PATRÓN DATA ACCESS OBJECT (DAO): PERSISTENCIA DE VUELOS (CRUD MYSQL)
- * ============================================================================
- * Seguridad y Robustez Clean Code:
- * - Parámetros bind (?) en PreparedStatement para 100% protección contra SQL Injection (OWASP).
- * - Manejo automático de recursos mediante try-with-resources (Cierre garantizado de Connection,
- *   PreparedStatement y ResultSet libre de connection leaks).
- * - Tolerancia a fallos: En ausencia de MySQL, retorna false/vacío y delega al estado en RAM.
- * ============================================================================
- */
+// DAO para persistencia CRUD de vuelos en MySQL
 public class VueloDAO {
 
     // Insertar vuelo

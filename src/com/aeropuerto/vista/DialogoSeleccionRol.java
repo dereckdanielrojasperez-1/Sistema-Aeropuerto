@@ -1,4 +1,3 @@
-// HUMANIZACION UI
 package com.aeropuerto.vista;
 
 import com.aeropuerto.controlador.ControladorAeropuerto;

@@ -28,7 +28,7 @@ import com.aeropuerto.servicio.ServicioCorreo;
 import java.io.File;
 import java.util.List;
 
-// HUMANIZACION UI - Cimientos y componentes modulares
+// Cimientos y componentes modulares
 import com.aeropuerto.vista.tema.Theme;
 import com.aeropuerto.vista.tema.FontManager;
 import com.aeropuerto.vista.tema.BotonPrimario;
@@ -230,7 +230,7 @@ public class VentanaPrincipal extends JFrame {
     private JLabel lblBannerVueloSeleccionado;
     private JButton[] btnsDestinosLaterales;
 
-    // HUMANIZACION UI - Componentes modulares Bloque 2
+    // Componentes modulares Bloque 2
     private StepperPasajero stepperPasajero;
     private PanelDashboardKpi panelDashboardKpi;
     private StripVueloSeleccionado stripVueloSeleccionado;
@@ -489,7 +489,7 @@ public class VentanaPrincipal extends JFrame {
 
         Theme.addThemeListener(this::actualizarTemaGlobal);
 
-        // HUMANIZACION UI - Bloque Superior: Encabezado institucional + Dashboard 4 KPIs + Stepper 4 pasos
+        // Bloque Superior: Encabezado institucional + Dashboard 4 KPIs + Stepper 4 pasos
         this.panelNorte = new JPanel(new BorderLayout(0, 0));
         panelNorte.setBackground(Theme.getBg());
         panelNorte.add(crearPanelEncabezado(), BorderLayout.NORTH);
@@ -930,7 +930,7 @@ public class VentanaPrincipal extends JFrame {
         return panelEncabezado;
     }
 
-    // HUMANIZACION UI - Dashboard visual de 4 metricas con entrada stagger 60ms
+    // Dashboard visual de 4 metricas con entrada stagger 60ms
     private JPanel crearPanelDashboardMetricas() {
         if (panelDashboardKpi == null) {
             panelDashboardKpi = new PanelDashboardKpi();
@@ -3087,7 +3087,7 @@ public class VentanaPrincipal extends JFrame {
         return panelRadarSmartAirport;
     }
 
-    // HUMANIZACION UI - Creación del panel de Vuelos y Destinos para el Pasajero
+    // Creación del panel de Vuelos y Destinos para el Pasajero
     private JPanel crearPanelPasajeroVuelos() {
         panelPasajeroVuelos = new JPanel(new BorderLayout(0, 6));
         panelPasajeroVuelos.setBackground(Theme.getBg());
@@ -3221,7 +3221,7 @@ public class VentanaPrincipal extends JFrame {
             btnToggleTablaDetallada.setText(modoVistaTablaVuelos ? "Volver a Tarjetas de Vuelo" : "Ver comparativa en tabla");
         });
 
-        // HUMANIZACION UI - Strip informativo de vuelo seleccionado (accent-soft, legible)
+        // Strip informativo de vuelo seleccionado (accent-soft, legible)
         stripVueloSeleccionado = new StripVueloSeleccionado();
 
         // Agrupar centro
@@ -4972,7 +4972,7 @@ public class VentanaPrincipal extends JFrame {
         actualizarBannerVueloSeleccionado();
     }
 
-    // HUMANIZACION UI - Tarjetas de vuelo ejecutivas modernas (scroll vertical fluido, estilo LATAM / Google Flights)
+    // Tarjetas de vuelo ejecutivas modernas (scroll vertical fluido, estilo LATAM / Google Flights)
     private void actualizarTarjetasVariaciones(java.util.List<Vuelo> lista) {
         if (panelTarjetasVariaciones == null) return;
         panelTarjetasVariaciones.removeAll();
@@ -5013,7 +5013,7 @@ public class VentanaPrincipal extends JFrame {
         panelTarjetasVariaciones.repaint();
     }
 
-    // HUMANIZACION UI - Strip informativo de vuelo seleccionado y Resumen de Reserva
+    // Strip informativo de vuelo seleccionado y Resumen de Reserva
     private void actualizarBannerVueloSeleccionado() {
         Vuelo v = controlador.obtenerVueloActivo();
         if (stripVueloSeleccionado != null) {
@@ -5963,7 +5963,7 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    // HUMANIZACION UI - Panel inferior: Barra de estado con chips semanticos (MySQL / RAM / TADs)
+    // Panel inferior: Barra de estado con chips semanticos (MySQL / RAM / TADs)
     private JPanel crearPanelInferior() {
         if (txtConsola == null) {
             txtConsola = new JTextArea();
@@ -8149,7 +8149,7 @@ public class VentanaPrincipal extends JFrame {
         timer.start();
     }
 
-    // HUMANIZACION UI - Sincronización dinámica de tema Claro / Oscuro en toda la aplicación
+    // Sincronización dinámica de tema Claro / Oscuro en toda la aplicación
     public void actualizarTemaGlobal() {
         refrescarPaletaLocal();
 

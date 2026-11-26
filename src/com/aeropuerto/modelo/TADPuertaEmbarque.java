@@ -1,13 +1,9 @@
 package com.aeropuerto.modelo;
 
+// Especificacion formal del TAD Puerta de Embarque
 /**
- * =========================================================================
- * ESPECIFICACIÓN FORMAL DEL TIPO ABSTRACTO DE DATOS: TAD PUERTA DE EMBARQUE
- * =========================================================================
- * 
  * DOMINIO CONCEPTUAL:
- * Modela un punto físico de abordaje (Gate) en terminal aeroportuario, asignado
- * mediante rotación continua cíclica (Round-Robin) en CORPAC S.A.
+ * Modela un punto fisico de abordaje (Gate) asignado mediante rotacion circular.
  * 
  * SINTAXIS:
  * - Constructores:

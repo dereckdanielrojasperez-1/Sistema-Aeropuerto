@@ -22,8 +22,6 @@ import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
-
-// HUMANIZACION UI
 import com.aeropuerto.vista.tema.Theme;
 import com.aeropuerto.vista.tema.AppIcon;
 import com.aeropuerto.vista.tema.FontManager;
